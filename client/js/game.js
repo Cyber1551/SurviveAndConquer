@@ -386,8 +386,8 @@
 		self.overclocked = false;
 		self.elementType = null;
 		self.movementSpd = initPack.maxSpd;
-		self.sprite = initPack.player;
-		self.spriteShield = Img.playerShield;
+		self.sprite = initPack.sprite;
+		self.spriteShield = iniPack.spriteShield;
 		self.draw = function()
 		{
 			//chatText.innerHTML += self.name + "<br />";
@@ -720,6 +720,10 @@
 				if (pack.sprite !== undefined)
 				{
 					p.sprite = pack.sprite;
+				}
+				if (pack.spriteShield !== undefined)
+				{
+					p.spriteShield = pack.spriteShield;
 				}
 			}
 		}

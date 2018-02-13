@@ -302,6 +302,7 @@ var Player = function(param)
 	self.matchType = param.matchType;
 	self.elementType = null;
 	self.sprite = '/client/img/Player/player.png';
+	self.spriteShield = '/client/img/Player/playerShield.png';
 	self.stats = {
 		attack:5,
 		armor:0,
@@ -436,7 +437,8 @@ var Player = function(param)
 			expMax:self.expMax,
 			team:self.team,
 			maxSpd:self.maxSpd,
-			sprite:self.sprite
+			sprite:self.sprite,
+			spriteShield:self.spriteShield
 
 		}
 	}
@@ -465,7 +467,8 @@ var Player = function(param)
 			canMove:self.canMove,
 			elementType:self.elementType,
 			maxSpd:self.maxSpd,
-			sprite:self.sprite
+			sprite:self.sprite,
+			spriteShield:self.spriteShield
 			
 		}
 	}
@@ -1611,23 +1614,23 @@ io.sockets.on('connection', function(socket)
 			{
 				case "Fire":
 					Player.list[socket.id].sprite = '/client/img/Player/playerFire.png';
-					//Player.list[selfId].spriteShield = Img.playerFireShield;
+					Player.list[socket.id].spriteShield = '/client/img/Player/playerFireShield.png';
 				break;
 				case "Water":
-					//Player.list[selfId].sprite = Img.playerWater;
-					//Player.list[selfId].spriteShield = Img.playerWaterShield;
+					Player.list[socket.id].sprite = '/client/img/Player/playerWater.png';
+					Player.list[socket.id].spriteShield = '/client/img/Player/playerWaterShield.png';
 				break;
 				case "Earth":
-					//Player.list[selfId].sprite = Img.playerEarth;
-					//Player.list[selfId].spriteShield = Img.playerEarthShield;
+					Player.list[socket.id].sprite = '/client/img/Player/playerEarth.png';
+					Player.list[socket.id].spriteShield = '/client/img/Player/playerEarthShield.png';
 				break;
 				case "Wind":
-					//Player.list[selfId].sprite = Img.playerWind;
-					//Player.list[selfId].spriteShield = Img.playerWindShield;
+					Player.list[socket.id].sprite = '/client/img/Player/playerWind.png';
+					Player.list[socket.id].spriteShield = '/client/img/Player/playerWindShield.png';
 				break;
 				case "Lightning":
-					//Player.list[selfId].sprite = Img.playerLightning;
-					//Player.list[selfId].spriteShield = Img.playerLightningShield;
+					Player.list[socket.id].sprite = '/client/img/Player/playerLightning.png';
+					Player.list[socket.id].spriteShield = '/client/img/Player/playerLightningShield.png';
 				break;
 				
 			}
