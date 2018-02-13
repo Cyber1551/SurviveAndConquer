@@ -299,6 +299,8 @@ var Player = function(param)
 	self.surrender = false;
 	self.matchType = param.matchType;
 	self.elementType = null;
+	self.sprite = Img.player;
+	self.spriteShield = Img.playerShield;
 	self.stats = {
 		attack:5,
 		armor:0,
@@ -432,7 +434,8 @@ var Player = function(param)
 			gold:self.gold,
 			expMax:self.expMax,
 			team:self.team,
-			maxSpd:self.maxSpd
+			maxSpd:self.maxSpd,
+			sprite:self.sprite
 
 		}
 	}
@@ -460,7 +463,8 @@ var Player = function(param)
 			isGoal:self.isGoal,
 			canMove:self.canMove,
 			elementType:self.elementType,
-			maxSpd:self.maxSpd
+			maxSpd:self.maxSpd,
+			sprite:self.sprite
 			
 		}
 	}
@@ -566,18 +570,22 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 		{
 			if (data.user == "team")
 			{
+				socket.emit("addToChat", {name:"To Team: ", txt:data.message});
 				for (var i in Player.list)
 				{
 					if (Player.list[i].team == player.team)
 					{
-						SOCKET_LIST[i].emit("addToChat", {name: player.user + ': ', txt: data.message});
-						socket.emit("addToChat", {name:"To Team: ", txt:data.message});
+						if (Player.list[i].user != player.user)
+						{
+							SOCKET_LIST[i].emit("addToChat", {name: player.user + ': ', txt: data.message});
+						}
+						
 					}
 				}
 			}
 			else
 			{
-				socket.emit("addToChat", "The player " + data.user + " is not online!");
+				socket.emit("addToChat", {name: "", txt:"The player " + data.user + " is not online!"});
 			}
 			
 		}
@@ -1595,10 +1603,33 @@ io.sockets.on('connection', function(socket)
 		{
 			if (Player.list[i].team == Player.list[socket.id].team)
 			{
-				
 				SOCKET_LIST[Player.list[i].id].emit("disableElement", {elementType: data.elementType});
 			}	
 		}
+		switch(data.elementType)
+			{
+				case "Fire":
+					Player.list[socket.id].sprite = Img.playerFire;
+					//Player.list[selfId].spriteShield = Img.playerFireShield;
+				break;
+				case "Water":
+					//Player.list[selfId].sprite = Img.playerWater;
+					//Player.list[selfId].spriteShield = Img.playerWaterShield;
+				break;
+				case "Earth":
+					//Player.list[selfId].sprite = Img.playerEarth;
+					//Player.list[selfId].spriteShield = Img.playerEarthShield;
+				break;
+				case "Wind":
+					//Player.list[selfId].sprite = Img.playerWind;
+					//Player.list[selfId].spriteShield = Img.playerWindShield;
+				break;
+				case "Lightning":
+					//Player.list[selfId].sprite = Img.playerLightning;
+					//Player.list[selfId].spriteShield = Img.playerLightningShield;
+				break;
+				
+			}
 		Player.list[socket.id].elementType = data.elementType;
 	});
 
