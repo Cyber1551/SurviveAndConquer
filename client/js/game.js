@@ -1218,7 +1218,7 @@
 		else if (chatInput.value[0] === '@')
 		{
 			socket.emit('sendPMToServer', {
-				user: chatInput.value.slice(1, chatInput.value.indexOf(','))
+				user: chatInput.value.slice(1, chatInput.value.indexOf(',')),
 				message: chatInput.value.slice(chatInput.value.indexOf(',') + 1)
 			});
 		}

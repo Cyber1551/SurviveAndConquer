@@ -565,13 +565,13 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 		{
 			socket.emit("addToChat", "The player " + data.user + " is not online!");
 		}
-		else if (data.user === "team")
+		else if (data.user == "team")
 		{
 			for (var i in Player.list)
 			{
 				if (Player.list[i].team == player.team)
 				{
-					recipientSocket.emit("addToChat", "From " + player.user + ": " + data.message);
+					SOCKET_LIST[i].emit("addToChat", "From " + player.user + ": " + data.message);
 					socket.emit("addToChat", "To Team: " + data.message);
 				}
 			}
