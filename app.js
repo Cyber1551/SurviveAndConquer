@@ -4,7 +4,7 @@ require("./client/js/map.js");
 require("./client/js/Elements.js");
 var serv = require('http').Server(app);
 var mongojs = require("mongojs");
-var db = mongojs('mongodb://cyberboy1551:Tank@1551@ds023445.mlab.com:23445/heroku_grzkxhzt', ['account']);
+var db = mongojs('mongodb://cyberboy1551:Tank1551@ds023445.mlab.com:23445/heroku_grzkxhzt', ['account']);
 
 
 
