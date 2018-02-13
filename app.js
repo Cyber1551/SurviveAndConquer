@@ -56,7 +56,9 @@ var isValidPassword = function(data, cb)
 }
 var isUsernameTaken = function(data, cb)
 {
-	db.account.find({username:data.username}, function(err, res)
+	if (data.username != "team")
+	{
+		db.account.find({username:data.username}, function(err, res)
 		{
 			if (res.length > 0)
 			{
@@ -67,6 +69,12 @@ var isUsernameTaken = function(data, cb)
 			}
 
 		});
+	}
+	else
+	{
+		cb(true);
+	}
+	
 }
 var addUser = function(data, cb)
 {
@@ -529,7 +537,53 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 
 	});
 
-
+	
+	socket.on('sendMsgToServer', function(data)
+	{
+		//console.log(playerName);
+		for (var i in SOCKET_LIST)
+		{
+			SOCKET_LIST[i].emit('addToChat',
+			{
+				name: player.user + ': ',
+				txt: data
+			});
+		}
+	});
+	socket.on('sendPMToServer', function(data) //data: {username, message}
+	{
+		//console.log(playerName);
+		var recipientSocket = null;
+		for (var i in Player.list)
+		{
+			if (Player.list[i].user === data.user)
+			{
+				recipientSocket = SOCKET_LIST[i];
+			}
+		}
+		if (recipientSocket === null)
+		{
+			socket.emit("addToChat", "The player " + data.user + " is not online!");
+		}
+		else if (data.user === "team")
+		{
+			for (var i in Player.list)
+			{
+				if (Player.list[i].team == player.team)
+				{
+					recipientSocket.emit("addToChat", "From " + player.user + ": " + data.message);
+					socket.emit("addToChat", "To Team: " + data.message);
+				}
+			}
+		}
+		else
+		{
+			recipientSocket.emit("addToChat", "From " + player.user + ": " + data.message);
+			socket.emit("addToChat", "To " + data.user + ": " + data.message);
+		}
+		
+	});
+	
 	socket.emit('init', {
 		selfId:socket.id,
 		player:Player.getAllInitPack(),
@@ -1281,19 +1335,6 @@ io.sockets.on('connection', function(socket)
 		console.log("socket disconnection");
 	});
 
-	socket.on('sendMsgToServer', function(data)
-	{
-		var playerName = "" + Player.list[socket.id].user;
-		//console.log(playerName);
-		for (var i in SOCKET_LIST)
-		{
-			SOCKET_LIST[i].emit('addToChat',
-			{
-				name: playerName + ': ',
-				txt: data
-			});
-		}
-	});
 	socket.on('evalServer', function(data)
 	{
 		if (DEBUG)
