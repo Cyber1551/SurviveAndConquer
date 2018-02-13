@@ -710,30 +710,6 @@
 				if (pack.elementType !== undefined)
 				{
 					p.elementType = pack.elementType;
-					switch(p.elementType)
-					{
-						case "Fire":
-							Player.list[selfId].sprite = Img.playerFire;
-							Player.list[selfId].spriteShield = Img.playerFireShield;
-						break;
-						case "Water":
-							Player.list[selfId].sprite = Img.playerWater;
-							Player.list[selfId].spriteShield = Img.playerWaterShield;
-						break;
-						case "Earth":
-							Player.list[selfId].sprite = Img.playerEarth;
-							Player.list[selfId].spriteShield = Img.playerEarthShield;
-						break;
-						case "Wind":
-							Player.list[selfId].sprite = Img.playerWind;
-							Player.list[selfId].spriteShield = Img.playerWindShield;
-						break;
-						case "Lightning":
-							Player.list[selfId].sprite = Img.playerLightning;
-							Player.list[selfId].spriteShield = Img.playerLightningShield;
-						break;
-				
-					}
 				}
 				if (pack.maxSpd !== undefined)
 				{
@@ -1095,7 +1071,30 @@
 				
 			}
 			socket.emit("setElement", {elementType:Element.list[itemId].name});
-			
+			switch(Element.list[itemId].name)
+			{
+				case "Fire":
+					Player.list[selfId].sprite = Img.playerFire;
+					Player.list[selfId].spriteShield = Img.playerFireShield;
+				break;
+				case "Water":
+					Player.list[selfId].sprite = Img.playerWater;
+					Player.list[selfId].spriteShield = Img.playerWaterShield;
+				break;
+				case "Earth":
+					Player.list[selfId].sprite = Img.playerEarth;
+					Player.list[selfId].spriteShield = Img.playerEarthShield;
+				break;
+				case "Wind":
+					Player.list[selfId].sprite = Img.playerWind;
+					Player.list[selfId].spriteShield = Img.playerWindShield;
+				break;
+				case "Lightning":
+					Player.list[selfId].sprite = Img.playerLightning;
+					Player.list[selfId].spriteShield = Img.playerLightningShield;
+				break;
+				
+			}
 			
 			$("#elementL").text(Element.list[itemId].name);
 			Element.list[itemId].event();
