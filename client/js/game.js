@@ -448,6 +448,8 @@
 				ctx.arc(self.x, self.y, 32, 0 + shieldRad, Math.PI + shieldRad);
 				ctx.stroke();
 			}*/
+			var spriteImage = new Image();
+			spriteImage.src = self.sprite;
 			ctx.translate(px + (width / 2) - 30, py + (height / 2) - 30 );
 
 			ctx.rotate(rad);
@@ -457,7 +459,7 @@
 			} 
 			else
 			{
-				ctx.drawImage(self.sprite, (width / 2 * (-1)), height / 2 * (-1), width, height);
+				ctx.drawImage(spriteImage, (width / 2 * (-1)), height / 2 * (-1), width, height);
 
 			}
 			//chatText.innerHTML+="" + self.mouseAngle + "<br />";

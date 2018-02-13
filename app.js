@@ -215,44 +215,7 @@ function backToLobby(id)
 }
 
 
-var Img = {};
-	//Neutral
-	Img.player = new Image();
-	Img.player.src = '/client/img/Player/player.png'; 
-	//Fire
-	Img.playerFire = new Image();
-	Img.playerFire.src = '/client/img/Player/playerFire.png'; 
-	//Water
-	Img.playerWater = new Image();
-	Img.playerWater.src = '/client/img/Player/playerWater.png';
-	//Earth
-	Img.playerEarth = new Image();
-	Img.playerEarth.src = '/client/img/Player/playerEarth.png';
-	//Wind
-	Img.playerWind = new Image();
-	Img.playerWind.src = '/client/img/Player/playerWind.png';
-	//Lightning
-	Img.playerLightning = new Image();
-	Img.playerLightning.src = '/client/img/Player/playerLightning.png';
-	
-	//Neutral
-	Img.playerShield = new Image();
-	Img.playerShield.src = '/client/img/PlayerShield/playerShield.png'; 
-	//Fire
-	Img.playerFireShield = new Image();
-	Img.playerFireShield.src = '/client/img/PlayerShield/playerFireShield.png'; 
-	//Water
-	Img.playerWaterShield = new Image();
-	Img.playerWaterShield.src = '/client/img/PlayerShield/playerWaterShield.png';
-	//Earth
-	Img.playerEarthShield = new Image();
-	Img.playerEarthShield.src = '/client/img/PlayerShield/playerEarthShield.png';
-	//Wind
-	Img.playerWindShield = new Image();
-	Img.playerWindShield.src = '/client/img/PlayerShield/playerWindShield.png';
-	//Lightning
-	Img.playerLightningShield = new Image();
-	Img.playerLightningShield.src = '/client/img/PlayerShield/playerLightningShield.png';
+
 
 
 
@@ -338,7 +301,7 @@ var Player = function(param)
 	self.surrender = false;
 	self.matchType = param.matchType;
 	self.elementType = null;
-	self.sprite = Img.player;
+	self.sprite = '/client/img/Player/player.png';
 	self.stats = {
 		attack:5,
 		armor:0,
@@ -1647,7 +1610,7 @@ io.sockets.on('connection', function(socket)
 		switch(data.elementType)
 			{
 				case "Fire":
-					Player.list[socket.id].sprite = Img.playerFire;
+					Player.list[socket.id].sprite = '/client/img/Player/playerFire.png';
 					//Player.list[selfId].spriteShield = Img.playerFireShield;
 				break;
 				case "Water":
