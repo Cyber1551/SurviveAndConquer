@@ -1191,6 +1191,8 @@
 
 	socket.on('addToChat', function(data)
 	{
+		
+		console.log(data.name + ";" + data.txt);
 		chatText.innerHTML += '<div><b>' + data.name + '</b>' + data.txt + '</div>';
 	});
 	socket.on('evalAnswer', function(data)
