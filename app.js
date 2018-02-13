@@ -553,6 +553,7 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 	socket.on('sendPMToServer', function(data) //data: {username, message}
 	{
 		//console.log(playerName);
+		console.log(data.user + "; " + data.message);
 		var recipientSocket = null;
 		for (var i in Player.list)
 		{
@@ -571,8 +572,8 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 			{
 				if (Player.list[i].team == player.team)
 				{
-					SOCKET_LIST[i].emit("addToChat", "From " + player.user + ": " + data.message);
-					socket.emit("addToChat", "To Team: " + data.message);
+					SOCKET_LIST[i].emit("addToChat", {name: player.user + ': ',txt: data.message});
+					socket.emit("addToChat", {name:"To Team: ", txt:data.message});
 				}
 			}
 		}
