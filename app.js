@@ -299,8 +299,6 @@ var Player = function(param)
 	self.surrender = false;
 	self.matchType = param.matchType;
 	self.elementType = null;
-	self.sprite = Img.player;
-	self.spriteShield = Img.playerShield;
 	self.stats = {
 		attack:5,
 		armor:0,
@@ -1606,30 +1604,7 @@ io.sockets.on('connection', function(socket)
 				SOCKET_LIST[Player.list[i].id].emit("disableElement", {elementType: data.elementType});
 			}	
 		}
-		switch(data.elementType)
-			{
-				case "Fire":
-					Player.list[socket.id].sprite = Img.playerFire;
-					//Player.list[selfId].spriteShield = Img.playerFireShield;
-				break;
-				case "Water":
-					//Player.list[selfId].sprite = Img.playerWater;
-					//Player.list[selfId].spriteShield = Img.playerWaterShield;
-				break;
-				case "Earth":
-					//Player.list[selfId].sprite = Img.playerEarth;
-					//Player.list[selfId].spriteShield = Img.playerEarthShield;
-				break;
-				case "Wind":
-					//Player.list[selfId].sprite = Img.playerWind;
-					//Player.list[selfId].spriteShield = Img.playerWindShield;
-				break;
-				case "Lightning":
-					//Player.list[selfId].sprite = Img.playerLightning;
-					//Player.list[selfId].spriteShield = Img.playerLightningShield;
-				break;
-				
-			}
+		
 		Player.list[socket.id].elementType = data.elementType;
 	});
 

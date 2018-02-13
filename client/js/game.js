@@ -386,7 +386,7 @@
 		self.overclocked = false;
 		self.elementType = null;
 		self.movementSpd = initPack.maxSpd;
-		self.sprite = initPack.sprite;
+		self.sprite = Img.player;
 		self.spriteShield = Img.playerShield;
 		self.draw = function()
 		{
@@ -710,15 +710,36 @@
 				if (pack.elementType !== undefined)
 				{
 					p.elementType = pack.elementType;
+					switch(p.elementType)
+					{
+						case "Fire":
+							Player.list[selfId].sprite = Img.playerFire;
+							Player.list[selfId].spriteShield = Img.playerFireShield;
+						break;
+						case "Water":
+							Player.list[selfId].sprite = Img.playerWater;
+							Player.list[selfId].spriteShield = Img.playerWaterShield;
+						break;
+						case "Earth":
+							Player.list[selfId].sprite = Img.playerEarth;
+							Player.list[selfId].spriteShield = Img.playerEarthShield;
+						break;
+						case "Wind":
+							Player.list[selfId].sprite = Img.playerWind;
+							Player.list[selfId].spriteShield = Img.playerWindShield;
+						break;
+						case "Lightning":
+							Player.list[selfId].sprite = Img.playerLightning;
+							Player.list[selfId].spriteShield = Img.playerLightningShield;
+						break;
+				
+					}
 				}
 				if (pack.maxSpd !== undefined)
 				{
 					p.movementSpd = pack.maxSpd;
 				}
-				if (pack.sprite !== undefined)
-				{
-					p.sprite = pack.sprite;
-				}
+				
 			}
 		}
 		for (var i = 0; i < data.bullet.length; i++)
