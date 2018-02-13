@@ -564,18 +564,22 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 		}
 		if (recipientSocket === null)
 		{
-			socket.emit("addToChat", "The player " + data.user + " is not online!");
-		}
-		else if (data.user == "team")
-		{
-			for (var i in Player.list)
+			if (data.user == "team")
 			{
-				if (Player.list[i].team == player.team)
+				for (var i in Player.list)
 				{
-					SOCKET_LIST[i].emit("addToChat", {name: player.user + ': ', txt: data.message});
-					socket.emit("addToChat", {name:"To Team: ", txt:data.message});
+					if (Player.list[i].team == player.team)
+					{
+						SOCKET_LIST[i].emit("addToChat", {name: player.user + ': ', txt: data.message});
+						socket.emit("addToChat", {name:"To Team: ", txt:data.message});
+					}
 				}
 			}
+			else
+			{
+				socket.emit("addToChat", "The player " + data.user + " is not online!");
+			}
+			
 		}
 		else
 		{
