@@ -583,7 +583,7 @@
 			{
 
 				$("#respawnL").text("Respawn in: " + val + " seconds! ");
-				console.log(val);
+				//console.log(val);
 				val-=1;
 				if (val == 0)
 				{
@@ -978,9 +978,9 @@
 			}
 			else
 			{
-				var lethalityArmor = ((lethalityValue - stats.lethality) / lethalityValue) *100;
+				var lethalityArmor = 100 - (((lethalityValue - stats.lethality) / lethalityValue) * 100);
 			}
-			console.log(lethalityArmor + "; " + stats.lethality);
+			//console.log(lethalityArmor + "; " + stats.lethality);
 			var damage = (stats.attack * stats.attack) / (stats.attack + 0);
 			var attackSpdMs = (40 * (5 + stats.attackSpd))
 			var attackSpdSec = attackSpdMs / 1000;
@@ -1196,7 +1196,7 @@
 		var p = Player.list[selfId];
 		var x = getStore(p.team).x * TILESIZE;
 		var y = getStore(p.team).y * TILESIZE;
-		console.log(getDis(x, y, p.x, p.y));
+		//console.log(getDis(x, y, p.x, p.y));
 
 		if (getDis(x, y, p.x, p.y) <= 416)
 		{
@@ -1341,7 +1341,7 @@
 		}
 		else if(event.keyCode === 49) //1
 		{
-			console.log ("1");
+			//console.log ("1");
 			if (!selfId)
 				return;
 			//socket.emit('keyPress', {inputId: 'item1', state:true});
@@ -1351,7 +1351,7 @@
 		}
 		else if(event.keyCode === 50) //2
 		{
-			console.log ("2");
+			//console.log ("2");
 			if (!selfId)
 				return;
 			if (playerInventory.items[1] !== undefined)
@@ -1360,7 +1360,7 @@
 		}
 		else if(event.keyCode === 51) //3
 		{
-			console.log ("3");
+			//console.log ("3");
 			if (!selfId)
 				return;
 			if (playerInventory.items[2] !== undefined)
