@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <html>
 <head>
 <title>Survive And Conquer</title>
@@ -146,3 +147,152 @@ T2: <div id="team2Cont" style="border: 1px solid black; width: 15px; height: 200
 <script src="/client/js/game.js"></script>
 </body>
 </html>
+=======
+<html>
+<head>
+<title>Survive And Conquer</title>
+<link rel="stylesheet" type="text/css" href="/client/css/style.css">
+</head>
+<body>
+<center>
+<div id="signDiv">
+<br />
+	<label><b>Login</b></label><br /><br />
+	<input id="signDiv-username" placeholder="Username..." type="text"></input><br /><br />
+	<input id="signDiv-password" placeholder="Password..." type="password"></input><br /><br />
+	<button id="signDiv-signIn">Sign In</button>
+	<button id="signDiv-register">Register</button><br /><br />
+	<label style="display: none; font-size: 20px;" id="signInfo"></label>
+
+	<br /><br />
+
+</div>
+<div id="regDiv" style="display:none;">
+<br />
+	<label><b>Register</b></label><br /><br />
+	<input id="regDiv-username" placeholder="Username..." type="text"></input><br /><br />
+	<input id="regDiv-password" placeholder="Password..." type="password"></input><br /><br />
+	<input id="regDiv-passwordRepeat" placeholder="Repeat Password..." type="password"></input><br /><br />
+	<input id="regDiv-email" placeholder="Email..." type="text"></input><br /><br />
+	<button id="regDiv-register">Register</button>
+	<button id="regDiv-signIn">Sign In</button><br /><br />
+	<label style="display: none; font-size: 20px;" id="regInfo"></label>
+</div>
+<div id="lobbyDiv" style="display:none;">
+<br />
+	<b>Welcome Back, <label id="userLabel"></label></b><br /><br />
+	<select id="lobbyModeSel">
+		<option disabled>Training Coming Soon</option>
+		<optgroup label="Normal">
+			<option value="one">Normal 1v1</option>
+			<option value="two">Normal 2v2</option>
+			<option value="three">Normal 3v3</option>
+		</optgroup>
+		<optgroup label="Ranked">
+			<option disabled>Ranked Coming Soon</option>
+		</optgroup>
+
+    </select><br />
+	<button id="lobbyDiv-findMatch">Find Match</button>
+	<button id="lobbyDivCancel" style="display:none;">Cancel Search</button><br /><br />
+
+	<button id="lobbyDivStats">Stats</button><br /><br />
+
+	<button id="lobbyDiv-signOut">Sign Out</button><br /><br />
+	<div style="display:none;" id="loader"></div>
+
+</div>
+<div id="playerStatsDiv" style="display:none;">
+	Wins: <label id="lobbyWins">0</label> / Losses: <label id="lobbyLosses">0</label>; Win Rate: <label id="lobbyWinR"></label><br /><br />
+	<button id="statsDivBack">Back</button><br /><br />
+</div>
+<div id="gameDiv" style="display:none;">
+<canvas id="ctx" width="1200" height="1000" style="border:1px solid #000000;"></canvas>
+
+<table style="width: auto; height:auto;padding: 0px; margin: 0px;">
+<tr>
+<td>
+<label id="killL">0</label><label id="deathL">0</label>
+<div id="chat-text" style="width:300px;height:100px;overflow-y:scroll">
+
+</div>
+
+<form id="chat-form">
+	<input id="chat-input" type="text" placeholder="Chat: " style="width:300px"></input>
+</form>
+<button id="surrenderBtn" onclick="surrender()">Surrender</button>
+</td>
+
+<td>
+<table style="padding:0px;margin:0px;">
+<tr>
+<td>
+<div id="healthCont" style="border: 1px solid black; width: 500px; height: 15px;">
+<div id="healthDiv" style="background-color: red; width: 100%; height: 15px; text-align: center;">
+<label id="healthL">500</label>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td>
+<div id="expCont" style="border: 1px solid black; width: 500px; height: 10px;">
+<div id="expDiv" style="background-color: #66ffb3; width: 100%; height: 10px; text-align: center;">
+
+</div>
+</div>
+
+Level: <label id="levelL">1</label> (<label id="expL"></label>/<label id="expMaxL"></label>)
+</td>
+</tr>
+</table>
+<div id="statsDiv" style="width: 500px; height: 110px; border:1px solid black;">
+<b>Attack: </b><label id="attackL"></label><div class="tooltip">&nbsp;<u>i</u><span class="tooltiptext" id="attackTT">Tooltip text</span></div><br />
+<b>Armor: </b><label id="armorL"></label><div class="tooltip" >&nbsp;<u>i</u><span class="tooltiptext" id="armorTT">Tooltip text</span></div><br />
+<b>Attack Speed: </b><label id="attackSpdL"></label><div class="tooltip">&nbsp;<u>i</u><span class="tooltiptext" id="attackSpdTT">Tooltip text</span></div><br />
+<b>Critical Chance: </b><label id="critL"></label><div class="tooltip">&nbsp;<u>i</u><span class="tooltiptext" id="critTT">Tooltip text</span></div><br />
+<b>Life Steal: </b><label id="lifeStealL"></label><div class="tooltip">&nbsp;<u>i</u><span class="tooltiptext" id="lifeStealTT">Tooltip text</span></div><br />
+<b>Movement Speed: </b><label id="movementL"></label><div class="tooltip">&nbsp;<u>i</u><span class="tooltiptext" id="movementTT">Tooltip text</span></div><br />
+</div>
+
+</td>
+<td>
+T1: <div id="team1Cont" style="border: 1px solid black; width: 15px; height: 200px; transform:rotate(180deg);">
+<div id="team1Div" style="background-color: #d9d9d9; width: 15px; height: 0%; text-align: center;">
+
+</div>
+</div>
+</td>
+<td>
+T2: <div id="team2Cont" style="border: 1px solid black; width: 15px; height: 200px; transform:rotate(180deg);">
+<div id="team2Div" style="background-color: #d9d9d9; width:15px; height: 0%; text-align: center;">
+
+</div>
+</div>
+
+</td>
+<td>
+<b>Gold: </b><label id="gold"></label><br />
+<div id="inventory" style="width: 200px; height:200px; border: 1px solid black; overflow-y:scroll;">
+
+</div>
+
+</td>
+<td>
+<u>Store</u>; Element: <label id="elementL">Not Set</label>
+<div id="store" style="width: 300px; height:200px; border: 1px solid black; overflow-y:scroll;">
+
+</div>
+</td>
+</table>
+</div>
+</center>
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="/client/js/Inventory.js"></script>
+<script src="/client/js/Elements.js"></script>
+<script src="/client/js/map.js"></script>
+<script src="/client/js/game.js"></script>
+</body>
+</html>
+>>>>>>> be43b6865c50eb9b271b692b2fe163381918395d
