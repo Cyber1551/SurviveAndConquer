@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 	var WIDTH = 1200;
 	var HEIGHT = 1000;
 

@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 Inventory = function()
 {
 	var self = {

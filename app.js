@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 var express = require("express");
 var app = express();
 require("./client/js/map.js");
