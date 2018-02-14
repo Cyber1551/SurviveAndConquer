@@ -450,12 +450,14 @@
 			}*/
 			var spriteImage = new Image();
 			spriteImage.src = self.sprite;
+			var spriteShieldImage = new Image();
+			spriteShieldImage.src = self.spriteShield;
 			ctx.translate(px + (width / 2) - 30, py + (height / 2) - 30 );
 
 			ctx.rotate(rad);
 			if (self.isShielding && self.shield > 0)
 			{
-				ctx.drawImage(self.spriteShield, (width / 2 * (-1)), height / 2 * (-1), width, height);
+				ctx.drawImage(spriteShieldImage, (width / 2 * (-1)), height / 2 * (-1), width, height);
 			}
 			else
 			{
