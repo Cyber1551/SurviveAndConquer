@@ -575,7 +575,7 @@
 	
 	socket.on("deathCounter", function(data)
 	{
-		ctx.font = "50px Arial";
+	//	ctx.font = "50px Arial";
 		var val = data.value;
 		setInterval(function()
 		{
@@ -583,9 +583,11 @@
 			{
 
 				$("#respawnL").text("Respawn in: " + val + " seconds! ");
+				console.log(val);
 				val-=1;
 				if (val == 0)
 				{
+					console.log("respawn");
 					$("#respawnL").text("");
 					socket.emit("setCanMove", {playerId:selfId, value:true});
 				}
