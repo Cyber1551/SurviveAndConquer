@@ -495,7 +495,7 @@
 	$("#respawnL").text("10 second strategy time!");
 	setTimeout(function()
 	{
-		//$("#respawnL").text("Capture the point!");
+		$("#respawnL").text("Capture the point!");
 		socket.emit("setCanMove", {value:true});
 	}, 10000);
 
