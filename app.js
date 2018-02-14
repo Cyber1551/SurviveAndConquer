@@ -74,7 +74,7 @@ var isUsernameTaken = function(data, cb)
 	{
 		cb(true);
 	}
-	
+
 }
 var addUser = function(data, cb)
 {
@@ -321,7 +321,7 @@ var Player = function(param)
 			{
 				super_update();
 			}
-			
+
 		}
 		else if(!isPositionWall(self.x + self.spdX, self.y + self.spdY, false))
 		{
@@ -469,7 +469,7 @@ var Player = function(param)
 			maxSpd:self.maxSpd,
 			sprite:self.sprite,
 			spriteShield:self.spriteShield
-			
+
 		}
 	}
 
@@ -545,7 +545,7 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 
 	});
 
-	
+
 	socket.on('sendMsgToServer', function(data)
 	{
 		//console.log(playerName);
@@ -583,7 +583,7 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 						{
 							SOCKET_LIST[i].emit("addToChat", {name: player.user + ': ', txt: data.message});
 						}
-						
+
 					}
 				}
 			}
@@ -591,16 +591,16 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 			{
 				socket.emit("addToChat", {name: "", txt:"The player " + data.user + " is not online!"});
 			}
-			
+
 		}
 		else
 		{
 			recipientSocket.emit("addToChat",{name: "From " + player.user + ': ', txt: data.message});
 			socket.emit("addToChat", {name: "To " + data.user + ': ', txt: data.message});
 		}
-		
+
 	});
-	
+
 	socket.emit('init', {
 		selfId:socket.id,
 		player:Player.getAllInitPack(),
@@ -710,7 +710,7 @@ var Bullet = function(param)
 							damage = (damage * 150) / 100;
 						}
 					}
-				
+
 
 					SOCKET_LIST[i].emit("updateArmor", {value: (damage / par.stats.attack)});
 					if (par.stats.crit > 0)
@@ -727,14 +727,14 @@ var Bullet = function(param)
 
 					}
 
-					
+
 					p.hp-=damage;
 					if (par.stats.lifeSteal > 0)
 					{
 						var amtHeal = par.hpMax * (par.stats.lifeSteal / 100);
 						if (par.hp + amtHeal >= par.hpMax)
 						{
-							par.hp = par.hpMax; 
+							par.hp = par.hpMax;
 						}
 						else
 						{
@@ -932,7 +932,7 @@ function isPositionWall(xx, yy, early)
 		return MapGrid[gridY][gridX];*/
 	if(early)
 	{
-		
+
 		if (MapGrid1[gridY][gridX] == 125)
 		{
 			return true;
@@ -953,7 +953,7 @@ function isPositionWall(xx, yy, early)
 			return false;
 		}
 	}
-		
+
 
 
 
@@ -1499,16 +1499,16 @@ io.sockets.on('connection', function(socket)
 				p.stats.armor += data.amount;
 			break;
 			case "attackSpd":
-				
+
 				p.stats.attackSpd -= data.amount;
 			break;
 			case "crit":
 				p.stats.crit += data.amount;
 			break;
-			case "lifeSteal":	
+			case "lifeSteal":
 				p.stats.lifeSteal += data.amount;
 			break;
-			case "movement":	
+			case "movement":
 				p.maxSpd += data.amount;
 			break;
 			}
@@ -1563,7 +1563,7 @@ io.sockets.on('connection', function(socket)
 					{
 						gameOver("blue");
 					}
-					
+
 					console.log (Player.list[data.playerId].team + " surrendered");
 				}
 			break;
@@ -1608,7 +1608,7 @@ io.sockets.on('connection', function(socket)
 			if (Player.list[i].team == Player.list[socket.id].team)
 			{
 				SOCKET_LIST[Player.list[i].id].emit("disableElement", {elementType: data.elementType});
-			}	
+			}
 		}
 		switch(data.elementType)
 			{
@@ -1618,21 +1618,21 @@ io.sockets.on('connection', function(socket)
 				break;
 				case "Water":
 					Player.list[socket.id].sprite = '/client/img/Player/playerWater.png';
-					Player.list[socket.id].spriteShield = '/client/img/Player/playerWaterShield.png';
+					Player.list[socket.id].spriteShield = '/client/img/playerShield/playerWaterShield.png';
 				break;
 				case "Earth":
 					Player.list[socket.id].sprite = '/client/img/Player/playerEarth.png';
-					Player.list[socket.id].spriteShield = '/client/img/Player/playerEarthShield.png';
+					Player.list[socket.id].spriteShield = '/client/img/PlayerShield/playerEarthShield.png';
 				break;
 				case "Wind":
 					Player.list[socket.id].sprite = '/client/img/Player/playerWind.png';
-					Player.list[socket.id].spriteShield = '/client/img/Player/playerWindShield.png';
+					Player.list[socket.id].spriteShield = '/client/img/PlayerShield/playerWindShield.png';
 				break;
 				case "Lightning":
 					Player.list[socket.id].sprite = '/client/img/Player/playerLightning.png';
-					Player.list[socket.id].spriteShield = '/client/img/Player/playerLightningShield.png';
+					Player.list[socket.id].spriteShield = '/client/img/PlayerShield/playerLightningShield.png';
 				break;
-				
+
 			}
 		Player.list[socket.id].elementType = data.elementType;
 	});
