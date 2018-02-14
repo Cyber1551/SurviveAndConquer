@@ -302,7 +302,7 @@ var Player = function(param)
 	self.matchType = param.matchType;
 	self.elementType = null;
 	self.sprite = '/client/img/Player/player.png';
-	self.spriteShield = '/client/img/Player/playerShield.png';
+	self.spriteShield = '/client/img/PlayerShield/playerShield.png';
 	self.stats = {
 		attack:5,
 		armor:0,
@@ -1614,7 +1614,7 @@ io.sockets.on('connection', function(socket)
 			{
 				case "Fire":
 					Player.list[socket.id].sprite = '/client/img/Player/playerFire.png';
-					Player.list[socket.id].spriteShield = '/client/img/Player/playerFireShield.png';
+					Player.list[socket.id].spriteShield = '/client/img/PlayerShield/playerFireShield.png';
 				break;
 				case "Water":
 					Player.list[socket.id].sprite = '/client/img/Player/playerWater.png';
