@@ -193,7 +193,7 @@ Item("basicattackGem", "Basic Attack Gem", 65, "passive", function()
 
 }, "+10 Attack Damage!");
 
-Item("mediumattackGem", "Medium Attack Gem", 150, "passive", function()
+Item("mediumattackGem", "Medium Attack Gem", 140, "passive", function()
 {
 	socket.emit("updateStats", {playerId:selfId, stat:"attack", type:"up", amount:25});
 
@@ -218,7 +218,7 @@ Item("basicarmor", "Basic Armor", 50, "passive", function()
 
 }, "+5 Armor!");
 
-Item("mediumarmor", "Medium Armor", 150, "passive", function()
+Item("mediumarmor", "Medium Armor", 135, "passive", function()
 {
 	socket.emit("updateStats", {playerId:selfId, stat:"armor", type:"up", amount:15});
 
@@ -238,13 +238,13 @@ Item("basicelectricgem", "Basic Electric Gem", 80, "passive", function()
 
 }, "+10 Critical chance"); 
 
-Item("mediumelectricgem", "Medium Electric Gem", 250, "passive", function()
+Item("mediumelectricgem", "Medium Electric Gem", 230, "passive", function()
 {
 
 	socket.emit("updateStats", {playerId:selfId, stat:"crit", type:"up", amount:40});
 
 }, "+30 Critical chance");
-Item("largeelectricgem", "Large Electric Gem", 500, "passive", function()
+Item("largeelectricgem", "Large Electric Gem", 350, "passive", function()
 {
 
 	socket.emit("updateStats", {playerId:selfId, stat:"crit", type:"up", amount:25});
@@ -252,19 +252,25 @@ Item("largeelectricgem", "Large Electric Gem", 500, "passive", function()
 
 }, "+25 Critical chance<br />+50% bonus critical damage");
 
-Item("basichealinggem", "Basic Healing Gem", 200, "passive", function()
+Item("basichealinggem", "Basic Healing Gem", 175, "passive", function()
 {
 
 	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"up", amount:1});
 
 }, "+1% Life Steal"); 
 
-Item("mediumhealinggem", "Medium Healing Gem", 400, "passive", function()
+Item("mediumhealinggem", "Medium Healing Gem", 500, "passive", function()
 {
 
-	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"up", amount:2});
+	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"up", amount:3});
 
-}, "+2% Life Steal");
+}, "+3% Life Steal");
+Item("largehealinggem", "Large Healing Gem", 500, "passive", function()
+{
+
+	socket.emit("updateStats", {playerId:selfId, stat:"lifeRegen", type:"up", amount:200});
+
+}, "+200% Life Regen!");
 
 
 

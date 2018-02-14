@@ -283,7 +283,7 @@ var Player = function(param)
 	self.hp = self.hpMax;
 	self.kills = 0;
 	self.deaths = 0;
-	self.gold = 100;
+	self.gold = 150;
 	self.latency = 0;
 	self.shield = 100;
 	self.isShielding = false;
@@ -312,7 +312,8 @@ var Player = function(param)
 		attackSpd:5,
 		crit:0,
 		critDam:0,
-		lifeSteal:0
+		lifeSteal:0,
+		lifeRegen:0
 	}
 	self.roomId = param.roomId;
 	var super_update = self.update;
@@ -1522,6 +1523,9 @@ io.sockets.on('connection', function(socket)
 			break;
 			case "lifeSteal":	
 				p.stats.lifeSteal += data.amount;
+			break;
+			case "lifeRegen":	
+				p.stats.lifeRegen += data.amount;
 			break;
 			case "movement":	
 				p.maxSpd += data.amount;

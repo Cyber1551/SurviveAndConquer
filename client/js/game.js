@@ -1085,7 +1085,11 @@
 			return;
 		var p = Player.list[selfId];
 		if (p.hp < p.hpMax)
-			socket.emit("increaseHP", {amount: 2, playerId:selfId});
+		{
+			var healExtra = 2 * (p.stats.lifeRegen / 100);
+			var healAmt = 2 + healExtra;
+			socket.emit("increaseHP", {amount: healAmt, playerId:selfId});
+		}
 	}, 3000);
 
 	playerInventory = Inventory();
