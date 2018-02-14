@@ -216,7 +216,10 @@
 	{
 		if (!selfId)
 			return;
-		
+		socket.emit('sendPMToServer', {
+				user: "team",
+				message: "Surrender Started!"
+			});
 		socket.emit("surrender", {playerId: selfId});
 	}
 
@@ -492,13 +495,13 @@
 	}
 	Player.list = {};
 
-	$("#respawnL").text("10 second strategy time!");
+	/*$("#respawnL").text("10 second strategy time!");
 	setTimeout(function()
 	{
 		$("#respawnL").text("Capture the point!");
 		socket.emit("setCanMove", {value:true});
 	}, 10000);
-
+*/
 	
 	/*var Damage = function()
 	{
