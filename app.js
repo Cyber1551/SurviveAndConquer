@@ -748,8 +748,8 @@ var Bullet = function(param)
 
 					}
 
-					
-					p.hp-=damage;
+					if (p.canMove == true)
+						p.hp-=damage;
 					if (par.stats.lifeSteal > 0)
 					{
 						var amtHeal = par.hpMax * (par.stats.lifeSteal / 100);
