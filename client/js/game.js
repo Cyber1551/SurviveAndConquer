@@ -208,7 +208,7 @@
 	{
 		if (!selfId)
 			return;
-		
+
 		socket.emit("surrender", {playerId: selfId});
 	}
 
@@ -304,10 +304,10 @@
 	var Img = {};
 	//Neutral
 	Img.player = new Image();
-	Img.player.src = '/client/img/Player/player.png'; 
+	Img.player.src = '/client/img/Player/player.png';
 	//Fire
 	Img.playerFire = new Image();
-	Img.playerFire.src = '/client/img/Player/playerFire.png'; 
+	Img.playerFire.src = '/client/img/Player/playerFire.png';
 	//Water
 	Img.playerWater = new Image();
 	Img.playerWater.src = '/client/img/Player/playerWater.png';
@@ -320,13 +320,13 @@
 	//Lightning
 	Img.playerLightning = new Image();
 	Img.playerLightning.src = '/client/img/Player/playerLightning.png';
-	
+
 	//Neutral
 	Img.playerShield = new Image();
-	Img.playerShield.src = '/client/img/PlayerShield/playerShield.png'; 
+	Img.playerShield.src = '/client/img/PlayerShield/playerShield.png';
 	//Fire
 	Img.playerFireShield = new Image();
-	Img.playerFireShield.src = '/client/img/PlayerShield/playerFireShield.png'; 
+	Img.playerFireShield.src = '/client/img/PlayerShield/playerFireShield.png';
 	//Water
 	Img.playerWaterShield = new Image();
 	Img.playerWaterShield.src = '/client/img/PlayerShield/playerWaterShield.png';
@@ -339,8 +339,8 @@
 	//Lightning
 	Img.playerLightningShield = new Image();
 	Img.playerLightningShield.src = '/client/img/PlayerShield/playerLightningShield.png';
-	
-	
+
+
 	Img.map1 = new Image();
 	Img.map1.src = '/client/img/Maps/testMap1.png';
 	Img.map2 = new Image();
@@ -387,7 +387,7 @@
 		self.elementType = null;
 		self.movementSpd = initPack.maxSpd;
 		self.sprite = initPack.sprite;
-		self.spriteShield = iniPack.spriteShield;
+		self.spriteShield = initPack.spriteShield;
 		self.draw = function()
 		{
 			//chatText.innerHTML += self.name + "<br />";
@@ -409,13 +409,13 @@
 			ctx.fillStyle = 'blue';
 			ctx.fillRect(px - 50, py - 50, shieldWidth, 5);
 
-			
+
 			ctx.font = "20px Arial";
-				
+
 			ctx.fillStyle = self.team;
 			ctx.fillText(self.user, px - 20, py - 65);
-				
-			
+
+
 
 			var width = Img.player.width;
 			var height = Img.player.height;
@@ -456,7 +456,7 @@
 			if (self.isShielding && self.shield > 0)
 			{
 				ctx.drawImage(self.spriteShield, (width / 2 * (-1)), height / 2 * (-1), width, height);
-			} 
+			}
 			else
 			{
 				ctx.drawImage(spriteImage, (width / 2 * (-1)), height / 2 * (-1), width, height);
@@ -564,10 +564,10 @@
 					$("#healthL").text(Player.list[selfId].hpMax);
 				}
 			}
-			
+
 		}, 1000);
-		
-		
+
+
 
 	});
 
@@ -776,7 +776,7 @@
 		{
 			for (var y = 0; y < MapGrid1[x].length; y++)
 			{
-				
+
 				if (MapGrid1[x][y] == val)
 				{
 					return {x, y};
@@ -942,7 +942,7 @@
 			var movementSpd = Player.list[selfId].movementSpd;
 			var mapTime = ((3200 / movementSpd) * 40) / 1000;
 			mapTime = mapTime.toFixed(2);
-			
+
 			$('#attackL').text(stats.attack);
 			attackTT.textContent = "You deal " + damage + " damage! (" + critDam + ") against weak elements";
 			$('#armorL').text(stats.armor);
@@ -955,11 +955,11 @@
 			$('#lifeStealL').text(stats.lifeSteal);
 			var lifeStealAmt = Player.list[selfId].hpMax * (stats.lifeSteal / 100);
 			lifeStealTT.textContent = "You heal +" + stats.lifeSteal + "% (+" + lifeStealAmt +") of your health on attack";
-			
+
 			$('#movementL').text(movementSpd);
-			
+
 			movementTT.textContent = "You can travel across the map in " + mapTime + " seconds!";
-			
+
 		}
 
 	}
@@ -1017,7 +1017,7 @@
 		$('#expDiv').css("width", percent);
 		$("#expL").text(p.exp);
 		$("#expMaxL").text(p.expMax);
-		
+
 	}
 
 	var drawMap = function()
@@ -1056,13 +1056,13 @@
 	}, 3000);
 
 	playerInventory = Inventory();
-	
+
 
 	for (var i in Element.list)
 	{
 		storeDiv.innerHTML += "<button id='btn"+Element.list[i].name+"'  onclick=selectElement('"+i+"')>" + Element.list[i].name + "</button><br /><label>" + Element.list[i].ability + "</label><br /><label>Strong against: " + Element.list[i].strength + "</label><br />	<label>Weak against: " + Element.list[i].weakness + "</label><br />";
 	}
-		
+
 	function selectElement(itemId)
 	{
 		if (checkStoreRange())
@@ -1075,30 +1075,30 @@
 					if(p.elementType == Element.list[itemId].name)
 					{
 						return;
-					}	
+					}
 				}
-				
+
 			}
 			socket.emit("setElement", {elementType:Element.list[itemId].name});
-			
-			
+
+
 			$("#elementL").text(Element.list[itemId].name);
 			Element.list[itemId].event();
 			storeDiv.innerHTML = "";
 			for (var i in Item.list)
 			{
-		
+
 				storeDiv.innerHTML += "<button onclick=buyItem('"+i+"')>" + Item.list[i].name + ": " + Item.list[i].gold + " Gold </button><br /><label>" + Item.list[i].explain + "</label><br /><hr />";
 			}
 		}
-		
+
 	}
 	socket.on("disableElement", function(data)
 	{
 		var buttonId = "#btn" + data.elementType;
 		$(buttonId).prop("disabled", "true");
 	});
-				
+
 	function buyItem(itemId)
 	{
 		if (checkStoreRange())
@@ -1112,7 +1112,7 @@
 			{
 				playerInventory.addItem(itemId, 1, Item.list[itemId].gold, Item.list[itemId].type);
 			}
-			
+
 		}
 
 	}
@@ -1178,7 +1178,7 @@
 
 	socket.on('addToChat', function(data)
 	{
-		
+
 		console.log(data.name + ";" + data.txt);
 		chatText.innerHTML += '<div><b>' + data.name + '</b>' + data.txt + '</div>';
 	});
@@ -1215,7 +1215,7 @@
 		{
 			socket.emit('sendMsgToServer', chatInput.value);
 		}
-		
+
 		chatInput.value = '';
 	}
 
@@ -1273,7 +1273,7 @@
 				return;
 			//socket.emit('keyPress', {inputId: 'item1', state:true});
 			if (playerInventory.items[0] !== undefined)
-				
+
 				Item.list[playerInventory.items[0].id].event();
 		}
 		else if(event.keyCode === 50) //2
