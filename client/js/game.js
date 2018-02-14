@@ -978,7 +978,7 @@
 			}
 			else
 			{
-				var lethalityArmor = lethalityValue;
+				var lethalityArmor = ((lethalityValue - stats.lethality) / lethalityValue) *100;
 			}
 			console.log(lethalityArmor + "; " + stats.lethality);
 			var damage = (stats.attack * stats.attack) / (stats.attack + 0);
@@ -999,10 +999,10 @@
 			$('#armorL').text(stats.armor);
 			armorTT.textContent = "You took " + armor + "% of damage on the last hit!";
 			
-			var lethalityPercent = ((lethalityArmor - stats.lethality) / lethalityArmor) * 100;
+			//var lethalityPercent = ((lethalityArmor - stats.lethality) / lethalityArmor) * 100;
 			
 			$('#lethalityL').text(stats.lethality);
-			lethalityTT.textContent = "You negate " + lethalityPercent + "% of the enemies armor";
+			lethalityTT.textContent = "You negate " + lethalityArmor + "% of the enemies armor";
 			
 			$('#attackSpdL').text(stats.attackSpd);
 			attackSpdTT.textContent = "1 Bullet every " + attackSpdSec + " second(" + attackSpdMs + "Ms)";

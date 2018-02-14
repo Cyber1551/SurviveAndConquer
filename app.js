@@ -732,7 +732,7 @@ var Bullet = function(param)
 				
 
 					SOCKET_LIST[i].emit("updateArmor", {value: (damage / par.stats.attack)});
-					SOCKET_LIST[i].emit("updateLethality", {value: (p.stats.armor)});
+					SOCKET_LIST[self.parent].emit("updateLethality", {value: (p.stats.armor)});
 					if (par.stats.crit > 0)
 					{
 						var chance = genRandomNumber(1, 100);
