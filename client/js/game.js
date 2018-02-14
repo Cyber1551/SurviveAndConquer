@@ -970,6 +970,7 @@
 			var extraDam = critDam * (stats.critDam / 100);
 			
 			var critDif = (critDam + extraDam) - damage;
+			
 			var movementSpd = Player.list[selfId].movementSpd;
 			var mapTime = ((3200 / movementSpd) * 40) / 1000;
 			mapTime = mapTime.toFixed(2);
@@ -983,12 +984,17 @@
 
 			$('#critL').text(stats.crit);
 			critTT.textContent = "You deal " + (critDam + extraDam) + " damage on critical hit (+" + critDif + ") | +" + extraDam;
+			
 			$('#lifeStealL').text(stats.lifeSteal);
 			var lifeStealAmt = Player.list[selfId].hpMax * (stats.lifeSteal / 100);
 			lifeStealTT.textContent = "You heal +" + stats.lifeSteal + "% (+" + lifeStealAmt +") of your health on attack";
 			
-			$('#movementL').text(movementSpd);
+			var lifeRegenExtra = 3 * (stats.lifeRegen / 100);
+			var lifeRegen = 3 + lifeRegenExtra;
+			$('#lifeRegenL').text(lifeRegen);
+			lifeRegenTT.textContent = "You heal +" + lifeRegen + " hp (+" + stats.lifeRegen +"%) every three seconds!";
 			
+			$('#movementL').text(movementSpd);
 			movementTT.textContent = "You can travel across the map in " + mapTime + " seconds!";
 			
 		}
@@ -1086,8 +1092,8 @@
 		var p = Player.list[selfId];
 		if (p.hp < p.hpMax)
 		{
-			var healExtra = 2 * (p.stats.lifeRegen / 100);
-			var healAmt = 2 + healExtra;
+			var healExtra = 3 * (p.stats.lifeRegen / 100);
+			var healAmt = 3 + healExtra;
 			socket.emit("increaseHP", {amount: healAmt, playerId:selfId});
 		}
 	}, 3000);
