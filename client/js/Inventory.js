@@ -225,6 +225,7 @@ Item("mediumarmor", "Medium Armor", 135, "passive", function()
 }, "+15 Armor!");
 Item("basiclethality", "Basic Lethality", 200, "passive", function()
 {
+	//console.log("bought");
 	socket.emit("updateStats", {playerId:selfId, stat:"lethality", type:"up", amount:5});
 
 }, "+5 Armor Penetration!");

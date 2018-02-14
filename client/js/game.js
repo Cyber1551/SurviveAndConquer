@@ -978,7 +978,7 @@
 			}
 			else
 			{
-				var lethalityArmor = 100 - (((lethalityValue - stats.lethality) / lethalityValue) * 100);
+				var lethalityArmor = 100 - (((lethalityValue - stats.lethality) / lethalityValue) * 100).toFixed(2);
 			}
 			//console.log(lethalityArmor + "; " + stats.lethality);
 			var damage = (stats.attack * stats.attack) / (stats.attack + 0);
@@ -1183,6 +1183,7 @@
 			}
 			else
 			{
+				//console.log(itemId);
 				playerInventory.addItem(itemId, 1, Item.list[itemId].gold, Item.list[itemId].type);
 			}
 			
