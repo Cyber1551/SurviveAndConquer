@@ -223,6 +223,17 @@ Item("mediumarmor", "Medium Armor", 135, "passive", function()
 	socket.emit("updateStats", {playerId:selfId, stat:"armor", type:"up", amount:15});
 
 }, "+15 Armor!");
+Item("basiclethality", "Basic Lethality", 200, "passive", function()
+{
+	socket.emit("updateStats", {playerId:selfId, stat:"lethality", type:"up", amount:5});
+
+}, "+5 Armor Penetration!");
+
+Item("mediumlethality", "Medium Lethality", 375, "passive", function()
+{
+	socket.emit("updateStats", {playerId:selfId, stat:"lethality", type:"up", amount:10});
+
+}, "+10 Armor Penetration!");
 
 Item("feather", "Feather", 75, "passive", function()
 {

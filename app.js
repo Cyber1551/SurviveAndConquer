@@ -308,6 +308,7 @@ var Player = function(param)
 	self.spriteShield = '/client/img/PlayerShield/playerShield.png';
 	self.stats = {
 		attack:5,
+		lethality:0,
 		armor:0,
 		attackSpd:5,
 		crit:0,
@@ -711,7 +712,16 @@ var Bullet = function(param)
 					var type = "damage";
 					if (!par)
 						return;
-					var damage = par.stats.attack * par.stats.attack / (par.stats.attack + p.stats.armor);
+					if (p.stats.armor > 0)
+					{
+						var newArmor = p.stats.armor - par.stats.lethality;
+						if (newArmor <= 0) newArmor = 0;
+						var damage = par.stats.attack * par.stats.attack / (par.stats.attack + newArmor);
+					}
+					else
+					{
+						var damage = par.stats.attack * par.stats.attack / (par.stats.attack + p.stats.armor);
+					}
 					if (p.elementType !== null && par.elementType !== null)
 					{
 						if (par.elementType == Element.list[p.elementType].weakness)
@@ -1526,6 +1536,9 @@ io.sockets.on('connection', function(socket)
 			break;
 			case "lifeRegen":	
 				p.stats.lifeRegen += data.amount;
+			break;
+			case "lethality":
+				p.stats.lethality += data.amount;
 			break;
 			case "movement":	
 				p.maxSpd += data.amount;

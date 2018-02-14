@@ -23,6 +23,8 @@
 	var attackSpdTT = document.getElementById("attackSpdTT");
 	var critTT = document.getElementById("critTT");
 	var lifeStealTT = document.getElementById("lifeStealTT");
+	var lifeRegenTT = document.getElementById("lifeRegenTT");
+	var lethalityTT = document.getElementById("lethalityTT");
 	var healthDiv = document.getElementById("healthDiv");
 	var healthL = document.getElementById("healthL");
 	var killL = document.getElementById("killL");
@@ -979,6 +981,11 @@
 			attackTT.textContent = "You deal " + damage + " damage! (" + critDam + ") against weak elements";
 			$('#armorL').text(stats.armor);
 			armorTT.textContent = "You took " + armor + "% of damage on the last hit!";
+			
+			var lethalityPercent = ((stats.armor - stats.lethality) / stats.armor) * 100;
+			$('#lethalityL').text(stats.lethality);
+			lethalityTT.textContent = "You negate " + lethalityPercent + "% of the enemies armor";
+			
 			$('#attackSpdL').text(stats.attackSpd);
 			attackSpdTT.textContent = "1 Bullet every " + attackSpdSec + " second(" + attackSpdMs + "Ms)";
 
