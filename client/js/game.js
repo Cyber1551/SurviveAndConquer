@@ -948,9 +948,15 @@
 		return Math.random() * (max - min) + min;
 	}
 	var armorValue = null;
+	var lethalityValue = null;
 	socket.on("updateArmor", function(data)
 	{
 		armorValue = data.value;
+		updateStatBoard();
+	});
+	socket.on("updateLethality", function(data)
+	{
+		lethalityValue = data.value;
 		updateStatBoard();
 	});
 	function updateStatBoard()
@@ -984,7 +990,7 @@
 			$('#armorL').text(stats.armor);
 			armorTT.textContent = "You took " + armor + "% of damage on the last hit!";
 			
-			var lethalityPercent = ((stats.armor - stats.lethality) / stats.armor) * 100;
+			var lethalityPercent = ((lethalityValue - stats.lethality) / lethalityValue) * 100;
 			$('#lethalityL').text(stats.lethality);
 			lethalityTT.textContent = "You negate " + lethalityPercent + "% of the enemies armor";
 			
