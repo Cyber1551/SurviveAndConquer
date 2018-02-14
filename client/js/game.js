@@ -393,7 +393,7 @@
 		self.exp = 0;
 		self.team = initPack.team;
 		self.isGoal = false;
-		self.canMove = false;
+		self.canMove = true;
 		self.overclocked = false;
 		self.elementType = initPack.elementType;
 		self.movementSpd = initPack.maxSpd;
@@ -585,6 +585,7 @@
 				if (val == 0)
 				{
 					$("#respawnL").text("");
+					socket.emit("setCanMove", {playerId:selfId, value:true});
 				}
 			}
 			

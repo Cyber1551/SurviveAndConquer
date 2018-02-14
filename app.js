@@ -873,11 +873,11 @@ var Bullet = function(param)
 								break;
 							}
 							SOCKET_LIST[i].emit("deathCounter", {value: p.deathCounter});
-							setTimeout(function()
+							/*setTimeout(function()
 							{
 								p.canMove = true;
 								p.deathCounter *= 2;
-							}, (p.deathCounter * 1000));
+							}, (p.deathCounter * 1000));*/
 							//SOCKET_LIST[i].emit("deathCounter", {value: p.deathCounter, counting:p.canMove});
 					}
 				}
@@ -1654,10 +1654,10 @@ io.sockets.on('connection', function(socket)
 
 	socket.on("setCanMove", function(data)
 	{
-		for (var i in Player.list)
-		{
-			Player.list[i].canMove = data.value;
-		}
+		
+		Player.list[data.playerId].canMove = data.value;
+		Player.list[data.playerId].deathCounter *= 2;
+		
 	});
 	/*socket.on("shieldValues", function(data)
 	{
