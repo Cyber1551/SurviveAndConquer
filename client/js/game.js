@@ -58,7 +58,7 @@
 		var canvas = document.getElementById("ctx");
 	var ctx = canvas.getContext("2d");
 
-	var pointerLocker = false;
+	var pointerLocked = false;
 	canvas.requestPointerLock = canvas.requestPointerLock ||
                             canvas.mozRequestPointerLock;
 
@@ -120,6 +120,8 @@
 	}
 	socket.on('backToLobby', function(data)
 	{
+		loadStore();
+		$("#elementL").text("Not Set");
 		$("#gameDiv").css("display", "none");
 		$("#lobbyDiv").css("display", "inline-block");
 		$("#loader").css("display", "none");
@@ -133,8 +135,9 @@
 		$("#lobbyDiv-findMatch").css("display", "inline-block");
 		console.log('The pointer lock status is now unlocked');
 		pointerLocked = false;
-		document.removeEventListener("mousemove", updatePosition, false);
-		socket.emit('disconnect');
+		
+		document.exitPointerLock();
+		//socket.emit('disconnect');
 	});
 
 	socket.on('signInResponse', function(data)
@@ -204,6 +207,10 @@
 		}
 
 	});
+	socket.on("removeSelfId", function()
+	{
+		selfId = null;
+	})
 	function surrender()
 	{
 		if (!selfId)
@@ -382,12 +389,12 @@
 		self.exp = 0;
 		self.team = initPack.team;
 		self.isGoal = false;
-		self.canMove = true;
+		self.canMove = false;
 		self.overclocked = false;
-		self.elementType = null;
+		self.elementType = initPack.elementType;
 		self.movementSpd = initPack.maxSpd;
 		self.sprite = initPack.sprite;
-		self.spriteShield = iniPack.spriteShield;
+		self.spriteShield = initPack.spriteShield;
 		self.draw = function()
 		{
 			//chatText.innerHTML += self.name + "<br />";
@@ -450,12 +457,15 @@
 			}*/
 			var spriteImage = new Image();
 			spriteImage.src = self.sprite;
+			
+			var spriteShieldImage = new Image();
+			spriteShieldImage.src = self.spriteShield;
 			ctx.translate(px + (width / 2) - 30, py + (height / 2) - 30 );
 
 			ctx.rotate(rad);
 			if (self.isShielding && self.shield > 0)
 			{
-				ctx.drawImage(self.spriteShield, (width / 2 * (-1)), height / 2 * (-1), width, height);
+				ctx.drawImage(spriteShieldImage, (width / 2 * (-1)), height / 2 * (-1), width, height);
 			} 
 			else
 			{
@@ -474,12 +484,21 @@
 			//ctx.fillText(self.kills, self.x, self.y-60);
 			//ctx.font = "30px Arial";
 		}
+		
 		Player.list[self.id] = self;
 
 		return self;
 	}
 	Player.list = {};
 
+	$("#respawnL").text("10 second strategy time!");
+	setTimeout(function()
+	{
+		$("#respawnL").text("Capture the point!");
+		socket.emit("setCanMove", {value:true});
+	}, 10000);
+
+	
 	/*var Damage = function()
 	{
 		var self = {};
@@ -547,7 +566,7 @@
 		return self;
 	}
 	*/
-
+	
 	socket.on("deathCounter", function(data)
 	{
 		ctx.font = "50px Arial";
@@ -557,11 +576,11 @@
 			if (Player.list[selfId].canMove == false && val > 0)
 			{
 
-				$("#healthL").text("Respawn in: " + val + " seconds! ");
+				$("#respawnL").text("Respawn in: " + val + " seconds! ");
 				val-=1;
 				if (val == 0)
 				{
-					$("#healthL").text(Player.list[selfId].hpMax);
+					$("#respawnL").text("");
 				}
 			}
 			
@@ -611,12 +630,15 @@
 		for (var i = 0; i < data.player.length; i++)
 		{
 			new Player(data.player[i]);
+			
+			//console.log("init");
 			//console.log(data.player[i]);
 		}
 		for (var i = 0; i < data.bullet.length; i++)
 		{
 			new Bullet(data.bullet[i]);
 		}
+		
 	});
 
 	//Update
@@ -711,6 +733,7 @@
 				}
 				if (pack.elementType !== undefined)
 				{
+					//console.log(pack.elementType);
 					p.elementType = pack.elementType;
 				}
 				if (pack.maxSpd !== undefined)
@@ -937,8 +960,11 @@
 			var damage = (stats.attack * stats.attack) / (stats.attack + 0);
 			var attackSpdMs = (40 * (5 + stats.attackSpd))
 			var attackSpdSec = attackSpdMs / 1000;
-			var critDam = (damage * 150) / 100;
-			var critDif = critDam - damage;
+			
+			var critDam = ((damage * 150) / 100);
+			var extraDam = critDam * (stats.critDam / 100);
+			
+			var critDif = (critDam + extraDam) - damage;
 			var movementSpd = Player.list[selfId].movementSpd;
 			var mapTime = ((3200 / movementSpd) * 40) / 1000;
 			mapTime = mapTime.toFixed(2);
@@ -951,7 +977,7 @@
 			attackSpdTT.textContent = "1 Bullet every " + attackSpdSec + " second(" + attackSpdMs + "Ms)";
 
 			$('#critL').text(stats.crit);
-			critTT.textContent = "You deal " + critDam + " damage on critical hit (+" + critDif + ")";
+			critTT.textContent = "You deal " + (critDam + extraDam) + " damage on critical hit (+" + critDif + ") | +" + extraDam;
 			$('#lifeStealL').text(stats.lifeSteal);
 			var lifeStealAmt = Player.list[selfId].hpMax * (stats.lifeSteal / 100);
 			lifeStealTT.textContent = "You heal +" + stats.lifeSteal + "% (+" + lifeStealAmt +") of your health on attack";
@@ -1023,6 +1049,8 @@
 	var drawMap = function()
 	{
 
+		if (!selfId)
+			return; 
 		var x = WIDTH/2 - Player.list[selfId].x;
 		var y = HEIGHT/2 - Player.list[selfId].y;
 		switch(Player.list[selfId].map)
@@ -1057,11 +1085,16 @@
 
 	playerInventory = Inventory();
 	
-
-	for (var i in Element.list)
+	loadStore();
+	function loadStore()
 	{
-		storeDiv.innerHTML += "<button id='btn"+Element.list[i].name+"'  onclick=selectElement('"+i+"')>" + Element.list[i].name + "</button><br /><label>" + Element.list[i].ability + "</label><br /><label>Strong against: " + Element.list[i].strength + "</label><br />	<label>Weak against: " + Element.list[i].weakness + "</label><br />";
+		storeDiv.innerHTML = "";
+		for (var i in Element.list)
+		{
+			storeDiv.innerHTML += "<button id='btn"+Element.list[i].name+"'  onclick=selectElement('"+i+"')>" + Element.list[i].name + "</button><br /><label>" + Element.list[i].ability + "</label><br /><label>Strong against: " + Element.list[i].strength + "</label><br />	<label>Weak against: " + Element.list[i].weakness + "</label><br />";
+		}
 	}
+	
 		
 	function selectElement(itemId)
 	{
@@ -1079,7 +1112,7 @@
 				}
 				
 			}
-			socket.emit("setElement", {elementType:Element.list[itemId].name});
+			socket.emit("setElement", {playerId:selfId, elementType:Element.list[itemId].name});
 			
 			
 			$("#elementL").text(Element.list[itemId].name);
@@ -1104,7 +1137,7 @@
 		if (checkStoreRange())
 		{
 			//console.log(Item.list[itemId].type);
-			if (itemId == "feather" && Player.list[seldId].stats.attackSpd - 0.2 < 0)
+			if (itemId == "feather" && Player.list[selfId].stats.attackSpd - 0.2 < 0)
 			{
 				return;
 			}
@@ -1313,8 +1346,12 @@
 		/*var x = -600 + event.clientX - 8;
 		var y = -500 + event.clientY - 8;
 		var angle = Math.atan2(y, x) / Math.PI * 180;*/
-
-		socket.emit('keyPress', {inputId:'mouseAngle', xx:entryCoor.x, yy:entryCoor.y});
+		if (pointerLocked == true)
+		{
+			
+			socket.emit('keyPress', {inputId:'mouseAngle', xx:entryCoor.x, yy:entryCoor.y});
+		}
+		
 
 	}
 	document.oncontextmenu = function(event)

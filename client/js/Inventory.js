@@ -223,12 +223,12 @@ Item("mediumarmor", "Medium Armor", 150, "passive", function()
 
 }, "+15 Armor!");
 
-Item("feather", "Feather", 100, "passive", function()
+Item("feather", "Feather", 75, "passive", function()
 {
 
-	socket.emit("updateStats", {playerId:selfId, stat:"attackSpd", type:"up", amount:0.2});
+	socket.emit("updateStats", {playerId:selfId, stat:"attackSpd", type:"up", amount:0.5});
 
-}, "+0.2 Attack Speed");
+}, "+0.5 Attack Speed");
 
 Item("basicelectricgem", "Basic Electric Gem", 80, "passive", function()
 {
@@ -237,12 +237,20 @@ Item("basicelectricgem", "Basic Electric Gem", 80, "passive", function()
 
 }, "+10 Critical chance"); 
 
-Item("mediumelectricgem", "Medium Electric Gem", 300, "passive", function()
+Item("mediumelectricgem", "Medium Electric Gem", 250, "passive", function()
 {
 
-	socket.emit("updateStats", {playerId:selfId, stat:"crit", type:"up", amount:30});
+	socket.emit("updateStats", {playerId:selfId, stat:"crit", type:"up", amount:40});
 
 }, "+30 Critical chance");
+Item("largeelectricgem", "Large Electric Gem", 500, "passive", function()
+{
+
+	socket.emit("updateStats", {playerId:selfId, stat:"crit", type:"up", amount:25});
+	socket.emit("updateStats", {playerId:selfId, stat:"critDam", type:"up", amount:50});
+
+}, "+25 Critical chance<br />+50% bonus critical damage");
+
 Item("basichealinggem", "Basic Healing Gem", 200, "passive", function()
 {
 

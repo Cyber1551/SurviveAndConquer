@@ -179,6 +179,7 @@ function gameOver(team)
 	for (var x in Player.list)
 	{
 
+		
 		if (Player.list[x].team == team)
 		{
 			db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'wins': 1}});
@@ -191,6 +192,7 @@ function gameOver(team)
 			db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'losses': 1} });
 
 		}
+		Player.onDisconnect(SOCKET_LIST[x]);
 		backToLobby(x);
 	}
 
@@ -297,17 +299,18 @@ var Player = function(param)
 	self.team = param.team;
 	self.isGoal = false;
 	self.deathCounter = 0;
-	self.canMove = true;
+	self.canMove = false;
 	self.surrender = false;
 	self.matchType = param.matchType;
 	self.elementType = null;
 	self.sprite = '/client/img/Player/player.png';
-	self.spriteShield = '/client/img/Player/playerShield.png';
+	self.spriteShield = '/client/img/PlayerShield/playerShield.png';
 	self.stats = {
 		attack:5,
 		armor:0,
 		attackSpd:5,
 		crit:0,
+		critDam:0,
 		lifeSteal:0
 	}
 	self.roomId = param.roomId;
@@ -343,7 +346,7 @@ var Player = function(param)
 			self.isGoal = false;
 		}
 
-		if (self.isShooting && self.cooldown == 0 && self.canMove)
+		if (self.isShooting && self.cooldown == 0 && self.canMove && self.isShielding == false)
 		{
 			self.shootBullet(self.mouseAngle);
 			self.cooldown = 5 + self.stats.attackSpd;
@@ -438,7 +441,8 @@ var Player = function(param)
 			team:self.team,
 			maxSpd:self.maxSpd,
 			sprite:self.sprite,
-			spriteShield:self.spriteShield
+			spriteShield:self.spriteShield,
+			elementType:self.elementType
 
 		}
 	}
@@ -527,15 +531,18 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 		}
 		else if (data.inputId === 'mouseAngle')
 		{
-			//console.log("x:" + player.updatedX + "; y: " + player.updatedX);
-			var xx = data.xx;
-			var yy = data.yy;
-			var angle = Math.atan2(yy - player.updatedY, xx - player.updatedX);
+			//console.log("x:" + player.updatedX + "; y: " + player.updatedY);
+			
+			var xx = data.xx - 600;
+			var yy = data.yy - 500;
+			var angle = Math.atan2(yy, xx);
 			angle = angle * (180/Math.PI);
+			
 			if (angle < 0) angle = 360 - (-angle);
+			//console.log(angle);
 			player.mouseAngle = angle;
 			//console.log(angle);
-			socket.emit("getPlayerAngle", {mouseAngle:angle});
+			//socket.emit("getPlayerAngle", {mouseAngle:angle});
 		}
 		else if (data.inputId === 'shield')
 		{
@@ -718,10 +725,12 @@ var Bullet = function(param)
 						var chance = genRandomNumber(1, 100);
 						if (chance < par.stats.crit)
 						{
+							
 							damage = (damage * 150) / 100;
-
+							var extraDam = damage * (par.stats.critDam / 100);
+							damage += extraDam;
 							type = "crit";
-							var critDam = (par.stats.attack * 150) / 100
+							var critDam = ((par.stats.attack * 150) / 100) + extraDam;
 							SOCKET_LIST[i].emit("updateArmor", {value: damage / critDam});
 						}
 
@@ -1183,6 +1192,7 @@ Player.onDisconnect = function(socket)
 {
 	delete Player.list[socket.id];
 	removePack.player.push(socket.id);
+	socket.emit("removeSelfId");
 }
 var io = require('socket.io')(serv, {});
 io.sockets.on('connection', function(socket)
@@ -1474,10 +1484,11 @@ io.sockets.on('connection', function(socket)
 	});
 	socket.on("updateXY", function(data)
 	{
-
+		
 		var p = Player.list[data.playerId];
 		if (p)
 		{
+			
 			p.updatedX = data.xx;
 			p.updatedY = data.yy;
 			//console.log("x: " + data.xx + "; y: " + data.yy);
@@ -1504,6 +1515,9 @@ io.sockets.on('connection', function(socket)
 			break;
 			case "crit":
 				p.stats.crit += data.amount;
+			break;
+			case "critDam":
+				p.stats.critDam += data.amount; //Percent
 			break;
 			case "lifeSteal":	
 				p.stats.lifeSteal += data.amount;
@@ -1564,7 +1578,7 @@ io.sockets.on('connection', function(socket)
 						gameOver("blue");
 					}
 					
-					console.log (Player.list[data.playerId].team + " surrendered");
+					//console.log (Player.list[data.playerId].team + " surrendered");
 				}
 			break;
 			case 4: //2v2
@@ -1578,7 +1592,7 @@ io.sockets.on('connection', function(socket)
 					{
 						gameOver("blue");
 					}
-					console.log (Player.list[data.playerId].team + " surrendered");
+					//console.log (Player.list[data.playerId].team + " surrendered");
 				}
 			break;
 			case 6: //3v3
@@ -1614,29 +1628,36 @@ io.sockets.on('connection', function(socket)
 			{
 				case "Fire":
 					Player.list[socket.id].sprite = '/client/img/Player/playerFire.png';
-					Player.list[socket.id].spriteShield = '/client/img/Player/playerFireShield.png';
+					Player.list[socket.id].spriteShield = '/client/img/PlayerShield/playerFireShield.png';
 				break;
 				case "Water":
 					Player.list[socket.id].sprite = '/client/img/Player/playerWater.png';
-					Player.list[socket.id].spriteShield = '/client/img/Player/playerWaterShield.png';
+					Player.list[socket.id].spriteShield = '/client/img/PlayerShield/playerWaterShield.png';
 				break;
 				case "Earth":
 					Player.list[socket.id].sprite = '/client/img/Player/playerEarth.png';
-					Player.list[socket.id].spriteShield = '/client/img/Player/playerEarthShield.png';
+					Player.list[socket.id].spriteShield = '/client/img/PlayerShield/playerEarthShield.png';
 				break;
 				case "Wind":
 					Player.list[socket.id].sprite = '/client/img/Player/playerWind.png';
-					Player.list[socket.id].spriteShield = '/client/img/Player/playerWindShield.png';
+					Player.list[socket.id].spriteShield = '/client/img/PlayerShield/playerWindShield.png';
 				break;
 				case "Lightning":
 					Player.list[socket.id].sprite = '/client/img/Player/playerLightning.png';
-					Player.list[socket.id].spriteShield = '/client/img/Player/playerLightningShield.png';
+					Player.list[socket.id].spriteShield = '/client/img/PlayerShield/playerLightningShield.png';
 				break;
 				
 			}
-		Player.list[socket.id].elementType = data.elementType;
+		Player.list[data.playerId].elementType = data.elementType;
 	});
 
+	socket.on("setCanMove", function(data)
+	{
+		for (var i in Player.list)
+		{
+			Player.list[i].canMove = data.value;
+		}
+	});
 	/*socket.on("shieldValues", function(data)
 	{
 		Player.list[socket.id].shieldMid = data.mid;
