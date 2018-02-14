@@ -972,6 +972,15 @@
 			{
 				var armor = armorValue.toFixed(2) * 100;
 			}
+			if (lethalityValue == null)
+			{
+				var lethalityArmor = "Undetermined ";
+			}
+			else
+			{
+				var lethalityArmor = lethalityValue;
+			}
+			
 			var damage = (stats.attack * stats.attack) / (stats.attack + 0);
 			var attackSpdMs = (40 * (5 + stats.attackSpd))
 			var attackSpdSec = attackSpdMs / 1000;
@@ -990,7 +999,7 @@
 			$('#armorL').text(stats.armor);
 			armorTT.textContent = "You took " + armor + "% of damage on the last hit!";
 			
-			var lethalityPercent = ((lethalityValue - stats.lethality) / lethalityValue) * 100;
+			var lethalityPercent = ((lethalityArmor - stats.lethality) / lethalityArmor) * 100;
 			$('#lethalityL').text(stats.lethality);
 			lethalityTT.textContent = "You negate " + lethalityPercent + "% of the enemies armor";
 			
