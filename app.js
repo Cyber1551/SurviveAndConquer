@@ -316,6 +316,7 @@ var Player = function(param)
 		lifeSteal:0,
 		lifeRegen:0
 	}
+	self.killCounter = 0;
 	self.roomId = param.roomId;
 	var super_update = self.update;
 	self.update = function()
@@ -475,7 +476,8 @@ var Player = function(param)
 			elementType:self.elementType,
 			maxSpd:self.maxSpd,
 			sprite:self.sprite,
-			spriteShield:self.spriteShield
+			spriteShield:self.spriteShield,
+			killCounter:self.killCounter
 			
 		}
 	}
@@ -487,6 +489,11 @@ var Player = function(param)
 }
 
 Player.list = {};
+
+
+
+
+
 Player.onConnect = function(socket, roomId, index, team, map, matchType)
 {
 	//console.log("New Player: socket: " + socket + "; roomId: " + roomId + "; index: " + index + "; team: " + team);
@@ -610,6 +617,8 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 		}
 		
 	});
+	
+	
 	
 	socket.emit('init', {
 		selfId:socket.id,
@@ -739,7 +748,7 @@ var Bullet = function(param)
 						if (chance < par.stats.crit)
 						{
 							
-							damage = (damage * 150) / 100;
+							damage = (damage * 200) / 100;
 							var extraDam = damage * (par.stats.critDam / 100);
 							damage += extraDam;
 							type = "crit";
@@ -780,7 +789,34 @@ var Bullet = function(param)
 					if (shooter)
 					{
 						shooter.kills++;
-						shooter.gold+=25;
+						shooter.killCounter++;
+						setTimeout(function()
+						{
+							shooter.killCounter = 0;
+						}, 15000);
+						if (shooter.killCounter == 1)
+						{
+							//console.log(p.user);
+							for (var iii in SOCKET_LIST)
+							{
+								SOCKET_LIST[iii].emit("killAnnounce", {playerId:self.parent, victim:p.user, type:"single"});
+							}
+						}
+						else if (shooter.killCounter == 2)
+						{
+							for (var iii in SOCKET_LIST)
+							{
+								SOCKET_LIST[iii].emit("killAnnounce", {playerId:self.parent, type:"double"});
+							}
+						}
+						else if (shooter.killCounter == 3)
+						{
+							for (var iii in SOCKET_LIST)
+							{
+								SOCKET_LIST[iii].emit("killAnnounce", {playerId:self.parent, type:"triple"});
+							}
+						}
+						shooter.gold+=75;
 						shooter.exp += 50;
 						p.exp += 25;
 						if (shooter.exp >= shooter.expMax)

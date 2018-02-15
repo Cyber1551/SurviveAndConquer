@@ -183,9 +183,9 @@ Item("overclock", "OverClock", 200, "active", function()
 
 Item("boots", "Basic Boots", 50, "passive", function()
 {
-	socket.emit("updateStats", {playerId:selfId, stat:"movement", type:"up", amount:1});
+	socket.emit("updateStats", {playerId:selfId, stat:"movement", type:"up", amount:2});
 
-}, "**Limit 1<br />+1 Movement Speed");
+}, "**Limit 1<br />+2 Movement Speed");
 
 Item("basicattackGem", "Basic Attack Gem", 65, "passive", function()
 {

@@ -33,8 +33,8 @@ Element("Fire", "+5 Attack Damage", "Earth", "Water", function()
 {
 	socket.emit("updateStats", {playerId:selfId, stat:"attack", type:"up", amount:5});
 });
-Element("Wind", "+1 Attack Spd", "Lightning", "Earth", function()
+Element("Wind", "+1.5 Attack Spd", "Lightning", "Earth", function()
 {
-	socket.emit("updateStats", {playerId:selfId, stat:"attackSpd", type:"up", amount:1});
+	socket.emit("updateStats", {playerId:selfId, stat:"attackSpd", type:"up", amount:1.5});
 });
 

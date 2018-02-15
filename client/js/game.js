@@ -401,6 +401,7 @@
 		self.movementSpd = initPack.maxSpd;
 		self.sprite = initPack.sprite;
 		self.spriteShield = initPack.spriteShield;
+		self.killCounter = 0;
 		self.draw = function()
 		{
 			//chatText.innerHTML += self.name + "<br />";
@@ -426,10 +427,12 @@
 			ctx.font = "20px Arial";
 				
 			ctx.fillStyle = self.team;
-			ctx.fillText(self.user, px - 20, py - 65);
-				
+			var nameLevel = self.user + " | " + self.level;
+			var nameLevelWidth = ctx.measureText(nameLevel).width;
+			ctx.fillText(nameLevel, px - nameLevelWidth / 2, py - 65);
+			//ctx.fillText(" | Level: " + self.level, px - 25, py - 65);	
 			
-
+		
 			var width = Img.player.width;
 			var height = Img.player.height;
 			//self.x = self.x - 10;
@@ -600,6 +603,23 @@
 	});
 
 
+	socket.on("killAnnounce", function(data)
+	{
+		switch(data.type)
+		{
+			case "single":
+				chatText.innerHTML += '<div><b>' + Player.list[data.playerId].user + '</b> killed ' + data.victim + '</div>';
+			break;
+			case "double":
+				chatText.innerHTML += '<div><b>' + Player.list[data.playerId].user + '</b> got a DOUBLE KILL</div>';
+			break;
+			case "triple":
+				chatText.innerHTML += '<div><b>' + Player.list[data.playerId].user + '</b> got a <u>TRIPLE KILL</u></div>';
+			break;
+		}
+		
+		
+	});
 	var Bullet = function(initPack)
 	{
 		var self = {};
@@ -756,6 +776,10 @@
 				if (pack.spriteShield !== undefined)
 				{
 					p.spriteShield = pack.spriteShield;
+				}
+				if (pack.killCounter !== undefined)
+				{
+					p.killCounter = pack.killCounter;
 				}
 			}
 		}
@@ -1030,7 +1054,7 @@
 		startTime = Date.now();
 		if (selfId)
 		{
-			socket.emit('updateGold', {amount: 1, playerId: selfId, type:"up"});
+			socket.emit('updateGold', {amount: 2, playerId: selfId, type:"up"});
 		}
 
 		socket.emit('calculateLatency');
