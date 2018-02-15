@@ -308,6 +308,7 @@ var Player = function(param)
 	self.spriteShield = '/client/img/PlayerShield/playerShield.png';
 	self.stats = {
 		attack:5,
+		elementalDamage:1,
 		lethality:0,
 		armor:0,
 		attackSpd:5,
@@ -568,13 +569,18 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 		//console.log(playerName);
 		for (var i in SOCKET_LIST)
 		{
-			SOCKET_LIST[i].emit('addToChat',
+			if (Player.list[i].roomId == player.roomId)
 			{
-				name: player.user + ': ',
-				txt: data
-			});
+				SOCKET_LIST[i].emit('addToChat',
+				{
+					name: player.user + ': ',
+					txt: data
+				});
+			}
+			
 		}
 	});
+
 	socket.on('sendPMToServer', function(data) //data: {username, message}
 	{
 		//console.log(playerName);
@@ -594,7 +600,7 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 				socket.emit("addToChat", {name:"To Team: ", txt:data.message});
 				for (var i in Player.list)
 				{
-					if (Player.list[i].team == player.team)
+					if (Player.list[i].team == player.team && Player.list[i].roomId == player.roomId)
 					{
 						if (Player.list[i].user != player.user)
 						{
@@ -735,7 +741,7 @@ var Bullet = function(param)
 					{
 						if (par.elementType == Element.list[p.elementType].weakness)
 						{
-							damage = (damage * 150) / 100;
+							damage = damage + par.stats.elementalDamage;
 						}
 					}
 				
@@ -1231,9 +1237,17 @@ function levelUpdate(player)
 	player.level++;
 	player.stats.attack += 5;
 	player.stats.armor += 2;
+	if (isEven(player.level) && player.level < 11)
+	{
+		player.stats.elementalDamage++;
+	}
 	//player.stats.attackSpd -= 0.1;
 	//player.stats.crit += 1;
 
+}
+function isEven(n) {
+  n = Number(n);
+  return n === 0 || !!(n && !(n%2));
 }
 
 

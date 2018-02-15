@@ -880,7 +880,7 @@
 				break;
 			}
 		var playerHit = data.playerHit;
-		if (playerHit !== null && selfId !== null && text !== null && col !== null && fnt !== null)
+		if (playerHit !== null && selfId !== null && text !== null && col !== null && fnt !== null && playerHit.roomId == Player.list[selfId].roomId)
 		{
 
 		//var xx = playerHit.x - Player.list[selfId].x + WIDTH/2;
@@ -1019,7 +1019,8 @@
 			mapTime = mapTime.toFixed(2);
 			
 			$('#attackL').text(stats.attack);
-			attackTT.textContent = "You deal " + damage + " damage! (" + critDam + ") against weak elements";
+			
+			attackTT.textContent = "You deal " + damage + " damage! (+" + stats.elementalDamage + ") against weak elements";
 			$('#armorL').text(stats.armor);
 			armorTT.textContent = "You took " + armor + "% of damage on the last hit!";
 			
@@ -1032,7 +1033,7 @@
 			attackSpdTT.textContent = "1 Bullet every " + attackSpdSec + " second(" + attackSpdMs + "Ms)";
 
 			$('#critL').text(stats.crit);
-			critTT.textContent = "You deal " + (critDam + extraDam) + " damage on critical hit (+" + critDif + ") | +" + extraDam;
+			critTT.textContent = "You deal " + (critDam + extraDam) + " damage on critical hit (+" + critDif + " difference) | +" + extraDam;
 			
 			$('#lifeStealL').text(stats.lifeSteal);
 			var lifeStealAmt = Player.list[selfId].hpMax * (stats.lifeSteal / 100);
