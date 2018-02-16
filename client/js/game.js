@@ -801,11 +801,7 @@
 		}
 	});
 
-	
-	socket.on("createInventory", function()
-	{
-		playerInventory = new Inventory();
-	});
+	playerInventory = new Inventory();
 	
 	/*socket.on("matchingLabel", function()
 	{
@@ -1431,3 +1427,16 @@
 	{
 		event.preventDefault();
 	}
+	
+	
+	function getWindowSize()
+	{
+		var wWidth = window.innerWidth;
+		var wHeight = window.innerHeight;
+		$("#wrapper").css("width", wWidth - 50);
+		$("#wrapper").css("height", wHeight - 50);
+		
+		console.log("Width: " + wWidth + "; HEIGHT" + wHeight);
+		
+	}
+	document.addEventListener("DOMContentLoaded", function() {getWindowSize();});

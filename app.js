@@ -511,7 +511,7 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 		matchType:matchType
 	});
 
-	socket.emit("createInventory");
+	//socket.emit("createInventory");
 	socket.on('keyPress', function(data)
 	{
 		if (data.inputId === 'left')

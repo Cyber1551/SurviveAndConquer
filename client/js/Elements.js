@@ -18,7 +18,7 @@ Element.list = {};
 
 Element("Water", "+150 Max Health", "Fire", "Lightning", function()
 {
-	
+		
 	socket.emit("updateMaxHp", {playerId:selfId, amount:150, type:"up"});
 });
 Element("Lightning", "+25% Critical Chance", "Water", "Wind", function()
