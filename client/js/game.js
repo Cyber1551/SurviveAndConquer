@@ -1428,15 +1428,19 @@
 		event.preventDefault();
 	}
 	
-	
-	function getWindowSize()
+	if (screen.width < 1500)
 	{
-		var wWidth = window.innerWidth;
-		var wHeight = window.innerHeight;
-		$("#wrapper").css("width", wWidth - 50);
-		$("#wrapper").css("height", wHeight - 50);
-		
-		console.log("Width: " + wWidth + "; HEIGHT" + wHeight);
-		
+		document.write("<style>body {zoom:70%;}</style>");
 	}
-	document.addEventListener("DOMContentLoaded", function() {getWindowSize();});
+	else if (screen.width >= 1500)
+	{
+		document.write("<style>body {zoom:115%;}</style>");
+	}
+	else if (screen.width >= 2000)
+	{
+		document.write("<style>body {zoom:135%;}</style>");
+	} 
+	else if (screen.width >= 2500)
+	{
+		document.write("<style>body {zoom:150%;}</style>");
+	}
