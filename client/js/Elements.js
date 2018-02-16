@@ -16,10 +16,10 @@ Element = function(name, ability, strength, weakness, event)
 Element.list = {};
 
 
-Element("Water", "+100 Max Health", "Fire", "Lightning", function()
+Element("Water", "+150 Max Health", "Fire", "Lightning", function()
 {
 	
-	socket.emit("updateMaxHp", {playerId:selfId, amount:100, type:"up"});
+	socket.emit("updateMaxHp", {playerId:selfId, amount:150, type:"up"});
 });
 Element("Lightning", "+25% Critical Chance", "Water", "Wind", function()
 {
@@ -29,12 +29,12 @@ Element("Earth", "+10 Armor", "Wind", "Fire", function()
 {
 	socket.emit("updateStats", {playerId:selfId, stat:"armor", type:"up", amount:10});
 });
-Element("Fire", "+5 Attack Damage", "Earth", "Water", function()
+Element("Fire", "+10 Attack Damage", "Earth", "Water", function()
 {
-	socket.emit("updateStats", {playerId:selfId, stat:"attack", type:"up", amount:5});
+	socket.emit("updateStats", {playerId:selfId, stat:"attack", type:"up", amount:10});
 });
-Element("Wind", "+1.5 Attack Spd", "Lightning", "Earth", function()
+Element("Wind", "+1 Attack Spd", "Lightning", "Earth", function()
 {
-	socket.emit("updateStats", {playerId:selfId, stat:"attackSpd", type:"up", amount:1.5});
+	socket.emit("updateStats", {playerId:selfId, stat:"attackSpd", type:"up", amount:1});
 });
 

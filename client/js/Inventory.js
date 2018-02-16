@@ -109,6 +109,12 @@ Inventory = function()
 		}
 		return false;
 	}
+	self.clearInventory = function()
+	{
+		self.items = [];
+		self.passive = [];
+		self.refreshRender();
+	}
 	self.refreshRender = function()
 	{
 		var str = "<b>Active Items</b><br />";
@@ -189,15 +195,15 @@ Item("boots", "Basic Boots", 50, "passive", function()
 
 Item("basicattackGem", "Basic Attack Gem", 65, "passive", function()
 {
-	socket.emit("updateStats", {playerId:selfId, stat:"attack", type:"up", amount:10});
+	socket.emit("updateStats", {playerId:selfId, stat:"attack", type:"up", amount:5});
 
-}, "+10 Attack Damage!");
+}, "+5 Attack Damage!");
 
 Item("mediumattackGem", "Medium Attack Gem", 140, "passive", function()
 {
-	socket.emit("updateStats", {playerId:selfId, stat:"attack", type:"up", amount:25});
+	socket.emit("updateStats", {playerId:selfId, stat:"attack", type:"up", amount:10});
 
-}, "+25 Attack Damage!");
+}, "+10 Attack Damage!");
 
 Item("supplybelt", "Supply Belt", 70, "passive", function()
 {
@@ -220,17 +226,17 @@ Item("basicarmor", "Basic Armor", 50, "passive", function()
 
 Item("mediumarmor", "Medium Armor", 135, "passive", function()
 {
-	socket.emit("updateStats", {playerId:selfId, stat:"armor", type:"up", amount:15});
+	socket.emit("updateStats", {playerId:selfId, stat:"armor", type:"up", amount:10});
 
-}, "+15 Armor!");
-Item("basiclethality", "Basic Lethality", 200, "passive", function()
+}, "+10 Armor!");
+Item("basiclethality", "Basic Lethality", 125, "passive", function()
 {
 	//console.log("bought");
 	socket.emit("updateStats", {playerId:selfId, stat:"lethality", type:"up", amount:5});
 
 }, "+5 Armor Penetration!");
 
-Item("mediumlethality", "Medium Lethality", 375, "passive", function()
+Item("mediumlethality", "Medium Lethality", 225, "passive", function()
 {
 	socket.emit("updateStats", {playerId:selfId, stat:"lethality", type:"up", amount:10});
 

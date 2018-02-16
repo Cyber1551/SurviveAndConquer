@@ -1160,6 +1160,7 @@
 	function loadStore()
 	{
 		storeDiv.innerHTML = "";
+		playerInventory.clearInventory();
 		for (var i in Element.list)
 		{
 			storeDiv.innerHTML += "<button id='btn"+Element.list[i].name+"'  onclick=selectElement('"+i+"')>" + Element.list[i].name + "</button><br /><label>" + Element.list[i].ability + "</label><br /><label>Strong against: " + Element.list[i].strength + "</label><br />	<label>Weak against: " + Element.list[i].weakness + "</label><br />";
