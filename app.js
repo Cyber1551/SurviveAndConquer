@@ -279,7 +279,7 @@ var Player = function(param)
 	self.mouseAngle = 0;
 	self.maxSpd = 10;
 	self.cooldown = 0;
-	self.hpMax = 500;
+	self.hpMax = 1000;
 	self.hp = self.hpMax;
 	self.kills = 0;
 	self.deaths = 0;
@@ -311,7 +311,7 @@ var Player = function(param)
 		elementalDamage:1,
 		lethality:0,
 		armor:0,
-		attackSpd:5,
+		attackSpd:6,
 		crit:0,
 		critDam:0,
 		lifeSteal:0,
@@ -754,13 +754,17 @@ var Bullet = function(param)
 						var chance = genRandomNumber(1, 100);
 						if (chance < par.stats.crit)
 						{
-							
+							var isDamageCrit = true;
 							damage = (damage * 200) / 100;
 							var extraDam = damage * (par.stats.critDam / 100);
 							damage += extraDam;
 							type = "crit";
 							var critDam = ((par.stats.attack * 150) / 100) + extraDam;
 							SOCKET_LIST[i].emit("updateArmor", {value: damage / critDam});
+						}
+						else
+						{
+							var isDamageCrit = false;
 						}
 
 					}
@@ -769,7 +773,7 @@ var Bullet = function(param)
 						p.hp-=damage;
 					if (par.stats.lifeSteal > 0)
 					{
-						var amtHeal = par.hpMax * (par.stats.lifeSteal / 100);
+						var amtHeal = damage * (par.stats.lifeSteal / 100);
 						if (par.hp + amtHeal >= par.hpMax)
 						{
 							par.hp = par.hpMax; 
@@ -795,6 +799,7 @@ var Bullet = function(param)
 					var shooter = Player.list[self.parent];
 					if (shooter)
 					{
+						var damageDealt = damage;
 						shooter.kills++;
 						shooter.killCounter++;
 						setTimeout(function()
@@ -927,7 +932,7 @@ var Bullet = function(param)
 
 								break;
 							}
-							SOCKET_LIST[i].emit("deathCounter", {value: p.deathCounter});
+							SOCKET_LIST[i].emit("deathCounter", {value: p.deathCounter, damageDealt: damageDealt, crit:isDamageCrit, killer:shooter.user});
 							/*setTimeout(function()
 							{
 								p.canMove = true;

@@ -205,18 +205,18 @@ Item("mediumattackGem", "Medium Attack Gem", 140, "passive", function()
 
 }, "+10 Attack Damage!");
 
-Item("supplybelt", "Supply Belt", 70, "passive", function()
+Item("supplybelt", "Supply Belt", 150, "passive", function()
 {
 
 	socket.emit("updateMaxHp", {playerId:selfId, amount:100, type:"up"});
 
-}, "+100 Maximum Health!");
+}, "+200 Maximum Health!");
 
-Item("gsupplybelt", "Giant Supply Belt", 130, "passive", function()
+Item("gsupplybelt", "Giant Supply Belt", 200, "passive", function()
 {
 	socket.emit("updateMaxHp", {playerId:selfId, amount:200, type:"up"});
 
-}, "+200 Maximum Health!");
+}, "+300 Maximum Health!");
 
 Item("basicarmor", "Basic Armor", 50, "passive", function()
 {
@@ -242,7 +242,7 @@ Item("mediumlethality", "Medium Lethality", 225, "passive", function()
 
 }, "+10 Armor Penetration!");
 
-Item("feather", "Feather", 75, "passive", function()
+Item("feather", "Feather", 100, "passive", function()
 {
 
 	socket.emit("updateStats", {playerId:selfId, stat:"attackSpd", type:"up", amount:0.5});
@@ -270,20 +270,32 @@ Item("largeelectricgem", "Large Electric Gem", 350, "passive", function()
 
 }, "+25 Critical chance<br />+50% bonus critical damage");
 
-Item("basichealinggem", "Basic Healing Gem", 175, "passive", function()
+Item("basichealinggem", "Basic Healing Gem", 80, "passive", function()
 {
 
-	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"up", amount:1});
+	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"up", amount:5});
 
-}, "+1% Life Steal"); 
+}, "+5% Life Steal"); 
 
-Item("mediumhealinggem", "Medium Healing Gem", 500, "passive", function()
+Item("mediumhealinggem", "Medium Healing Gem", 230, "passive", function()
 {
 
-	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"up", amount:3});
+	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"up", amount:20});
 
-}, "+3% Life Steal");
-Item("largehealinggem", "Large Healing Gem", 500, "passive", function()
+}, "+20% Life Steal");
+Item("mediumhealinggem", "Medium Healing Gem", 400, "passive", function()
+{
+
+	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"up", amount:20});
+
+}, "+40% Life Steal");
+Item("basicruby", "Basic Ruby", 300, "passive", function()
+{
+
+	socket.emit("updateStats", {playerId:selfId, stat:"lifeRegen", type:"up", amount:100});
+
+}, "+100% Life Regen!");
+Item("mediumruby", "Medium Ruby", 300, "passive", function()
 {
 
 	socket.emit("updateStats", {playerId:selfId, stat:"lifeRegen", type:"up", amount:200});

@@ -579,6 +579,7 @@
 	socket.on("deathCounter", function(data)
 	{
 	//	ctx.font = "50px Arial";
+		showDeathRecap(data);
 		var val = data.value;
 		setInterval(function()
 		{
@@ -1039,10 +1040,10 @@
 			
 			$('#lifeStealL').text(stats.lifeSteal);
 			var lifeStealAmt = Player.list[selfId].hpMax * (stats.lifeSteal / 100);
-			lifeStealTT.textContent = "You heal +" + stats.lifeSteal + "% (+" + lifeStealAmt +") of your health on attack";
+			lifeStealTT.textContent = "You heal +" + stats.lifeSteal + "% (+" + lifeStealAmt +") of your damage on attack";
 			
-			var lifeRegenExtra = 3 * (stats.lifeRegen / 100);
-			var lifeRegen = 3 + lifeRegenExtra;
+			var lifeRegenExtra = 5 * (stats.lifeRegen / 100);
+			var lifeRegen = 5 + lifeRegenExtra;
 			$('#lifeRegenL').text(lifeRegen);
 			lifeRegenTT.textContent = "You heal +" + lifeRegen + " hp (+" + stats.lifeRegen +"%) every three seconds!";
 			
@@ -1144,8 +1145,8 @@
 		var p = Player.list[selfId];
 		if (p.hp < p.hpMax)
 		{
-			var healExtra = 3 * (p.stats.lifeRegen / 100);
-			var healAmt = 3 + healExtra;
+			var healExtra = 5 * (p.stats.lifeRegen / 100);
+			var healAmt = 5 + healExtra;
 			socket.emit("increaseHP", {amount: healAmt, playerId:selfId});
 		}
 	}, 3000);
@@ -1423,24 +1424,49 @@
 		
 
 	}
+	
+	function showDeathRecap(data)
+	{
+		if (data.crit)
+		{
+			$("#deathRecap").html("<label>Killed By <b>" + data.killer + "</b></label><br /><label>Damage: " + data.damageDealt + " crit damage</label>");
+		}
+		else
+		{
+			$("#deathRecap").html("<label>Killed By <b>" + data.killer + "</b></label><br /><label>Damage: " + data.damageDealt + " normal damage</label");
+		}
+		
+		$( "#deathRecap" ).dialog({
+			modal: true,
+			buttons: {
+			Ok: function() {
+				$( this ).dialog( "close" );
+			}
+		}
+		});
+		
+	}
+    
+
+	
 	document.oncontextmenu = function(event)
 	{
 		event.preventDefault();
 	}
 	
-	if (screen.width < 1500)
+	document.addEventListener("DOMContentLoaded", function()
 	{
-		document.write("<style>body {zoom:70%;}</style>");
+		console.log(screen.width);
+	});
+	
+	if (screen.width <= 1100)
+	{
+		alert("Gameplay will improve on larger screen dimensions!");
 	}
-	else if (screen.width >= 1500)
+	else if (screen.width < 1500 && screen.width > 1100)
 	{
-		document.write("<style>body {zoom:115%;}</style>");
+		document.write("<style>body {zoom:65%;}</style>");
 	}
-	else if (screen.width >= 2000)
-	{
-		document.write("<style>body {zoom:135%;}</style>");
-	} 
-	else if (screen.width >= 2500)
-	{
-		document.write("<style>body {zoom:150%;}</style>");
-	}
+	
+	
+	
