@@ -354,7 +354,7 @@ var Player = function(param)
 		if (self.isShooting && self.cooldown == 0 && self.canMove && self.isShielding == false)
 		{
 			self.shootBullet(self.mouseAngle);
-			self.cooldown = 5 + self.stats.attackSpd;
+			self.cooldown = self.stats.attackSpd;
 		}
 
 	}
@@ -511,6 +511,7 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 		matchType:matchType
 	});
 
+	socket.emit("createInventory");
 	socket.on('keyPress', function(data)
 	{
 		if (data.inputId === 'left')
@@ -989,7 +990,9 @@ function isPositionWall(xx, yy, early)
 {
 	var gridX = Math.floor(xx / TILESIZE);
 	var gridY = Math.floor(yy / TILESIZE);
-
+	
+	if (MapGrid1[gridY][gridX] == undefined || MapGrid1 == undefined)
+		return;
 	/*if (gridX < 0 || gridX >= MapGrid[0].length)
 		return true;
 	if (gridY < 0 || gridY >= MapGrid.length)

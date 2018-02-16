@@ -801,6 +801,12 @@
 		}
 	});
 
+	
+	socket.on("createInventory", function()
+	{
+		playerInventory = new Inventory();
+	});
+	
 	/*socket.on("matchingLabel", function()
 	{
 		matchLabel.innerHTML = "Searching...";
@@ -1006,7 +1012,7 @@
 			}
 			//console.log(lethalityArmor + "; " + stats.lethality);
 			var damage = (stats.attack * stats.attack) / (stats.attack + 0);
-			var attackSpdMs = (40 * (5 + stats.attackSpd))
+			var attackSpdMs = (40 * (stats.attackSpd))
 			var attackSpdSec = attackSpdMs / 1000;
 			
 			var critDam = ((damage * 150) / 100);
@@ -1148,7 +1154,7 @@
 		}
 	}, 3000);
 
-	playerInventory = Inventory();
+	
 	
 	loadStore();
 	function loadStore()
