@@ -432,18 +432,32 @@
 			var endingX = startingX + hpWidth;
 			var endingY = startingY + 10;
 			
-			var lines = self.hp / 500;
+			var lines = self.hp / 250;
+			var bigLines = self.hp / 500;
 			var pixels = hpWidth / lines;
+			var bigPixels = hpWidth / bigLines;
+			var c = 0;
 			for (var i = 0; i < lines; i++)
 			{
+
 				ctx.beginPath();
 				ctx.strokeStyle = 'black';
 				ctx.moveTo(startingX, startingY);
-				ctx.lineTo(startingX, startingY + 7);
+				if (c < 2)
+				{
+					ctx.lineTo(startingX, startingY + 6);
+				}
+				else
+				{
+					ctx.lineTo(startingX, startingY + 10);
+					c = 0;
+				}
+				
 				ctx.stroke();
 				ctx.closePath();
 				
 				startingX += pixels;
+				c++;
 				
 			}
 			
@@ -1129,7 +1143,6 @@
 		if(selfId)
 		{
 			Player.list[selfId].latency = Date.now() - startTime;
-
 		}
 
 	});
