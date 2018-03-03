@@ -75,7 +75,7 @@ var isUsernameTaken = function(data, cb)
 	{
 		cb(true);
 	}
-	
+
 }
 var addUser = function(data, cb)
 {
@@ -180,7 +180,7 @@ function gameOver(team)
 	for (var x in Player.list)
 	{
 
-		
+
 		if (Player.list[x].team == team)
 		{
 			db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'wins': 1}});
@@ -317,6 +317,7 @@ var Player = function(param)
 		lifeSteal:0,
 		lifeRegen:0
 	}
+	self.tutorial = false;
 	self.killCounter = 0;
 	self.roomId = param.roomId;
 	var super_update = self.update;
@@ -329,7 +330,7 @@ var Player = function(param)
 			{
 				super_update();
 			}
-			
+
 		}
 		else if(!isPositionWall(self.x + self.spdX, self.y + self.spdY, false))
 		{
@@ -478,8 +479,9 @@ var Player = function(param)
 			maxSpd:self.maxSpd,
 			sprite:self.sprite,
 			spriteShield:self.spriteShield,
-			killCounter:self.killCounter
-			
+			killCounter:self.killCounter,
+			tutorial:self.tutorial
+
 		}
 	}
 
@@ -544,12 +546,12 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 		else if (data.inputId === 'mouseAngle')
 		{
 			//console.log("x:" + player.updatedX + "; y: " + player.updatedY);
-			
+
 			var xx = data.xx - 600;
 			var yy = data.yy - 500;
 			var angle = Math.atan2(yy, xx);
 			angle = angle * (180/Math.PI);
-			
+
 			if (angle < 0) angle = 360 - (-angle);
 			//console.log(angle);
 			player.mouseAngle = angle;
@@ -564,7 +566,7 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 
 	});
 
-	
+
 	socket.on('sendMsgToServer', function(data)
 	{
 		//console.log(playerName);
@@ -578,7 +580,7 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 					txt: data
 				});
 			}
-			
+
 		}
 	});
 
@@ -607,7 +609,7 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 						{
 							SOCKET_LIST[i].emit("addToChat", {name: player.user + ': ', txt: data.message});
 						}
-						
+
 					}
 				}
 			}
@@ -615,18 +617,18 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 			{
 				socket.emit("addToChat", {name: "", txt:"The player " + data.user + " is not online!"});
 			}
-			
+
 		}
 		else
 		{
 			recipientSocket.emit("addToChat",{name: "From " + player.user + ': ', txt: data.message});
 			socket.emit("addToChat", {name: "To " + data.user + ': ', txt: data.message});
 		}
-		
+
 	});
-	
-	
-	
+
+
+
 	socket.emit('init', {
 		selfId:socket.id,
 		player:Player.getAllInitPack(),
@@ -745,7 +747,7 @@ var Bullet = function(param)
 							damage = damage + par.stats.elementalDamage;
 						}
 					}
-				
+
 
 					SOCKET_LIST[i].emit("updateArmor", {value: (damage / par.stats.attack)});
 					SOCKET_LIST[self.parent].emit("updateLethality", {value: (p.stats.armor)});
@@ -776,7 +778,7 @@ var Bullet = function(param)
 						var amtHeal = damage * (par.stats.lifeSteal / 100);
 						if (par.hp + amtHeal >= par.hpMax)
 						{
-							par.hp = par.hpMax; 
+							par.hp = par.hpMax;
 						}
 						else
 						{
@@ -894,7 +896,7 @@ function respawn(i)
 	var p = Player.list[i];
 	if (p == undefined)
 		return;
-	
+
 	p.deaths++;
 	p.hp = p.hpMax;
 	SOCKET_LIST[i].emit("updateHealthbar", {amount: p.hpMax, type:"heal"});
@@ -987,9 +989,9 @@ function respawn(i)
 
 		break;
 	}
-	
-							
-	
+
+
+
 }
 
 
@@ -1010,7 +1012,7 @@ function isPositionWall(xx, yy, early)
 {
 	var gridX = Math.floor(xx / TILESIZE);
 	var gridY = Math.floor(yy / TILESIZE);
-	
+
 	if (MapGrid1[gridY][gridX] == undefined || MapGrid1 == undefined)
 		return;
 	/*if (gridX < 0 || gridX >= MapGrid[0].length)
@@ -1019,7 +1021,7 @@ function isPositionWall(xx, yy, early)
 		return MapGrid[gridY][gridX];*/
 	if(early)
 	{
-		
+
 		if (MapGrid1[gridY][gridX] == 125)
 		{
 			return true;
@@ -1040,7 +1042,7 @@ function isPositionWall(xx, yy, early)
 			return false;
 		}
 	}
-		
+
 
 
 
@@ -1073,9 +1075,9 @@ function checkInvasion(id)
 		else
 		{
 			return false;
-		}	
+		}
 	}
-	
+
 }
 
 
@@ -1240,7 +1242,7 @@ setInterval(function()
 			{
 				respawn(i);
 			}
-			
+
 		}
 		p.exp += 1;
 		if (p.exp >= p.expMax)
@@ -1422,6 +1424,13 @@ io.sockets.on('connection', function(socket)
 					socket.emit("cancelButton", {value:true});
 					matchMakingThree(socket.id, usersLoggedIn[socket.id], 6);
 				}
+			break;
+			case "tutorial":
+				if (usersWaitingOne.includes(usersLoggedIn[socket.id]) == false && usersWaitingTwo.includes(usersLoggedIn[socket.id]) == false && usersWaitingThree.includes(usersLoggedIn[socket.id]) == false)
+				{
+					socket.emit("cancelButton", {value:true});
+					matchMakingTutorial(socket.id, usersLoggedIn[socket.id], 1);
+				 }
 			break;
 		}
 
@@ -1618,11 +1627,11 @@ io.sockets.on('connection', function(socket)
 	});
 	socket.on("updateXY", function(data)
 	{
-		
+
 		var p = Player.list[data.playerId];
 		if (p)
 		{
-			
+
 			p.updatedX = data.xx;
 			p.updatedY = data.yy;
 			//console.log("x: " + data.xx + "; y: " + data.yy);
@@ -1644,7 +1653,7 @@ io.sockets.on('connection', function(socket)
 				p.stats.armor += data.amount;
 			break;
 			case "attackSpd":
-				
+
 				p.stats.attackSpd -= data.amount;
 			break;
 			case "crit":
@@ -1653,16 +1662,16 @@ io.sockets.on('connection', function(socket)
 			case "critDam":
 				p.stats.critDam += data.amount; //Percent
 			break;
-			case "lifeSteal":	
+			case "lifeSteal":
 				p.stats.lifeSteal += data.amount;
 			break;
-			case "lifeRegen":	
+			case "lifeRegen":
 				p.stats.lifeRegen += data.amount;
 			break;
 			case "lethality":
 				p.stats.lethality += data.amount;
 			break;
-			case "movement":	
+			case "movement":
 				p.maxSpd += data.amount;
 			break;
 			}
@@ -1717,7 +1726,7 @@ io.sockets.on('connection', function(socket)
 					{
 						gameOver("blue");
 					}
-					
+
 					//console.log (Player.list[data.playerId].team + " surrendered");
 				}
 			break;
@@ -1762,7 +1771,7 @@ io.sockets.on('connection', function(socket)
 			if (Player.list[i].team == Player.list[socket.id].team)
 			{
 				SOCKET_LIST[Player.list[i].id].emit("disableElement", {elementType: data.elementType});
-			}	
+			}
 		}
 		switch(data.elementType)
 			{
@@ -1786,27 +1795,27 @@ io.sockets.on('connection', function(socket)
 					Player.list[socket.id].sprite = '/client/img/Player/playerLightning.png';
 					Player.list[socket.id].spriteShield = '/client/img/PlayerShield/playerLightningShield.png';
 				break;
-				
+
 			}
 		Player.list[data.playerId].elementType = data.elementType;
 	});
 
 	socket.on("setCanMove", function(data)
 	{
-		
+
 		Player.list[data.playerId].canMove = data.value;
 		if (data.count = true)
 		{
 			Player.list[data.playerId].deathCounter *= 2;
 		}
-		
+
 	});
 	socket.on("teleportToBase", function(data)
 	{
 		var p = Player.list[data.selfId];
 		if (p == undefined)
 			return;
-		
+
 		//console.log(p.map);
 		//var n = genRandomNumber(0, 3);
 		switch(p.map)
@@ -1841,15 +1850,15 @@ io.sockets.on('connection', function(socket)
 					var n = genRandomNumber(3, 5);
 				}
 			break;
-			
+
 		}
-		
-		
+
+
 		p.x = getStartingPlatform(n, p.map).x * TILESIZE + (TILESIZE * 2);
 		p.y = getStartingPlatform(n, p.map).y * TILESIZE + (TILESIZE * 2);
 
 	});
-	
+
 	/*socket.on("shieldValues", function(data)
 	{
 		Player.list[socket.id].shieldMid = data.mid;
@@ -2042,6 +2051,31 @@ function matchMakingThree(id, data, roomSize)
 
 	//Player.onConnect(socket);
 	//Player.list[socket.id].user = data.username;
+}
+
+function matchMakingTutorial(id, data)
+{
+
+		currentRoomID = genRandomNumber(0, 1000);
+		while (currentRooms.includes(currentRoomID))
+		{
+			currentRoomID = genRandomNumber(0, 1000);
+		}
+		currentRooms.push(currentRoomID);
+
+		var tm = "blue";
+		goal = new Goal({one: 0, two: 0});
+		goal.updateBars();
+		Player.onConnect(SOCKET_LIST[id], currentRoomID, 1, tm, 'map1', 'tut');
+
+		Player.list[id].user = data;
+		Player.list[id].tutorial = true;
+		console.log(id);
+		SOCKET_LIST[id].emit('inGame');
+
+			//playersWaiting.splice(i, 1);
+
+
 }
 
 

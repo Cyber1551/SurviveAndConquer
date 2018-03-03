@@ -167,23 +167,23 @@ Item("potion", "Potion", 40, "active", function()
 
 Item("overclock", "OverClock", 200, "active", function()
 {
-	if (playerInventory.hasItem("overclock", 2) == false && Player.list[selfId].overclocked == false && Player.list[selfId].stats.armor >= 10)
+	if (Player.list[selfId].overclocked == false && Player.list[selfId].stats.armor >= 10)
 	{
 		playerInventory.removeItem("overclock", 1);
 		Player.list[selfId].overclocked = true;
-		socket.emit("updateStats", {playerId:selfId, stat:"attack", type:"up", amount:20});
+		socket.emit("updateStats", {playerId:selfId, stat:"attack", type:"up", amount:10});
 		socket.emit("updateStats", {playerId:selfId, stat:"armor", type:"down", amount:10});
 		setTimeout(function()
 		{
-			socket.emit("updateStats", {playerId:selfId, stat:"attack", type:"down", amount:20});
+			socket.emit("updateStats", {playerId:selfId, stat:"attack", type:"down", amount:10});
 			socket.emit("updateStats", {playerId:selfId, stat:"armor", type:"up", amount:10});
 			Player.list[selfId].overclocked = false;
 		}, 10000);
 	}
 	
 
-}, "**Limit 1<br />+20 Attack Damage!<br />-10 Armor!<br />Lasts 10 Seconds");
-Item("return", "Return", 100, "active", function()
+}, "**Limit 1<br />+10 Attack Damage!<br />-10 Armor!<br />Lasts 10 Seconds");
+Item("return", "Return", 25, "active", function()
 {
 	socket.emit("setCanMove", {playerId:selfId, count:false, value: false});
 	setTimeout(function()
@@ -286,34 +286,34 @@ Item("largeelectricgem", "Large Electric Gem", 350, "passive", function()
 Item("basichealinggem", "Basic Healing Gem", 80, "passive", function()
 {
 
-	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"up", amount:5});
+	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"up", amount:12});
 
-}, "+5% Life Steal"); 
+}, "+12% Life Steal"); 
 
-Item("mediumhealinggem", "Medium Healing Gem", 230, "passive", function()
+Item("mediumhealinggem", "Medium Healing Gem", 150, "passive", function()
 {
 
-	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"up", amount:20});
+	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"up", amount:24});
 
-}, "+20% Life Steal");
-Item("mediumhealinggem", "Medium Healing Gem", 400, "passive", function()
+}, "+24% Life Steal");
+Item("largehealinggem", "Large Healing Gem", 310, "passive", function()
 {
 
-	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"up", amount:20});
+	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"up", amount:50});
 
-}, "+40% Life Steal");
+}, "+50% Life Steal");
 Item("basicruby", "Basic Ruby", 250, "passive", function()
-{
-
-	socket.emit("updateStats", {playerId:selfId, stat:"lifeRegen", type:"up", amount:100});
-
-}, "+100% Life Regen!");
-Item("mediumruby", "Medium Ruby", 450, "passive", function()
 {
 
 	socket.emit("updateStats", {playerId:selfId, stat:"lifeRegen", type:"up", amount:200});
 
 }, "+200% Life Regen!");
+Item("mediumruby", "Medium Ruby", 450, "passive", function()
+{
+
+	socket.emit("updateStats", {playerId:selfId, stat:"lifeRegen", type:"up", amount:400});
+
+}, "+400% Life Regen!");
 
 
 

@@ -4,7 +4,7 @@
 
 
 	var isGuide = false;
-	
+
 	var socket = io();
 	//var $ = require("jquery");
 	var signDiv = document.getElementById("signDiv");
@@ -187,6 +187,20 @@
 		document.getElementById("sacTitle").style.visibility = "hidden";
 		$('body').css("background-color", "white");
 		gameDiv.style.display = 'inline-block';
+
+			setTimeout(function()
+			{
+				if (!selfId)
+					return;
+				console.log(Player.list[selfId].tutorial);
+				if (Player.list[selfId].tutorial)
+				{
+					startTutorial();
+				}
+
+			}, 500);
+
+
 	});
 	socket.on("updateLobbyScore", function(data)
 	{
@@ -220,7 +234,7 @@
 	{
 		if (!selfId)
 			return;
-		
+
 		if (confirm("Are you sure?"))
 		{
 			var message = Player.list[selfId].user + " wants to surrender!";
@@ -229,9 +243,9 @@
 				message: message
 			});
 			socket.emit("surrender", {playerId: selfId});
-			
+
 		}
-	
+
 	}
 
 	var chatText = document.getElementById("chat-text");
@@ -326,10 +340,10 @@
 	var Img = {};
 	//Neutral
 	Img.player = new Image();
-	Img.player.src = '/client/img/Player/player.png'; 
+	Img.player.src = '/client/img/Player/player.png';
 	//Fire
 	Img.playerFire = new Image();
-	Img.playerFire.src = '/client/img/Player/playerFire.png'; 
+	Img.playerFire.src = '/client/img/Player/playerFire.png';
 	//Water
 	Img.playerWater = new Image();
 	Img.playerWater.src = '/client/img/Player/playerWater.png';
@@ -342,13 +356,13 @@
 	//Lightning
 	Img.playerLightning = new Image();
 	Img.playerLightning.src = '/client/img/Player/playerLightning.png';
-	
+
 	//Neutral
 	Img.playerShield = new Image();
-	Img.playerShield.src = '/client/img/PlayerShield/playerShield.png'; 
+	Img.playerShield.src = '/client/img/PlayerShield/playerShield.png';
 	//Fire
 	Img.playerFireShield = new Image();
-	Img.playerFireShield.src = '/client/img/PlayerShield/playerFireShield.png'; 
+	Img.playerFireShield.src = '/client/img/PlayerShield/playerFireShield.png';
 	//Water
 	Img.playerWaterShield = new Image();
 	Img.playerWaterShield.src = '/client/img/PlayerShield/playerWaterShield.png';
@@ -361,8 +375,8 @@
 	//Lightning
 	Img.playerLightningShield = new Image();
 	Img.playerLightningShield.src = '/client/img/PlayerShield/playerLightningShield.png';
-	
-	
+
+
 	Img.map1 = new Image();
 	Img.map1.src = '/client/img/Maps/testMap1.png';
 	Img.map2 = new Image();
@@ -411,6 +425,7 @@
 		self.sprite = initPack.sprite;
 		self.spriteShield = initPack.spriteShield;
 		self.killCounter = 0;
+		self.tutorial = false;
 		self.draw = function()
 		{
 			//chatText.innerHTML += self.name + "<br />";
@@ -431,7 +446,7 @@
 			var startingY = py - 60;
 			var endingX = startingX + hpWidth;
 			var endingY = startingY + 10;
-			
+
 			var lines = self.hp / 250;
 			var bigLines = self.hp / 500;
 			var pixels = hpWidth / lines;
@@ -452,30 +467,30 @@
 					ctx.lineTo(startingX, startingY + 10);
 					c = 0;
 				}
-				
+
 				ctx.stroke();
 				ctx.closePath();
-				
+
 				startingX += pixels;
 				c++;
-				
+
 			}
-			
+
 			var shieldWidth = 100 * self.shield / self.shieldMax;
 			ctx.strokeRect(px-50, py-50, 100, 5);
 			ctx.fillStyle = 'blue';
 			ctx.fillRect(px - 50, py - 50, shieldWidth, 5);
 
-			
+
 			ctx.font = "20px Arial";
-				
+
 			ctx.fillStyle = self.team;
 			var nameLevel = self.user + " | " + self.level;
 			var nameLevelWidth = ctx.measureText(nameLevel).width;
 			ctx.fillText(nameLevel, px - nameLevelWidth / 2, py - 65);
-			//ctx.fillText(" | Level: " + self.level, px - 25, py - 65);	
-			
-		
+			//ctx.fillText(" | Level: " + self.level, px - 25, py - 65);
+
+
 			var width = Img.player.width;
 			var height = Img.player.height;
 			//self.x = self.x - 10;
@@ -509,7 +524,7 @@
 			}*/
 			var spriteImage = new Image();
 			spriteImage.src = self.sprite;
-			
+
 			var spriteShieldImage = new Image();
 			spriteShieldImage.src = self.spriteShield;
 			ctx.translate(px + (width / 2) - 30, py + (height / 2) - 30 );
@@ -518,7 +533,7 @@
 			if (self.isShielding && self.shield > 0)
 			{
 				ctx.drawImage(spriteShieldImage, (width / 2 * (-1)), height / 2 * (-1), width, height);
-			} 
+			}
 			else
 			{
 				ctx.drawImage(spriteImage, (width / 2 * (-1)), height / 2 * (-1), width, height);
@@ -536,12 +551,54 @@
 			//ctx.fillText(self.kills, self.x, self.y-60);
 			//ctx.font = "30px Arial";
 		}
-		
+
 		Player.list[self.id] = self;
 
 		return self;
 	}
 	Player.list = {};
+
+
+var message = "";
+function showTutorialMessage()
+{
+	var count = 0;
+	$("#deathRecap").html(message);
+	$( "#deathRecap").dialog({
+		modal: true,
+		buttons: {
+		Ok: function() {
+			switch (count) {
+				case 0:
+					message = "Using W, A, S, D to move and the mouse to aim and shoot. <br />Be the first team to capture the point in the center!";
+					$("#deathRecap").html(message);
+				break;
+				case 1:
+
+				break;
+				case 2:
+
+				break;
+				case 3:
+						$( this ).dialog( "close" );
+				break;
+			}
+			count++;
+
+		}
+	}
+	});
+}
+
+	function startTutorial()
+	{
+		message = "Welcome to the SurviveAndConquer tutorial!<br />This will give you the basics needed to start out!";
+		showTutorialMessage();
+
+
+
+	}
+
 
 	/*$("#respawnL").text("10 second strategy time!");
 	setTimeout(function()
@@ -550,7 +607,7 @@
 		socket.emit("setCanMove", {value:true});
 	}, 10000);
 */
-	
+
 	/*var Damage = function()
 	{
 		var self = {};
@@ -618,7 +675,7 @@
 		return self;
 	}
 	*/
-	
+
 	socket.on("deathCounter", function(data)
 	{
 	//	ctx.font = "50px Arial";
@@ -639,10 +696,10 @@
 					socket.emit("setCanMove", {playerId:selfId, count: true, value:true});
 				}
 			}
-			
+
 		}, 1000);
-		
-		
+
+
 
 	});
 
@@ -661,8 +718,8 @@
 				chatText.innerHTML += '<div><b>' + Player.list[data.playerId].user + '</b> got a <u>TRIPLE KILL</u></div>';
 			break;
 		}
-		
-		
+
+
 	});
 	var Bullet = function(initPack)
 	{
@@ -689,7 +746,7 @@
 		Bullet.list[self.id] = self;
 		return self;
 	}
-	
+
 	var BulletGuide = function()
 	{
 		var self = {};
@@ -703,7 +760,7 @@
 
 			ctx.beginPath();
 			ctx.moveTo(600, 500);
-			
+
 			ctx.lineTo(entryCoor.x, entryCoor.y);
 			console.log(entryCoor.x + ": " + entryCoor.y)
 			//ctx.fillRect(bx-5, by-5, 10, 10);
@@ -711,12 +768,12 @@
 			ctx.fillStyle = "red";
 			//ctx.endPath();
 			self.counter--;
-			
-			
+
+
 				//ctx.arc(self.x-5, self.y-5, 5, 0,d 2 * Math.PI, false);
 		}
 	return self;
-		
+
 	}
 	Bullet.list = {};
 
@@ -732,7 +789,7 @@
 		for (var i = 0; i < data.player.length; i++)
 		{
 			new Player(data.player[i]);
-			
+
 			//console.log("init");
 			//console.log(data.player[i]);
 		}
@@ -740,7 +797,7 @@
 		{
 			new Bullet(data.bullet[i]);
 		}
-		
+
 	});
 
 	//Update
@@ -854,6 +911,10 @@
 				{
 					p.killCounter = pack.killCounter;
 				}
+				if (pack.tutorial !== undefined)
+				{
+					p.tutorial = pack.tutorial;
+				}
 			}
 		}
 		for (var i = 0; i < data.bullet.length; i++)
@@ -875,7 +936,7 @@
 	});
 
 	playerInventory = new Inventory();
-	
+
 	/*socket.on("matchingLabel", function()
 	{
 		matchLabel.innerHTML = "Searching...";
@@ -907,7 +968,7 @@
 		{
 			for (var y = 0; y < MapGrid1[x].length; y++)
 			{
-				
+
 				if (MapGrid1[x][y] == val)
 				{
 					return {x, y};
@@ -1083,46 +1144,46 @@
 			var damage = (stats.attack * stats.attack) / (stats.attack + 0);
 			var attackSpdMs = (40 * (stats.attackSpd))
 			var attackSpdSec = attackSpdMs / 1000;
-			
+
 			var critDam = ((damage * 150) / 100);
 			var extraDam = critDam * (stats.critDam / 100);
-			
+
 			var critDif = (critDam + extraDam) - damage;
-			
+
 			var movementSpd = Player.list[selfId].movementSpd;
 			var mapTime = ((3200 / movementSpd) * 40) / 1000;
 			mapTime = mapTime.toFixed(2);
-			
+
 			$('#attackL').text(stats.attack);
-			
+
 			attackTT.textContent = "You deal " + damage + " damage! (+" + stats.elementalDamage + ") against weak elements";
 			$('#armorL').text(stats.armor);
 			armorTT.textContent = "You took " + armor + "% of damage on the last hit!";
-			
+
 			//var lethalityPercent = ((lethalityArmor - stats.lethality) / lethalityArmor) * 100;
-			
+
 			$('#lethalityL').text(stats.lethality);
 			lethalityTT.textContent = "You negate " + lethalityArmor + "% of the enemies armor";
-			
+
 			$('#attackSpdL').text(stats.attackSpd);
 			attackSpdTT.textContent = "1 Bullet every " + attackSpdSec + " second(" + attackSpdMs + "Ms)";
 
 			$('#critL').text(stats.crit);
 			critTT.textContent = "You deal " + (critDam + extraDam) + " damage on critical hit (+" + critDif + " difference) | +" + extraDam;
-			
+
 			$('#lifeStealL').text(stats.lifeSteal);
 			var lifeStealAmt = damage * (stats.lifeSteal / 100);
 			var critLifeAmt = critDam * (stats.lifeSteal / 100);
 			lifeStealTT.textContent = "You heal +" + stats.lifeSteal + "% (+" + lifeStealAmt +"/+" + critLifeAmt+ ") of your damage on attack";
-			
-			var lifeRegenExtra = 5 * (stats.lifeRegen / 100);
-			var lifeRegen = 5 + lifeRegenExtra;
+
+			var lifeRegenExtra = 2 * (stats.lifeRegen / 100);
+			var lifeRegen = 2 + lifeRegenExtra;
 			$('#lifeRegenL').text(lifeRegen);
-			lifeRegenTT.textContent = "You heal +" + lifeRegen + " hp (+" + stats.lifeRegen +"%) every three seconds!";
-			
+			lifeRegenTT.textContent = "You heal +" + lifeRegen + " hp (+" + stats.lifeRegen +"%) every second!";
+
 			$('#movementL').text(movementSpd);
 			movementTT.textContent = "You can travel across the map in " + mapTime + " seconds!";
-			
+
 		}
 
 	}
@@ -1179,14 +1240,14 @@
 		$('#expDiv').css("width", percent);
 		$("#expL").text(p.exp);
 		$("#expMaxL").text(p.expMax);
-		
+
 	}
 
 	var drawMap = function()
 	{
 
 		if (!selfId)
-			return; 
+			return;
 		var x = WIDTH/2 - Player.list[selfId].x;
 		var y = HEIGHT/2 - Player.list[selfId].y;
 		switch(Player.list[selfId].map)
@@ -1217,14 +1278,14 @@
 		var p = Player.list[selfId];
 		if (p.hp < p.hpMax)
 		{
-			var healExtra = 5 * (p.stats.lifeRegen / 100);
-			var healAmt = 5 + healExtra;
+			var healExtra = 2 * (p.stats.lifeRegen / 100);
+			var healAmt = 2 + healExtra;
 			socket.emit("increaseHP", {amount: healAmt, playerId:selfId});
 		}
-	}, 3000);
+	}, 1000);
 
-	
-	
+
+
 	loadStore();
 	function loadStore()
 	{
@@ -1235,8 +1296,8 @@
 			storeDiv.innerHTML += "<button id='btn"+Element.list[i].name+"'  onclick=selectElement('"+i+"')>" + Element.list[i].name + "</button><br /><label>" + Element.list[i].ability + "</label><br /><label>Strong against: " + Element.list[i].strength + "</label><br />	<label>Weak against: " + Element.list[i].weakness + "</label><br />";
 		}
 	}
-	
-		
+
+
 	function selectElement(itemId)
 	{
 		if (checkStoreRange())
@@ -1249,30 +1310,30 @@
 					if(p.elementType == Element.list[itemId].name)
 					{
 						return;
-					}	
+					}
 				}
-				
+
 			}
 			socket.emit("setElement", {playerId:selfId, elementType:Element.list[itemId].name});
-			
-			
+
+
 			$("#elementL").text(Element.list[itemId].name);
 			Element.list[itemId].event();
 			storeDiv.innerHTML = "";
 			for (var i in Item.list)
 			{
-		
+
 				storeDiv.innerHTML += "<button onclick=buyItem('"+i+"')>" + Item.list[i].name + ": " + Item.list[i].gold + " Gold </button><br /><label>" + Item.list[i].explain + "</label><br /><hr />";
 			}
 		}
-		
+
 	}
 	socket.on("disableElement", function(data)
 	{
 		var buttonId = "#btn" + data.elementType;
 		$(buttonId).prop("disabled", "true");
 	});
-				
+
 	function buyItem(itemId)
 	{
 		if (checkStoreRange())
@@ -1282,12 +1343,22 @@
 			{
 				return;
 			}
+			else if (itemId == "overclock" && playerInventory.hasItem("overclock", 1) == 1)
+			{
+				return;
+
+			}
+			else if (itemId == "return" && playerInventory.hasItem("return", 1) == 1)
+			{
+				return;
+
+			}
 			else
 			{
 				//console.log(itemId);
 				playerInventory.addItem(itemId, 1, Item.list[itemId].gold, Item.list[itemId].type);
 			}
-			
+
 		}
 
 	}
@@ -1318,7 +1389,7 @@
 		//checkStoreRange();
 
 		ctx.clearRect(0, 0, 1200, 1000);
-		
+
 		drawMap();
 		drawScore();
 		updateExpBar();
@@ -1359,7 +1430,7 @@
 
 	socket.on('addToChat', function(data)
 	{
-		
+
 		console.log(data.name + ";" + data.txt);
 		chatText.innerHTML += '<div><b>' + data.name + '</b>' + data.txt + '</div>';
 	});
@@ -1396,7 +1467,7 @@
 		{
 			socket.emit('sendMsgToServer', chatInput.value);
 		}
-		
+
 		chatInput.value = '';
 	}
 
@@ -1419,7 +1490,7 @@
 			socket.emit('keyPress', {inputId: 'up', state:true});
 		}
 		else if(event.keyCode === 32) //Space
-		{ 
+		{
 
 			socket.emit('keyPress', {inputId: 'shield', state:true});
 		}
@@ -1454,8 +1525,11 @@
 				return;
 			//socket.emit('keyPress', {inputId: 'item1', state:true});
 			if (playerInventory.items[0] !== undefined)
-				
+			{
 				Item.list[playerInventory.items[0].id].event();
+
+			}
+
 		}
 		else if(event.keyCode === 50) //2
 		{
@@ -1483,7 +1557,7 @@
 
 		if (event.button == 0)
 		{
-			socket.emit('keyPress', {inputId: 'attack', state: true});	
+			socket.emit('keyPress', {inputId: 'attack', state: true});
 		}
 		else if (event.button == 2)
 		{
@@ -1497,8 +1571,8 @@
 				break;
 			}
 		}
-		
-		
+
+
 
 	}
 	document.onmouseup = function(event)
@@ -1513,13 +1587,13 @@
 		var angle = Math.atan2(y, x) / Math.PI * 180;*/
 		if (pointerLocked == true)
 		{
-			
+
 			socket.emit('keyPress', {inputId:'mouseAngle', xx:entryCoor.x, yy:entryCoor.y});
 		}
-		
+
 
 	}
-	
+
 	function showDeathRecap(data)
 	{
 		if (data.crit)
@@ -1530,7 +1604,7 @@
 		{
 			$("#deathRecap").html("<label>Killed By <b>" + data.killer + "</b></label><br /><label>Damage: " + data.damageDealt + " normal damage</label");
 		}
-		
+
 		$( "#deathRecap" ).dialog({
 			modal: true,
 			buttons: {
@@ -1539,21 +1613,19 @@
 			}
 		}
 		});
-		
-	}
-    
 
-	
+	}
+
 	document.oncontextmenu = function(event)
 	{
 		event.preventDefault();
 	}
-	
+
 	document.addEventListener("DOMContentLoaded", function()
 	{
 		console.log(screen.width);
 	});
-	
+
 	if (screen.width <= 1100)
 	{
 		alert("Gameplay will improve on larger screen dimensions!");
@@ -1563,6 +1635,3 @@
 	{
 		document.write("<style>body {zoom:50%;}</style>");
 	}
-	
-	
-	
