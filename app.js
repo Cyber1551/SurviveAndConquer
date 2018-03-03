@@ -311,7 +311,7 @@ var Player = function(param)
 		elementalDamage:1,
 		lethality:0,
 		armor:0,
-		attackSpd:6,
+		attackSpd:5,
 		crit:0,
 		critDam:0,
 		lifeSteal:0,
@@ -840,99 +840,8 @@ var Bullet = function(param)
 						{
 							levelUpdate(p);
 						}
-						p.deaths++;
-						p.hp = p.hpMax;
-						SOCKET_LIST[i].emit("updateHealthbar", {amount: p.hpMax, type:"heal"});
-						//self.toRemove = true;
-							p.canMove = false;
-							var r = Math.random() * 1;
-							switch(p.team)
-							{
-								case "red":
-									if (p.map == "map1")
-									{
-
-											p.x = 128;
-											p.y = 128;
-
-
-									}
-									else if (p.map == "map2")
-									{
-										if (r < 0.5)
-										{
-											p.x = 128;
-											p.y = 256;
-										}
-										else if (r >= 0.5)
-										{
-											p.x = 256;
-											p.y = 128;
-										}
-
-									}
-									else
-									{
-										if (r < 0.5)
-										{
-											p.x = 128;
-											p.y = 128;
-										}
-										else if (r > 0.75)
-										{
-											p.x = 256;
-											p.y = 128;
-										}
-										else
-										{
-											p.x = 128;
-											p.y = 256;
-										}
-									}
-								break;
-								case "blue":
-									if (p.map == "map1")
-									{
-											p.x = 3072;
-											p.y = 3072;
-
-									}
-									else if (p.map == "map2")
-									{
-										if (r < 0.5)
-										{
-											p.x = 3072;
-											p.y = 2944;
-										}
-										else if (r >= 0.5)
-										{
-											p.x = 2944;
-											p.y = 3072;
-										}
-
-									}
-									else
-									{
-										if (r < 0.5)
-										{
-											p.x = 3072;
-											p.y = 3072;
-										}
-										else if (r > 0.75)
-										{
-											p.x = 2944;
-											p.y = 3072;
-										}
-										else
-										{
-											p.x = 3072;
-											p.y = 2944;
-										}
-									}
-
-								break;
-							}
-							SOCKET_LIST[i].emit("deathCounter", {value: p.deathCounter, damageDealt: damageDealt, crit:isDamageCrit, killer:shooter.user});
+						respawn(i);
+						SOCKET_LIST[i].emit("deathCounter", {value: p.deathCounter, damageDealt: damageDealt, crit:isDamageCrit, killer:shooter.user});
 							/*setTimeout(function()
 							{
 								p.canMove = true;
@@ -978,6 +887,112 @@ var Bullet = function(param)
 	return self;
 }
 Bullet.list = {};
+
+
+function respawn(i)
+{
+	var p = Player.list[i];
+	if (p == undefined)
+		return;
+	
+	p.deaths++;
+	p.hp = p.hpMax;
+	SOCKET_LIST[i].emit("updateHealthbar", {amount: p.hpMax, type:"heal"});
+	//self.toRemove = true;
+	p.canMove = false;
+	var r = Math.random() * 1;
+	switch(p.team)
+	{
+		case "red":
+		if (p.map == "map1")
+			{
+
+				p.x = 128;
+				p.y = 128;
+
+
+			}
+			else if (p.map == "map2")
+			{
+				if (r < 0.5)
+				{
+					p.x = 128;
+					p.y = 256;
+				}
+				else if (r >= 0.5)
+				{
+					p.x = 256;
+					p.y = 128;
+				}
+
+			}
+			else
+			{
+				if (r < 0.5)
+				{
+					p.x = 128;
+					p.y = 128;
+				}
+				else if (r > 0.75)
+				{
+					p.x = 256;
+					p.y = 128;
+				}
+				else
+				{
+					p.x = 128;
+					p.y = 256;
+				}
+			}
+		break;
+		case "blue":
+			if (p.map == "map1")
+			{
+				p.x = 3072;
+				p.y = 3072;
+
+			}
+			else if (p.map == "map2")
+			{
+				if (r < 0.5)
+				{
+					p.x = 3072;
+					p.y = 2944;
+				}
+				else if (r >= 0.5)
+				{
+					p.x = 2944;
+					p.y = 3072;
+				}
+
+			}
+			else
+			{
+				if (r < 0.5)
+				{
+					p.x = 3072;
+					p.y = 3072;
+				}
+				else if (r > 0.75)
+				{
+					p.x = 2944;
+					p.y = 3072;
+				}
+				else
+				{
+					p.x = 3072;
+					p.y = 2944;
+				}
+			}
+
+		break;
+	}
+	
+							
+	
+}
+
+
 
 function genRandomNumber(min, max)
 {
@@ -1030,6 +1045,40 @@ function isPositionWall(xx, yy, early)
 
 
 }
+function checkInvasion(id)
+{
+	var p = Player.list[id];
+	if (p == undefined)
+		return;
+	var otherTeam = null;
+	switch(p.team)
+	{
+		case "red":
+			otherTeam = "blue";
+		break;
+		case "blue":
+			otherTeam = "red";
+		break;
+	}
+	if (otherTeam != null)
+	{
+		var x = getStore(otherTeam).x * TILESIZE;
+		var y = getStore(otherTeam).y * TILESIZE;
+		//console.log(getDis(x, y, p.x, p.y));
+
+		if (getDis(x, y, p.x, p.y) <= 416)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}	
+	}
+	
+}
+
+
 function checkStoreRange(id)
 {
 
@@ -1076,6 +1125,10 @@ function getStore(team)
 	return false;
 
 }
+
+
+
+
 function getStartingPlatform(num, map)
 {
 
@@ -1179,6 +1232,16 @@ setInterval(function()
 
 			}
 		}
+		if (checkInvasion(i))
+		{
+			p.hp -= 700;
+			SOCKET_LIST[i].emit("updateHealthbar", {amount: 700, type: "damage"});
+			if (p.hp <= 0)
+			{
+				respawn(i);
+			}
+			
+		}
 		p.exp += 1;
 		if (p.exp >= p.expMax)
 		{
@@ -1190,7 +1253,7 @@ setInterval(function()
 			//console.log("Length of 2: " + playersInGoal2.length);
 			if (playersInGoal2.length == 0)
 			{
-				goal.increaseAmount(1, 50);
+				goal.increaseAmount(1, 5);
 			}
 			if(playersInGoal1.indexOf(p) < 0)
 				playersInGoal1.push(p);
@@ -1208,7 +1271,7 @@ setInterval(function()
 			//console.log("Length of 1: " + playersInGoal1.length);
 			if (playersInGoal1.length == 0)
 			{
-				goal.increaseAmount(2, 50);
+				goal.increaseAmount(2, 5);
 			}
 			if (playersInGoal2.indexOf(p) < 0)
 				playersInGoal2.push(p);
@@ -1226,12 +1289,12 @@ setInterval(function()
 
 	if(playersInGoal1.length == 0 && goal.team1 > 0)
 	{
-		goal.decreaseAmount(1, 50);
+		goal.decreaseAmount(1, 1);
 
 	}
 	if(playersInGoal2.length == 0 && goal.team2 > 0)
 	{
-		goal.decreaseAmount(2, 50);
+		goal.decreaseAmount(2, 1);
 
 	}
 
@@ -1732,9 +1795,61 @@ io.sockets.on('connection', function(socket)
 	{
 		
 		Player.list[data.playerId].canMove = data.value;
-		Player.list[data.playerId].deathCounter *= 2;
+		if (data.count = true)
+		{
+			Player.list[data.playerId].deathCounter *= 2;
+		}
 		
 	});
+	socket.on("teleportToBase", function(data)
+	{
+		var p = Player.list[data.selfId];
+		if (p == undefined)
+			return;
+		
+		//console.log(p.map);
+		//var n = genRandomNumber(0, 3);
+		switch(p.map)
+		{
+			case "map1":
+				if (p.team == "red")
+				{
+					var n = 0;
+				}
+				else
+				{
+					var n = 1;
+				}
+			break;
+			case "map2":
+				if (p.team == "red")
+				{
+					var n = genRandomNumber(0, 1);
+				}
+				else
+				{
+					var n = genRandomNumber(2, 3);
+				}
+			break;
+			case "map3":
+				if (p.team == "red")
+				{
+					var n = genRandomNumber(0, 2);
+				}
+				else
+				{
+					var n = genRandomNumber(3, 5);
+				}
+			break;
+			
+		}
+		
+		
+		p.x = getStartingPlatform(n, p.map).x * TILESIZE + (TILESIZE * 2);
+		p.y = getStartingPlatform(n, p.map).y * TILESIZE + (TILESIZE * 2);
+
+	});
+	
 	/*socket.on("shieldValues", function(data)
 	{
 		Player.list[socket.id].shieldMid = data.mid;

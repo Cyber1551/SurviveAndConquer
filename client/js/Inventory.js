@@ -183,6 +183,19 @@ Item("overclock", "OverClock", 200, "active", function()
 	
 
 }, "**Limit 1<br />+20 Attack Damage!<br />-10 Armor!<br />Lasts 10 Seconds");
+Item("return", "Return", 100, "active", function()
+{
+	socket.emit("setCanMove", {playerId:selfId, count:false, value: false});
+	setTimeout(function()
+	{
+		
+		playerInventory.removeItem("return", 1);
+		socket.emit("setCanMove", {playerId:selfId, count:false, value: true});
+		socket.emit("teleportToBase", {selfId: selfId});	
+	}, 3000);
+	
+}, "**Limit 1<br />Wait 3 seconds to be teleported back to base!");
+
 
 
 //Passive Items
@@ -289,13 +302,13 @@ Item("mediumhealinggem", "Medium Healing Gem", 400, "passive", function()
 	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"up", amount:20});
 
 }, "+40% Life Steal");
-Item("basicruby", "Basic Ruby", 300, "passive", function()
+Item("basicruby", "Basic Ruby", 250, "passive", function()
 {
 
 	socket.emit("updateStats", {playerId:selfId, stat:"lifeRegen", type:"up", amount:100});
 
 }, "+100% Life Regen!");
-Item("mediumruby", "Medium Ruby", 300, "passive", function()
+Item("mediumruby", "Medium Ruby", 450, "passive", function()
 {
 
 	socket.emit("updateStats", {playerId:selfId, stat:"lifeRegen", type:"up", amount:200});

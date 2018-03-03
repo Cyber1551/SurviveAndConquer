@@ -3,7 +3,8 @@
 	var HEIGHT = 1000;
 
 
-
+	var isGuide = false;
+	
 	var socket = io();
 	//var $ = require("jquery");
 	var signDiv = document.getElementById("signDiv");
@@ -138,7 +139,7 @@
 		$("#lobbyDiv-findMatch").css("display", "inline-block");
 		console.log('The pointer lock status is now unlocked');
 		pointerLocked = false;
-		
+		document.getElementById("sacTitle").style.visibility = "visible";
 		document.exitPointerLock();
 		//socket.emit('disconnect');
 	});
@@ -183,6 +184,7 @@
 	{
 
 		lobbyDiv.style.display = 'none';
+		document.getElementById("sacTitle").style.visibility = "hidden";
 		$('body').css("background-color", "white");
 		gameDiv.style.display = 'inline-block';
 	});
@@ -218,11 +220,18 @@
 	{
 		if (!selfId)
 			return;
-		socket.emit('sendPMToServer', {
+		
+		if (confirm("Are you sure?"))
+		{
+			var message = Player.list[selfId].user + " wants to surrender!";
+			socket.emit('sendPMToServer', {
 				user: "team",
-				message: "Surrender Started!"
+				message: message
 			});
-		socket.emit("surrender", {playerId: selfId});
+			socket.emit("surrender", {playerId: selfId});
+			
+		}
+	
 	}
 
 	var chatText = document.getElementById("chat-text");
@@ -418,6 +427,26 @@
 			var hpWidth = 100 * (self.hp / self.hpMax);
 			ctx.fillStyle = 'red';
 			ctx.fillRect(px - 50, py - 60, hpWidth, 10);
+			var startingX = px - 50;
+			var startingY = py - 60;
+			var endingX = startingX + hpWidth;
+			var endingY = startingY + 10;
+			
+			var lines = self.hp / 500;
+			var pixels = hpWidth / lines;
+			for (var i = 0; i < lines; i++)
+			{
+				ctx.beginPath();
+				ctx.strokeStyle = 'black';
+				ctx.moveTo(startingX, startingY);
+				ctx.lineTo(startingX, startingY + 7);
+				ctx.stroke();
+				ctx.closePath();
+				
+				startingX += pixels;
+				
+			}
+			
 			var shieldWidth = 100 * self.shield / self.shieldMax;
 			ctx.strokeRect(px-50, py-50, 100, 5);
 			ctx.fillStyle = 'blue';
@@ -593,7 +622,7 @@
 				{
 					console.log("respawn");
 					$("#respawnL").text("");
-					socket.emit("setCanMove", {playerId:selfId, value:true});
+					socket.emit("setCanMove", {playerId:selfId, count: true, value:true});
 				}
 			}
 			
@@ -645,6 +674,35 @@
 
 		Bullet.list[self.id] = self;
 		return self;
+	}
+	
+	var BulletGuide = function()
+	{
+		var self = {};
+		//self.map = initPack.map;
+		self.draw = function()
+		{
+			ctx.fillStyle = "black";
+			//var bx = self.x - Player.list[selfId].x + WIDTH/2;
+			//var by = self.y - Player.list[selfId].y + HEIGHT/2;
+			//var lx = Player.list[selfId].x + 600;
+
+			ctx.beginPath();
+			ctx.moveTo(600, 500);
+			
+			ctx.lineTo(entryCoor.x, entryCoor.y);
+			console.log(entryCoor.x + ": " + entryCoor.y)
+			//ctx.fillRect(bx-5, by-5, 10, 10);
+			ctx.stroke();
+			ctx.fillStyle = "red";
+			//ctx.endPath();
+			self.counter--;
+			
+			
+				//ctx.arc(self.x-5, self.y-5, 5, 0,d 2 * Math.PI, false);
+		}
+	return self;
+		
 	}
 	Bullet.list = {};
 
@@ -1039,8 +1097,9 @@
 			critTT.textContent = "You deal " + (critDam + extraDam) + " damage on critical hit (+" + critDif + " difference) | +" + extraDam;
 			
 			$('#lifeStealL').text(stats.lifeSteal);
-			var lifeStealAmt = Player.list[selfId].hpMax * (stats.lifeSteal / 100);
-			lifeStealTT.textContent = "You heal +" + stats.lifeSteal + "% (+" + lifeStealAmt +") of your damage on attack";
+			var lifeStealAmt = damage * (stats.lifeSteal / 100);
+			var critLifeAmt = critDam * (stats.lifeSteal / 100);
+			lifeStealTT.textContent = "You heal +" + stats.lifeSteal + "% (+" + lifeStealAmt +"/+" + critLifeAmt+ ") of your damage on attack";
 			
 			var lifeRegenExtra = 5 * (stats.lifeRegen / 100);
 			var lifeRegen = 5 + lifeRegenExtra;
@@ -1246,9 +1305,15 @@
 		//checkStoreRange();
 
 		ctx.clearRect(0, 0, 1200, 1000);
+		
 		drawMap();
 		drawScore();
 		updateExpBar();
+		if (isGuide)
+		{
+			var bg = BulletGuide();
+			bg.draw();
+		}
 		//drawName();
 		//updateScoreBoard();
 		ctx.fillStyle = "black";
@@ -1341,7 +1406,7 @@
 			socket.emit('keyPress', {inputId: 'up', state:true});
 		}
 		else if(event.keyCode === 32) //Space
-		{
+		{ 
 
 			socket.emit('keyPress', {inputId: 'shield', state:true});
 		}
@@ -1403,13 +1468,30 @@
 	{
 		//chatText.innerHTML += event.clientX + ":" + event.clientY + "<br />";
 
-			socket.emit('keyPress', {inputId: 'attack', state: true});
-
+		if (event.button == 0)
+		{
+			socket.emit('keyPress', {inputId: 'attack', state: true});	
+		}
+		else if (event.button == 2)
+		{
+			switch(isGuide)
+			{
+				case false:
+					isGuide = true;
+				break;
+				case true:
+					isGuide = false;
+				break;
+			}
+		}
+		
+		
 
 	}
 	document.onmouseup = function(event)
 	{
-		socket.emit('keyPress', {inputId: 'attack', state: false});
+		if (event.button == 0)
+			socket.emit('keyPress', {inputId: 'attack', state: false});
 	}
 	document.onmousemove = function(event)
 	{
@@ -1462,10 +1544,11 @@
 	if (screen.width <= 1100)
 	{
 		alert("Gameplay will improve on larger screen dimensions!");
+		document.write("<style>body {zoom:50%;}</style>");
 	}
 	else if (screen.width < 1500 && screen.width > 1100)
 	{
-		document.write("<style>body {zoom:65%;}</style>");
+		document.write("<style>body {zoom:50%;}</style>");
 	}
 	
 	
