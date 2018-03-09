@@ -2,6 +2,8 @@
 body
 {
 	background-color: #3399ff;
+	padding: 0px;
+	margin: 0px;
 }
 
 #signDiv
@@ -403,7 +405,7 @@ body
     /* Position the tooltip text - see examples below! */
     position: relative;
     z-index: 1;
-	top: -5px;
+		top: -5px;
     left: 10%;
 }
 
@@ -411,5 +413,3 @@ body
 .tooltip:hover .tooltiptext {
     visibility: visible;
 }
-
-

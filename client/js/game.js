@@ -1,10 +1,12 @@
 
-	var WIDTH = 1200;
-	var HEIGHT = 1000;
+	var WIDTH = 0;
+	var HEIGHT = 0;
 
 
 	var isGuide = false;
-
+	var currentRoom = "signin";
+	
+	
 	var socket = io();
 	//var $ = require("jquery");
 	var signDiv = document.getElementById("signDiv");
@@ -59,7 +61,7 @@
 	var levelL = document.getElementById("levelL");
 
 
-		var canvas = document.getElementById("ctx");
+	var canvas = document.getElementById("ctx");
 	var ctx = canvas.getContext("2d");
 
 	var pointerLocked = false;
@@ -74,11 +76,13 @@
 	{
 		signDiv.style.display = 'none';
 		regDiv.style.display = 'inline-block';
+		currentRoom = "register";
 	}
 	regDivSignIn.onclick = function()
 	{
 		regDiv.style.display = 'none';
 		signDiv.style.display = 'inline-block';
+		currentRoom = "signIn";
 	}
 	signDivSignIn.onclick = function()
 	{
@@ -116,15 +120,18 @@
 		//var matchType = lobbyModeSel.options[lobbyModeSel.selectedIndex].value;
 		$("#lobbyDiv").css("display", "none");
 		$("#playerStatsDiv").css("display", "inline-block");
+		currentRoom = "stats";
 	}
 	statsDivBack.onclick = function()
 	{
 		$("#lobbyDiv").css("display", "inline-block");
 		$("#playerStatsDiv").css("display", "none");
+		currentRoom = "lobby";
 	}
 	socket.on('backToLobby', function(data)
 	{
 		loadStore();
+		currentRoom = "lobby";
 		$("#elementL").text("Not Set");
 		$("#gameDiv").css("display", "none");
 		$("#lobbyDiv").css("display", "inline-block");
@@ -156,6 +163,7 @@
 			var winR = ((data.wins / totalGames) * 100).toFixed(2) + "%";
 			$("#lobbyWinR").text(winR);
 			$("#userLabel").text(data.username);
+			currentRoom = "lobby";
 		}
 		else{
 			$("#signInfo").css("display", "inline-block");
@@ -182,24 +190,12 @@
 
 	socket.on("inGame", function()
 	{
-
+		currentRoom = "game";
 		lobbyDiv.style.display = 'none';
 		document.getElementById("sacTitle").style.visibility = "hidden";
 		$('body').css("background-color", "white");
 		gameDiv.style.display = 'inline-block';
-
-			setTimeout(function()
-			{
-				if (!selfId)
-					return;
-				console.log(Player.list[selfId].tutorial);
-				if (Player.list[selfId].tutorial)
-				{
-					startTutorial();
-				}
-
-			}, 500);
-
+		
 
 	});
 	socket.on("updateLobbyScore", function(data)
@@ -248,9 +244,9 @@
 
 	}
 
-	var chatText = document.getElementById("chat-text");
-	var chatInput = document.getElementById("chat-input");
-	var chatForm = document.getElementById("chat-form");
+	//var chatText = document.getElementById("chat-text");
+	//var chatInput = document.getElementById("chat-input");
+	//var chatForm = document.getElementById("chat-form");
 
 
 	ctx.font = "30px Arial";
@@ -338,6 +334,7 @@
 
 
 	var Img = {};
+	
 	//Neutral
 	Img.player = new Image();
 	Img.player.src = '/client/img/Player/player.png';
@@ -384,7 +381,19 @@
 	Img.map3 = new Image();
 	Img.map3.src = '/client/img/Maps/testMap3.png';
 
+	Img.fire = new Image();
+	Img.fire.src = '/client/img/Elements/fire.png';
+	Img.wind = new Image();
+	Img.wind.src = '/client/img/Elements/wind.png';
+	Img.earth = new Image();
+	Img.earth.src = '/client/img/Elements/earth.png';
+	Img.lightning = new Image();
+	Img.lightning.src = '/client/img/Elements/lightning.png';
+	Img.water = new Image();
+	Img.water.src = '/client/img/Elements/water.png';
 
+	
+	
 	function getPoint(c1, c2, radius, angle)
 	{
 		return [c1 + Math.cos(angle) * radius, c2 + Math.sin(angle) * radius];
@@ -425,7 +434,7 @@
 		self.sprite = initPack.sprite;
 		self.spriteShield = initPack.spriteShield;
 		self.killCounter = 0;
-		self.tutorial = false;
+
 		self.draw = function()
 		{
 			//chatText.innerHTML += self.name + "<br />";
@@ -557,49 +566,6 @@
 		return self;
 	}
 	Player.list = {};
-
-
-var message = "";
-function showTutorialMessage()
-{
-	var count = 0;
-	$("#deathRecap").html(message);
-	$( "#deathRecap").dialog({
-		modal: true,
-		buttons: {
-		Ok: function() {
-			switch (count) {
-				case 0:
-					message = "Using W, A, S, D to move and the mouse to aim and shoot. <br />Be the first team to capture the point in the center!";
-					$("#deathRecap").html(message);
-				break;
-				case 1:
-
-				break;
-				case 2:
-
-				break;
-				case 3:
-						$( this ).dialog( "close" );
-				break;
-			}
-			count++;
-
-		}
-	}
-	});
-}
-
-	function startTutorial()
-	{
-		message = "Welcome to the SurviveAndConquer tutorial!<br />This will give you the basics needed to start out!";
-		showTutorialMessage();
-
-
-
-	}
-
-
 	/*$("#respawnL").text("10 second strategy time!");
 	setTimeout(function()
 	{
@@ -681,8 +647,12 @@ function showTutorialMessage()
 	//	ctx.font = "50px Arial";
 		showDeathRecap(data);
 		var val = data.value;
+		
 		setInterval(function()
 		{
+			if (!selfId)
+				return;
+			
 			if (Player.list[selfId].canMove == false && val > 0)
 			{
 
@@ -709,16 +679,19 @@ function showTutorialMessage()
 		switch(data.type)
 		{
 			case "single":
-				chatText.innerHTML += '<div><b>' + Player.list[data.playerId].user + '</b> killed ' + data.victim + '</div>';
+				chatArr.unshift(Player.list[data.playerId].user + ' killed ' + data.victim);
+				
 			break;
 			case "double":
-				chatText.innerHTML += '<div><b>' + Player.list[data.playerId].user + '</b> got a DOUBLE KILL</div>';
+				chatArr.unshift(Player.list[data.playerId].user + ' got a double kill! ');
+				
 			break;
 			case "triple":
-				chatText.innerHTML += '<div><b>' + Player.list[data.playerId].user + '</b> got a <u>TRIPLE KILL</u></div>';
+				chatArr.unshift(Player.list[data.playerId].user + ' got a TRIPLE KILL!');
+				
 			break;
 		}
-
+		drawChatBody = true;
 
 	});
 	var Bullet = function(initPack)
@@ -759,7 +732,7 @@ function showTutorialMessage()
 			//var lx = Player.list[selfId].x + 600;
 
 			ctx.beginPath();
-			ctx.moveTo(600, 500);
+			ctx.moveTo(WIDTH/2, HEIGHT/2);
 
 			ctx.lineTo(entryCoor.x, entryCoor.y);
 			console.log(entryCoor.x + ": " + entryCoor.y)
@@ -911,10 +884,7 @@ function showTutorialMessage()
 				{
 					p.killCounter = pack.killCounter;
 				}
-				if (pack.tutorial !== undefined)
-				{
-					p.tutorial = pack.tutorial;
-				}
+
 			}
 		}
 		for (var i = 0; i < data.bullet.length; i++)
@@ -980,15 +950,21 @@ function showTutorialMessage()
 
 	}
 
-
+	var killDeathVal = "";
+	var goldVal = "";
+	var levelVal = "";
 	var drawScore = function()
 	{
-
-		killL.innerHTML = "Kills: " + Player.list[selfId].kills + " / ";
-		deathL.innerHTML = "Deaths: " + Player.list[selfId].deaths;
+		if (!selfId)
+			return;
+		//killL.innerHTML = "Kills: " + Player.list[selfId].kills + " / ";
+		killDeathVal = "Kills: " + Player.list[selfId].kills + " / Deaths: " + Player.list[selfId].deaths;
+		goldVal = "Gold: " + Player.list[selfId].gold;
+		levelVal = "Level: " + Player.list[selfId].level;
+		//deathL.innerHTML = "Deaths: " + Player.list[selfId].deaths;
 		//ctx.fillText("Shield: " + Player.list[selfId].shield, 200, 30);
-		goldLabel.innerHTML = Player.list[selfId].gold;
-		levelL.innerHTML = Player.list[selfId].level;
+		//goldLabel.innerHTML = Player.list[selfId].gold;
+		//levelL.innerHTML = Player.list[selfId].level;
 		//killL.innerHTML = "Goal: " + Player.list[selfId].isGoal + " / ";
 	}
 
@@ -1119,7 +1095,7 @@ function showTutorialMessage()
 		lethalityValue = data.value;
 		updateStatBoard();
 	});
-	function updateStatBoard()
+	/*function updateStatBoard()
 	{
 		if(selfId)
 		{
@@ -1186,7 +1162,7 @@ function showTutorialMessage()
 
 		}
 
-	}
+	}*/
 	setInterval(function()
 	{
 		startTime = Date.now();
@@ -1196,7 +1172,7 @@ function showTutorialMessage()
 		}
 
 		socket.emit('calculateLatency');
-		updateStatBoard();
+		//updateStatBoard();
 	}, 2000); //Calculate Latency
 
 	socket.on('displayLatency', function()
@@ -1216,7 +1192,8 @@ function showTutorialMessage()
 			{
 				var missing = p.hp - data.amount;
 				var percent = (missing / p.hpMax) * 100 + "%";
-				$('#healthL').text(missing.toFixed(2) + " (-" + data.amount.toFixed(2) + ")");
+				//$('#healthL').text(missing.toFixed(2) + " (-" + data.amount.toFixed(2) + ")");
+				healthText = missing.toFixed(2) + " (-" + data.amount.toFixed(2) + ")";
 			}
 			else if (data.type == "heal")
 			{
@@ -1226,20 +1203,34 @@ function showTutorialMessage()
 					missing = p.hpMax;
 				}
 				var percent = (missing / p.hpMax) * 100 + "%";
-				$('#healthL').text(missing.toFixed(2) + " (+" + data.amount.toFixed(2) + ")");
+				healthText = missing.toFixed(2) + " (+" + data.amount.toFixed(2) + ")";
+				//$('#healthL').text(missing.toFixed(2) + " (+" + data.amount.toFixed(2) + ")");
+				
 			}
 			//console.log(data.damage);
-			$('#healthDiv').css("width", percent);
+			var ratio = p.hp / p.hpMax;
+			healthBar.resize(550 * ratio, healthBar.h);
+			//$('#healthDiv').css("width", percent);
 
 		}
 	});
+	var expVal = "";
+	var expMapVal = "";
+	
 	function updateExpBar()
 	{
 		var p = Player.list[selfId];
 		var percent = (p.exp / p.expMax) * 100 + "%";
-		$('#expDiv').css("width", percent);
-		$("#expL").text(p.exp);
-		$("#expMaxL").text(p.expMax);
+		expVal = p.exp;
+		expMaxVal = p.expMax;
+		var ratio = p.exp / p.expMax;
+
+		expBar.resize(400 * ratio, expBar.h);
+		
+		
+		//$('#expDiv').css("width", percent);
+		//$("#expL").text(p.exp);
+		//$("#expMaxL").text(p.expMax);
 
 	}
 
@@ -1286,20 +1277,11 @@ function showTutorialMessage()
 
 
 
-	loadStore();
-	function loadStore()
-	{
-		storeDiv.innerHTML = "";
-		playerInventory.clearInventory();
-		for (var i in Element.list)
-		{
-			storeDiv.innerHTML += "<button id='btn"+Element.list[i].name+"'  onclick=selectElement('"+i+"')>" + Element.list[i].name + "</button><br /><label>" + Element.list[i].ability + "</label><br /><label>Strong against: " + Element.list[i].strength + "</label><br />	<label>Weak against: " + Element.list[i].weakness + "</label><br />";
-		}
-	}
 
-
+	var drawElements = true;
 	function selectElement(itemId)
 	{
+		
 		if (checkStoreRange())
 		{
 			for (var ii in Player.list)
@@ -1317,14 +1299,28 @@ function showTutorialMessage()
 			socket.emit("setElement", {playerId:selfId, elementType:Element.list[itemId].name});
 
 
-			$("#elementL").text(Element.list[itemId].name);
+			//$("#elementL").text(Element.list[itemId].name);
 			Element.list[itemId].event();
-			storeDiv.innerHTML = "";
+			store.resize(1200, 700);
+			storeWidth = 1200;
+			storeHeight = 800;
+			store.move((WIDTH / 2) - storeWidth/2, 25);
+			//storeDiv.innerHTML = "";
+			var count = 0;
+			var cols = 0;
 			for (var i in Item.list)
 			{
-
-				storeDiv.innerHTML += "<button onclick=buyItem('"+i+"')>" + Item.list[i].name + ": " + Item.list[i].gold + " Gold </button><br /><label>" + Item.list[i].explain + "</label><br /><hr />";
+				//storeDiv.innerHTML += "<button onclick=buyItem('"+i+"')>" + Item.list[i].name + ": " + Item.list[i].gold + " Gold </button><br /><label>" + Item.list[i].explain + "</label><br /><hr />";
+				itemlist.push(new Button(Item.list[i].name + ": " + Item.list[i].gold + " Gold", Item.list[i].explain, null, null, i, true, (WIDTH/2) - ((storeWidth/2) - 10) + (cols * 305), (count*55) + 80, 300, 50));
+				count++;
+				if (count % 11 == 0)
+				{
+					cols++;
+					count = 0;
+				}
 			}
+			infoId = -1;
+			drawElements = false;
 		}
 
 	}
@@ -1336,7 +1332,7 @@ function showTutorialMessage()
 
 	function buyItem(itemId)
 	{
-		if (checkStoreRange())
+		if (checkStoreRange() && playerInventory.invSize < 7)
 		{
 			//console.log(Item.list[itemId].type);
 			if (itemId == "feather" && Player.list[selfId].stats.attackSpd - 0.2 < 0)
@@ -1349,6 +1345,11 @@ function showTutorialMessage()
 
 			}
 			else if (itemId == "return" && playerInventory.hasItem("return", 1) == 1)
+			{
+				return;
+
+			}
+			else if (itemId == "boots" && playerInventory.hasItem("boots", 1) == 1)
 			{
 				return;
 
@@ -1388,11 +1389,10 @@ function showTutorialMessage()
 
 		//checkStoreRange();
 
-		ctx.clearRect(0, 0, 1200, 1000);
-
+		ctx.clearRect(0, 0, WIDTH, HEIGHT);
+		
 		drawMap();
-		drawScore();
-		updateExpBar();
+		
 		if (isGuide)
 		{
 			var bg = BulletGuide();
@@ -1400,8 +1400,7 @@ function showTutorialMessage()
 		}
 		//drawName();
 		//updateScoreBoard();
-		ctx.fillStyle = "black";
-		ctx.fillRect(entryCoor.x, entryCoor.y, 5, 5);
+		
 		if (Player.list[selfId].isShielding)
 		{
 			socket.emit('updateShield', {state:false}); //True for positive, false for negative
@@ -1420,7 +1419,24 @@ function showTutorialMessage()
 		{
 			Bullet.list[i].draw();
 		}
+		
+		//GUI ----------
+		
+		
+		if (WIDTH != 0)
+		{
+			drawStore();
+			drawScore();
+			updateExpBar();
+			drawGUI();
+		}
+		
+		playerInventory.refreshRender();
 
+		
+		//Mouse
+		ctx.fillStyle = "black";
+		ctx.fillRect(entryCoor.x, entryCoor.y, 5, 5);
 	}, 40);
 
 	socket.on('getPlayerAngle', function(data)
@@ -1428,76 +1444,115 @@ function showTutorialMessage()
 		Player.list[selfId].mouseAngle = data.mouseAngle;
 	});
 
+	var chatArr = [];
 	socket.on('addToChat', function(data)
 	{
 
 		console.log(data.name + ";" + data.txt);
-		chatText.innerHTML += '<div><b>' + data.name + '</b>' + data.txt + '</div>';
+		chatArr.unshift(data.name + "" + data.txt);
+
+		drawChatBody = true;
+
+		
+		//chatText.innerHTML += '<div><b>' + data.name + '</b>' + data.txt + '</div>';
 	});
 	socket.on('evalAnswer', function(data)
 	{
 		console.log(data);
 	});
+	var team1ScoreVal = "";
+	var team2ScoreVal = "";
 	socket.on('updateScoreBar', function(data)
 	{
 
 		//$("#team1L").text("(+" + data.team1N + ")");
 		//$("#team2L").text("(+" + data.team2N + ")");
-
-		$("#team1Div").css("height", data.team1);
-		$("#team2Div").css("height", data.team2);
+		team1ScoreVal = (data.team1 / 1000).toFixed(2) * 100 + "%";
+		team2ScoreVal = (data.team2 / 1000).toFixed(2) * 100 + "%";
+		//$("#team1Div").css("height", data.team1);
+		//$("#team2Div").css("height", data.team2);
 	});
 
 
-	chatForm.onsubmit = function(e)
+	var sendChatToServer = function(e, chatText)
 	{
 		e.preventDefault();
-		if (chatInput.value[0] === '/')
+		if (chatText.charAt(0) === '/')
 		{
-			socket.emit('evalServer', chatInput.value.slice(1));
+			socket.emit('evalServer', chatText.slice(1));
 		}
-		else if (chatInput.value[0] === '@')
+		else if (chatText.charAt(0) === '@')
 		{
+			
 			socket.emit('sendPMToServer', {
-				user: chatInput.value.slice(1, chatInput.value.indexOf(',')),
-				message: chatInput.value.slice(chatInput.value.indexOf(',') + 1)
+				user: chatText.slice(1, chatText.indexOf(',')),
+				message: chatText.slice(chatText.indexOf(',') + 1)
 			});
 		}
 		else
 		{
-			socket.emit('sendMsgToServer', chatInput.value);
+			console.log(chatText);
+			socket.emit('sendMsgToServer', chatText);
 		}
 
-		chatInput.value = '';
+		
 	}
+	
+	var inChat = false;
 
 	document.onkeydown = function(event)
 	{
-		if(event.keyCode === 68) //D
+		if (event.keyCode === 8 && currentRoom == "game")
 		{
+			return false;
+		}
+		else if(event.keyCode === 68) //D
+		{
+			if (inChat)
+				return;
 			socket.emit('keyPress', {inputId: 'right', state:true});
 		}
 		else if(event.keyCode === 83) //S
 		{
+			if (inChat)
+				return;
 			socket.emit('keyPress', {inputId: 'down', state:true});
 		}
 		else if(event.keyCode === 65) //A
 		{
+			if (inChat)
+				return;
 			socket.emit('keyPress', {inputId: 'left', state:true});
 		}
 		else if(event.keyCode === 87) //W
 		{
+			if (inChat)
+				return;
 			socket.emit('keyPress', {inputId: 'up', state:true});
 		}
 		else if(event.keyCode === 32) //Space
 		{
-
+			if (inChat)
+				return;
 			socket.emit('keyPress', {inputId: 'shield', state:true});
 		}
+		else if(event.keyCode === 69) //E
+		{
+			if (inChat)
+				return;
+			showStore();
+		}
+		
 	}
+	
+	
+	var chatText = "";
+	
 	document.onkeyup = function(event)
 	{
-		if(event.keyCode === 68) //D
+		
+		
+		 if(event.keyCode === 68) //D
 		{
 			socket.emit('keyPress', {inputId: 'right', state:false});
 		}
@@ -1549,6 +1604,43 @@ function showTutorialMessage()
 				Item.list[playerInventory.items[2].id].event();
 			//socket.emit('keyPress', {inputId: 'item1', state:true});
 		}
+		else if (event.keyCode === 13)
+		{
+			switch(inChat)
+			{
+				case true:
+					inChat = false;
+					if (chatText != "")
+					{
+						sendChatToServer(event, chatText);
+					}
+					chatText = '';
+				break
+				case false:
+					inChat = true;
+				break;
+			}
+		}
+		if (inChat)
+		{
+			var key = event.keyCode;
+			if (key !== 8)
+			{
+				var letter = String.fromCharCode((96 <= key && key <= 105) ? key-48 : key);
+				if(chatText.length < 30)
+				{
+					chatText += letter;
+				}
+				
+				
+			}
+			else
+			{
+				chatText = chatText.substring(0, chatText.length - 1);
+			}
+			console.log(chatText);
+			
+		}
 	}
 
 	document.onmousedown = function(event)
@@ -1557,6 +1649,8 @@ function showTutorialMessage()
 
 		if (event.button == 0)
 		{
+			if (isStore)
+				return;
 			socket.emit('keyPress', {inputId: 'attack', state: true});
 		}
 		else if (event.button == 2)
@@ -1578,7 +1672,37 @@ function showTutorialMessage()
 	document.onmouseup = function(event)
 	{
 		if (event.button == 0)
-			socket.emit('keyPress', {inputId: 'attack', state: false});
+		{
+			if (isStore == false)
+			{
+				socket.emit('keyPress', {inputId: 'attack', state: false});
+			}
+			else
+			{
+				for (var i = 0; i < elementlist.length; i++)
+				{
+					elementlist[i].getInfo();
+				}
+				for (var i = 0; i < itemlist.length; i++)
+				{
+					itemlist[i].getInfo();
+				}
+			}
+			
+		}
+		else if (event.button == 2 && isStore)
+		{
+			for (var i = 0; i < elementlist.length; i++)
+			{
+				elementlist[i].getClick();
+			}
+			for (var i = 0; i < itemlist.length; i++)
+			{
+				itemlist[i].getClick();
+			}
+			
+		}
+			
 	}
 	document.onmousemove = function(event)
 	{
@@ -1587,7 +1711,15 @@ function showTutorialMessage()
 		var angle = Math.atan2(y, x) / Math.PI * 180;*/
 		if (pointerLocked == true)
 		{
-
+			//checkHover();
+			for (var i = 0; i < elementlist.length; i++)
+			{
+				elementlist[i].getHover();
+			}
+			for (var i = 0; i < itemlist.length; i++)
+			{
+				itemlist[i].getHover();
+			}
 			socket.emit('keyPress', {inputId:'mouseAngle', xx:entryCoor.x, yy:entryCoor.y});
 		}
 
@@ -1620,18 +1752,578 @@ function showTutorialMessage()
 	{
 		event.preventDefault();
 	}
-
+	var isStore = false;
 	document.addEventListener("DOMContentLoaded", function()
 	{
-		console.log(screen.width);
+		resize();
+		loadStore();
+		
 	});
+	
+	function resize()
+	{
+		var ww = window.innerWidth - 100;
+		var wh = window.innerHeight - 100;
+		
+		canvas.width = ww;
+		canvas.height = wh;
+		
+		WIDTH = ww;
+		HEIGHT = wh;
+		
+	
+		store.move((WIDTH/2) - storeWidth/2, 25);
+		gui.move((WIDTH/2)-500, HEIGHT-125);
+		healthBar.move((WIDTH/2) - 490, HEIGHT-115);
+		healthBarBorder.move((WIDTH/2)-490, HEIGHT-115);
+		expBar.move((WIDTH/2)-490, HEIGHT-88);
+		expBarBorder.move((WIDTH/2)-490, HEIGHT-88);
+		chatInput.move(25, HEIGHT-50);
+		chatBorder.move(25, HEIGHT-470);
 
-	if (screen.width <= 1100)
-	{
-		alert("Gameplay will improve on larger screen dimensions!");
-		document.write("<style>body {zoom:50%;}</style>");
+		for (var i = 0; i < elementlist.length; i++)
+		{
+			elementlist[i].move((WIDTH/2) - ((storeWidth/2) - 10), (i*55) + 80);
+			
+		}
+		var count = 0;
+		var cols = 0;
+		for (var i = 0; i < itemlist.length; i++)
+		{
+				//storeDiv.innerHTML += "<button onclick=buyItem('"+i+"')>" + Item.list[i].name + ": " + Item.list[i].gold + " Gold </button><br /><label>" + Item.list[i].explain + "</label><br /><hr />";
+			itemlist[i].move((WIDTH/2) - ((storeWidth/2) - 10) + (cols * 305), (count*55) + 80);
+			count++;
+			if (count % 11 == 0)
+			{
+				cols++;
+				count = 0;
+			}
+		}
+		socket.emit("resize", {width:ww, height:wh});
+		console.log(WIDTH + ", " + HEIGHT)
+		
 	}
-	else if (screen.width < 1500 && screen.width > 1100)
+	
+	function Shape(x, y, w, h, fill) {
+  		this.x = x || 0;
+  		this.y = y || 0;
+  		this.w = w || 1;
+  		this.h = h || 1;
+  		this.fill = fill || '#AAAAAA';
+		}
+		Shape.prototype.resize = function(w, h)
+		{
+			this.w = w;
+			this.h = h;
+		}
+		Shape.prototype.move = function(x, y)
+		{
+			this.x = x;
+			this.y = y;
+		}
+		Shape.prototype.draw = function(ctx, border) {
+			if (border)
+			{
+				drawBorder(this.x, this.y, this.w, this.h, 2);
+			}
+			
+			ctx.fillStyle = this.fill;
+			ctx.fillRect(this.x, this.y, this.w, this.h);
+		}
+		
+	
+	var infoId = -1;
+	var infoType = false;
+	function Button(txt, ability, strength, weakness, id, item, x, y, w, h) {
+  		this.x = x || 0;
+  		this.y = y || 0;
+  		this.w = w;
+  		this.h = h;
+		this.txt = txt;
+		this.ability = ability;
+		this.strength = strength;
+		this.weakness = weakness;
+		this.id = id;
+		this.fill = '#000';
+		this.hover = false;
+		this.item = item;
+		}
+		Button.prototype.resize = function(w, h)
+		{
+			this.w = w;
+			this.h = h;
+		}
+		Button.prototype.move = function(x, y)
+		{
+			this.x = x;
+			this.y = y;
+		}
+		Button.prototype.draw = function(ctx) {
+		
+			//drawBorder(this.x, this.y, this.w, this.h, 2);
+			if (this.hover)
+			{
+				this.fill = '#333';
+			}
+			else
+			{
+				this.fill = '#000';
+			}
+			ctx.fillStyle = this.fill;
+			ctx.fillRect(this.x, this.y, this.w, this.h);
+			ctx.fillStyle = 'white';
+			if (this.item)
+			{
+				drawText(this.txt, this.x + 10, this.y + this.h / 2);
+			}
+			else
+			{
+				drawText(this.txt, this.x + this.w / 3, this.y + this.h / 2);
+			}
+			
+		}
+		Button.prototype.getHover = function()
+		{
+			if (entryCoor.x >= this.x && entryCoor.x <= this.x + this.w)
+			{
+				if (entryCoor.y >= this.y && entryCoor.y <= this.y + this.h)
+				{
+					//console.log("hover");
+					this.hover = true;
+				}
+				else
+				{
+					this.hover = false;
+				}
+			}
+			else
+			{
+				this.hover = false;
+			}
+		}
+		Button.prototype.getClick = function()
+		{
+			if (this.hover && isStore)
+			{
+				if (this.item)
+				{
+					buyItem(this.id);
+				}
+				else
+				{
+					selectElement(this.id);
+				}
+				
+			}
+		}
+		Button.prototype.getInfo = function()
+		{
+			if (this.hover && isStore)
+			{
+				infoId = this.id;
+				infoType = this.item;
+				
+			}
+		}
+	
+	
+	var elementlist = [];
+	var itemlist = [];
+	function loadStore()
 	{
-		document.write("<style>body {zoom:50%;}</style>");
+		console.log(true);
+		//storeDiv.innerHTML = "";
+		playerInventory.clearInventory();
+		var count = 0;
+		for (var i in Element.list)
+		{
+			
+			//new Button(Element.list[i].name, Element.list[i].ability, Element.list[i].strength, Element.list[i].weakness, selectElement(i), (WIDTH / 2), (i * 25) + 25);
+			elementlist.push(new Button(Element.list[i].name, Element.list[i].ability, Element.list[i].strength, Element.list[i].weakness, i, false, (WIDTH/2) - ((storeWidth/2) - 10), (count*55) + 80, 150, 50));
+			count++;
+		}
 	}
+	
+
+	
+	function drawText(txt, x, y, font, color)
+	{
+		ctx.font=font;
+		ctx.fillStyle = color;
+		var array = [];
+		if (txt.includes("<br>"))
+		{
+			array = txt.split("<br>");
+		}
+		else
+		{
+			array[0] = txt;
+		}
+		
+		
+		var offset = 0;
+		var boldText = "";
+		var xoffset = 0;
+		for (var i = 0; i < array.length; i++) 
+		{	
+			if (array[i].includes("<b>") && array[i].includes("</b>"))
+			{
+				array[i] = array[i].replace("<b>", "");
+				array[i] = array[i].replace("</b>", "");
+				drawBoldText(array[i], x, y + offset, font);
+				
+			}
+			else
+			{
+				ctx.fillText(array[i], x, y + offset);
+			}
+			
+			offset += 17;
+		}
+		
+	}
+	function drawBoldText(txt, x, y, font)
+	{
+		ctx.font = "bold " + font;
+		ctx.fillText(txt, x, y);
+		ctx.font = font;
+	}
+	
+	
+	var storeWidth = 600;
+	var storeHeight = 400;
+	
+	var store = new Shape((canvas.width / 2) - storeWidth/2, 25, storeWidth, storeHeight, '#AAAAAA');
+	var gui = new Shape((canvas.width/2) - 500, canvas.height - 125, 1000, 125, '#AAAAAA');
+	var healthBar = new Shape((canvas.width/2) - 490, canvas.height-115, 550, 25, '#e63900');
+	var healthBarBorder = new Shape((canvas.width/2) - 490, canvas.height-115, 550, 25, '#AAAAAA');
+	var expBar = new Shape((canvas.width/2) - 490, canvas.height-88, 400, 15, '#66ff99');
+	var expBarBorder = new Shape((canvas.width/2) - 490, canvas.height-88, 400, 15, '#AAAAAA');
+	var chatInput = new Shape(0, 0, 400, 25, '#fff');
+	var chatBorder = new Shape(0, 0, 400, 400, '#fff');
+	
+	//GUI - Healthbars and score
+
+	var isHover = false;
+	var healthText = "";
+	
+	
+	function drawGUI()
+	{
+		gui.draw(ctx, false);
+		healthBarBorder.draw(ctx, true);
+		expBarBorder.draw(ctx, true);
+		healthBar.draw(ctx, false);
+		drawText(healthText, (canvas.width/2)-245, canvas.height-95, "20px Arial", 'black');
+		expBar.draw(ctx, false);
+		drawText(levelVal + " ("+expVal+"/"+expMaxVal+")", ((canvas.width/2) - 85), canvas.height-74, "15px Arial", 'black');
+		drawStats();
+		drawScoreText();
+		drawChat();
+
+		
+	}
+	
+	var drawChatBody = false;
+
+	
+	function drawChat()
+	{
+		
+		chatInput.draw(ctx, true);
+		
+		if (inChat)
+		{
+			drawChatBody = true;
+
+		}
+
+		if (drawChatBody)
+		{
+			chatBorder.draw(ctx, true);
+			ctx.fillStyle = 'black';
+			for(var i = 0; i < chatArr.length; i++)
+			{
+				
+				drawText(chatArr[i], 35, HEIGHT-(i*25)-75);
+			}
+			if (inChat == false)
+			{
+				setTimeout(function()
+				{
+					drawChatBody = false;
+				}, 2000);
+			}
+			
+		}
+		
+		
+		drawText(chatText, 25, HEIGHT - 26);
+		
+	}
+
+	
+	
+	function drawScoreText()
+	{
+		drawText("Blue Team: " + team2ScoreVal, ((canvas.width/2) - 85), canvas.height - 50, "20px Arial", 'blue');
+		drawText("Red Team: " + team1ScoreVal, (canvas.width/2) - 85, canvas.height - 25, "20px Arial", 'red');
+		drawText(killDeathVal, canvas.width - 200, 30, "20px Arial", 'black');
+		drawText(goldVal, canvas.width - 150, 50, "20px Arial", 'black');
+	}
+	function drawStats()
+	{
+		var fnt = "17px Arial";
+		
+		if(selfId)
+		{
+			var stats = Player.list[selfId].stats;
+		
+			drawText("Attack: " + stats.attack, ((canvas.width/2) - 490), canvas.height-55, fnt, 'black');
+			drawText("Armor: " + stats.armor, ((canvas.width/2) - 490), canvas.height-40, fnt, 'black');
+			drawText("Attack Speed: " + stats.attackSpd, ((canvas.width/2) - 490), canvas.height-25, fnt, 'black');
+			drawText("Life Regen: " + stats.lifeRegen, ((canvas.width/2) - 490), canvas.height-10, fnt, 'black');
+		
+			drawText("Lethality: " + stats.lethality, ((canvas.width/2) - 270), canvas.height-55, fnt, 'black');
+			drawText("Critical Chance: " + stats.crit, ((canvas.width/2) - 270), canvas.height-40, fnt, 'black');
+			drawText("Movement Speed: " + Player.list[selfId].movementSpd, ((canvas.width/2) - 270), canvas.height-25, fnt, 'black');
+			drawText("Life Steal: " + stats.lifeSteal, ((canvas.width/2) - 270), canvas.height-10, fnt, 'black');
+		}
+		
+	}
+	var isBottom = false;
+	var tooltipMessage = "";
+	function checkHover()
+	{
+		
+		if(selfId)
+		{
+			var stats = Player.list[selfId].stats;
+			if (armorValue == null)
+			{
+				var armor = "Undetermined ";
+			}
+			else
+			{
+				var armor = armorValue.toFixed(2) * 100;
+			}
+			if (lethalityValue == null)
+			{
+				var lethalityArmor = "Undetermined ";
+			}
+			else
+			{
+				var lethalityArmor = 100 - (((lethalityValue - stats.lethality) / lethalityValue) * 100).toFixed(2);
+			}
+			//console.log(lethalityArmor + "; " + stats.lethality);
+			var damage = (stats.attack * stats.attack) / (stats.attack + 0);
+			var attackSpdMs = (40 * (stats.attackSpd))
+			var attackSpdSec = attackSpdMs / 1000;
+
+			var critDam = ((damage * 150) / 100);
+			var extraDam = critDam * (stats.critDam / 100);
+
+			var critDif = (critDam + extraDam) - damage;
+
+			var movementSpd = Player.list[selfId].movementSpd;
+			var mapTime = ((3200 / movementSpd) * 40) / 1000;
+			mapTime = mapTime.toFixed(2);
+			var lifeStealAmt = damage * (stats.lifeSteal / 100);
+			var critLifeAmt = critDam * (stats.lifeSteal / 100);
+
+			var lifeRegenExtra = 2 * (stats.lifeRegen / 100);
+			var lifeRegen = 2 + lifeRegenExtra;
+		
+		
+		
+		if (entryCoor.x > 110 && entryCoor.x < 170 && entryCoor.y > 930 && entryCoor.y < 940)
+		{
+			isHover = true;
+			isBottom = false;
+			//Attack
+			tooltipMessage = "You deal " + damage + " damage on hit";
+			
+		}
+		else if (entryCoor.x > 110 && entryCoor.x < 170 && entryCoor.y > 945 && entryCoor.y < 955)
+		{
+			//Armor
+			tooltipMessage = "You took " + armor + "%<br> of damage on last hit";
+			isHover = true;
+			isBottom = false;
+		}
+		else if (entryCoor.x > 110 && entryCoor.x < 225 && entryCoor.y > 960 && entryCoor.y < 970)
+		{
+			//Attack Speed
+			tooltipMessage = "1 bullet every " + attackSpdSec + " second";
+			isHover = true;
+			isBottom = true;
+		}
+		else if (entryCoor.x > 334 && entryCoor.x < 407 && entryCoor.y > 930 && entryCoor.y < 940)
+		{
+			//Lethality
+			tooltipMessage = "You negate " + lethalityArmor + "%<br> of the enemies armor";
+			isHover = true;
+			isBottom = false;
+		}
+		else if (entryCoor.x > 110 && entryCoor.x < 204 && entryCoor.y > 975 && entryCoor.y < 985)
+		{
+			//Life Regen
+			tooltipMessage = "You heal " + lifeRegen +" hp(+"+lifeRegenExtra+"%)<br> every second";
+			isHover = true;
+			isBottom = true;
+		}
+		else if (entryCoor.x > 334 && entryCoor.x < 415 && entryCoor.y > 975 && entryCoor.y < 985)
+		{
+			//Life Steal
+			tooltipMessage = "You heal "+stats.lifeSteal +"% (+"+lifeStealAmt+")<br> of your damage";
+			isHover = true;
+			isBottom = true;
+		}
+		else if (entryCoor.x > 334 && entryCoor.x < 460 && entryCoor.y > 945 && entryCoor.y < 955)
+		{
+			//Crit
+			tooltipMessage = "You have a "+stats.crit+"% chance to<br> deal "+critDam+"(+"+extraDam+") damage";
+			isHover = true;
+			isBottom = false;
+		}
+		else if (entryCoor.x > 334 && entryCoor.x < 476 && entryCoor.y > 960 && entryCoor.y < 970)
+		{
+			//Movement Speed
+			tooltipMessage = "You move across the map<br> in "+mapTime+" seconds";
+			isHover = true;
+			isBottom = true;
+		}
+		else 
+		{
+			isHover = false;
+		}
+		}
+		
+	}
+	
+
+	//Store
+	
+	function showStore()
+	{
+		switch(isStore)
+		{
+			case true:
+				isStore = false;
+			break;
+			case false:
+				isStore = true;
+			break;
+		}
+		
+	}
+	function drawBorder(xPos, yPos, width, height, thickness)
+	{
+		ctx.fillStyle='#000';
+		ctx.fillRect(xPos - (thickness), yPos - (thickness), width + (thickness * 2), height + (thickness * 2));
+	}
+	
+	function drawStore()
+	{
+		if (isStore)
+		{
+			store.draw(ctx, true);
+			ctx.strokeStyle='black';
+			
+			
+			//console.log(buttonlist.length)
+			if (drawElements)
+			{
+				ctx.font = "20px Arial";
+				ctx.fillStyle = 'black';
+				drawText("Choose an Element!", store.x + 5, store.y + 20);
+				ctx.moveTo(WIDTH/2 - 110, 25);
+				ctx.lineTo(WIDTH/2 - 110, 400);
+				ctx.stroke();
+				for (var i = 0; i < elementlist.length; i++)
+				{
+					elementlist[i].draw(ctx);
+					
+				}
+				ctx.fillStyle = 'black';
+				ctx.font = "20px Arial";
+				if (infoId == -1)
+				{
+					drawText("Left click for info.<br>Right click to select", WIDTH/2 + 10, 50);
+				}
+				else
+				{
+					ctx.font = "25px Arial";
+					drawText(Element.list[infoId].name + ": " + Element.list[infoId].ability, WIDTH/2 - 100, 50);
+					ctx.font = "20px Arial";
+					ctx.moveTo(WIDTH/2-110, 60);
+					ctx.lineTo(store.x + store.w, 60);
+					ctx.stroke();
+					drawText("Lore: " + Element.list[infoId].lore, WIDTH/2 - 100, 80);
+					drawText("Ability: " + Element.list[infoId].ability, WIDTH/2 - 100, 150);
+					drawText("Strength: Deal +damage against " + Element.list[infoId].strength, WIDTH/2 - 100, 180);
+					drawText("Weakness: Take +damage from " + Element.list[infoId].weakness, WIDTH/2 - 100, 210);
+					switch(Element.list[infoId].name)
+					{
+						case "Fire":
+							ctx.drawImage(Img.fire, WIDTH/2, 240);
+						break;
+						case "Lightning":
+							ctx.drawImage(Img.lightning, WIDTH/2, 240);
+						break;
+						case "Water":
+							ctx.drawImage(Img.water, WIDTH/2, 240);
+						break;
+						case "Earth":
+							ctx.drawImage(Img.earth, WIDTH/2, 240);
+						break;
+						case "Wind":
+							ctx.drawImage(Img.wind, WIDTH/2, 240);
+						break;
+					}
+					
+					
+				}
+				
+			}
+			else
+			{
+				ctx.font = "20px Arial";
+				ctx.fillStyle = 'black';
+				drawText("Store", store.x + store.w / 4, store.y + 20);
+
+				ctx.moveTo(WIDTH/2 + 30, 25);
+				ctx.lineTo(WIDTH/2 + 30, 700);
+				ctx.stroke();
+
+				for (var i = 0; i < itemlist.length; i++)
+				{
+					itemlist[i].draw(ctx);
+				}
+				ctx.fillStyle = 'black';
+				ctx.font = "20px Arial";
+				if (infoId == -1)
+				{
+					drawText("Left click for info.<br>Right click to select", WIDTH/2 + 40, 50);
+				}
+				else
+				{
+					ctx.font = "25px Arial";
+					drawText(Item.list[infoId].name + ": " + Item.list[infoId].gold + " Gold", WIDTH/2 + 40, 50);
+					ctx.font = "20px Arial";
+					ctx.moveTo(WIDTH/2 + 30, 60);
+					ctx.lineTo(store.x + store.w, 60);
+					ctx.stroke();
+					//drawText("Lore: " + Element.list[infoId].lore, WIDTH/2 - 100, 80);
+					drawText("Type: " + Item.list[infoId].type, WIDTH/2 + 40, 80);
+					drawText("Ability: " + Item.list[infoId].explain, WIDTH/2 + 40, 110);
+					//drawText("Strength: Deal +damage against " + Element.list[infoId].strength, WIDTH/2 - 100, 180);
+					//drawText("Weakness: Take +damage from " + Element.list[infoId].weakness, WIDTH/2 - 100, 210);
+				}
+			}
+			
+			
+		}
+		
+	}
+	

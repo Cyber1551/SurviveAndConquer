@@ -1,15 +1,17 @@
 
+
 Inventory = function()
 {
 	var self = {
 		items:[], //{id:"itemId", amount:1}
-		passive:[]
+		passive:[],
+		invSize:0
 	}
 	self.addItem = function(id, amount, gold, type)
 	{
 		if (Player.list[selfId].gold >= gold)
 		{
-
+			self.invSize++;
 			for (var i = 0; i < self.items.length; i++)
 			{
 				if (type == "active")
@@ -19,6 +21,7 @@ Inventory = function()
 					//Player.list[selfId].gold -= gold;
 						socket.emit('updateGold', {amount: gold, playerId: selfId, type:"down"});
 						self.items[i].amount += amount;
+						//self.invSize++;
 						self.refreshRender();
 						return;
 					}
@@ -36,7 +39,9 @@ Inventory = function()
 					{
 						socket.emit('updateGold', {amount: gold, playerId: selfId, type:"down"});
 						self.passive[i].amount += amount;
+						//self.invSize++;
 						Item.list[id].event();
+						
 						self.refreshRender();
 						return;
 					}
@@ -68,12 +73,14 @@ Inventory = function()
 		{
 			if (self.items[i].id === id)
 			{
+				self.invSize--;
 				socket.emit('updateGold', {amount: (Item.list[id].gold / 2), playerId: selfId, type:"up"});
 				if (Item.list[id].type == "active")
 				{
 
 					self.items[i].amount -= amount;
 					self.refreshRender();
+					//self.invSize--;
 					if(self.items[i].amount <= 0)
 					{
 						self.items.splice(i, 1);
@@ -84,6 +91,7 @@ Inventory = function()
 				else if(Item.list[id].type == "passive")
 				{
 					self.passive[i].amount -= amount;
+					//self.invSize--;
 					self.refreshRender();
 					if(self.passive[i].amount <= 0)
 					{
@@ -115,7 +123,7 @@ Inventory = function()
 		self.passive = [];
 		self.refreshRender();
 	}
-	self.refreshRender = function()
+	/*self.refreshRender = function()
 	{
 		var str = "<b>Active Items</b><br />";
 
@@ -133,6 +141,27 @@ Inventory = function()
 			str += item.name + " x" + self.passive[i].amount + "<br />";
 		}
 		document.getElementById("inventory").innerHTML = str;
+	}*/
+	self.refreshRender = function()
+	{
+		var str = "<b>Active Items</b><br>";
+
+		for (var i = 0; i < self.items.length; i++)
+		{
+			let item = Item.list[self.items[i].id];
+			//let use = "Item.list['" + item.id + "'].event()";
+			str += item.name + " x" + self.items[i].amount + "<br>";
+		}
+		var str1 = "<b>Passive Items</b><br>";
+		for (var i = 0; i < self.passive.length; i++)
+		{
+			let item = Item.list[self.passive[i].id];
+			//let use = "Item.list['" + item.id + "'].event()";
+			str1 += item.name + " x" + self.passive[i].amount + "<br>";
+		}
+		drawText(str, (canvas.width / 2) + 100, canvas.height - 100, "17px Arial", 'black');
+		drawText(str1, (canvas.width / 2) + 250, canvas.height - 100, "17px Arial", 'black');
+		
 	}
 	return self;
 }
@@ -182,7 +211,7 @@ Item("overclock", "OverClock", 200, "active", function()
 	}
 	
 
-}, "**Limit 1<br />+10 Attack Damage!<br />-10 Armor!<br />Lasts 10 Seconds");
+}, "**Limit 1<br>+10 Attack Damage!<br>-10 Armor!<br>Lasts 10 Seconds");
 Item("return", "Return", 25, "active", function()
 {
 	socket.emit("setCanMove", {playerId:selfId, count:false, value: false});
@@ -194,7 +223,7 @@ Item("return", "Return", 25, "active", function()
 		socket.emit("teleportToBase", {selfId: selfId});	
 	}, 3000);
 	
-}, "**Limit 1<br />Wait 3 seconds to be teleported back to base!");
+}, "**Limit 1<br>Wait 3 seconds to be teleported back to base!");
 
 
 
@@ -204,7 +233,7 @@ Item("boots", "Basic Boots", 50, "passive", function()
 {
 	socket.emit("updateStats", {playerId:selfId, stat:"movement", type:"up", amount:2});
 
-}, "**Limit 1<br />+2 Movement Speed");
+}, "**Limit 1<br>+2 Movement Speed");
 
 Item("basicattackGem", "Basic Attack Gem", 65, "passive", function()
 {
@@ -281,7 +310,7 @@ Item("largeelectricgem", "Large Electric Gem", 350, "passive", function()
 	socket.emit("updateStats", {playerId:selfId, stat:"crit", type:"up", amount:25});
 	socket.emit("updateStats", {playerId:selfId, stat:"critDam", type:"up", amount:50});
 
-}, "+25 Critical chance<br />+50% bonus critical damage");
+}, "+25 Critical chance<br>+50% bonus critical damage");
 
 Item("basichealinggem", "Basic Healing Gem", 80, "passive", function()
 {

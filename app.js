@@ -7,7 +7,8 @@ var serv = require('http').Server(app);
 var mongojs = require("mongojs");
 var db = mongojs('mongodb://cyberboy1551:Tank1551@ds023445.mlab.com:23445/heroku_grzkxhzt', ['account']);
 
-
+WIDTH = 1200;
+HEIGHT = 1000;
 
 var playersWaitingOne = [];
 var usersWaitingOne = [];
@@ -161,14 +162,14 @@ var Goal = function(param)
 	}
 	self.updateBars = function()
 	{
-		var team1Percent = (self.team1 / self.amountMax) * 100 + "%";
-		var team2Percent = (self.team2 / self.amountMax) * 100 + "%";
+		//var team1Ratio = (self.team1 / self.amountMax);
+		//var team2Ratio = (self.team2 / self.amountMax);
 		//var team1Num = playersInGoal1.length;
 		//var team2Num = playersInGoal2.length;
 		//console.log(self.team2N);
 		for (var i in SOCKET_LIST)
 		{
-			SOCKET_LIST[i].emit("updateScoreBar", {team1:team1Percent, team2:team2Percent});
+			SOCKET_LIST[i].emit("updateScoreBar", {team1:self.team1, team2:self.team2});
 		}
 
 	}
@@ -283,7 +284,7 @@ var Player = function(param)
 	self.hp = self.hpMax;
 	self.kills = 0;
 	self.deaths = 0;
-	self.gold = 150;
+	self.gold = 200;
 	self.latency = 0;
 	self.shield = 100;
 	self.isShielding = false;
@@ -317,7 +318,7 @@ var Player = function(param)
 		lifeSteal:0,
 		lifeRegen:0
 	}
-	self.tutorial = false;
+
 	self.killCounter = 0;
 	self.roomId = param.roomId;
 	var super_update = self.update;
@@ -480,7 +481,6 @@ var Player = function(param)
 			sprite:self.sprite,
 			spriteShield:self.spriteShield,
 			killCounter:self.killCounter,
-			tutorial:self.tutorial
 
 		}
 	}
@@ -547,8 +547,8 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 		{
 			//console.log("x:" + player.updatedX + "; y: " + player.updatedY);
 
-			var xx = data.xx - 600;
-			var yy = data.yy - 500;
+			var xx = data.xx - WIDTH/2;
+			var yy = data.yy - HEIGHT/2;
 			var angle = Math.atan2(yy, xx);
 			angle = angle * (180/Math.PI);
 
@@ -1255,7 +1255,7 @@ setInterval(function()
 			//console.log("Length of 2: " + playersInGoal2.length);
 			if (playersInGoal2.length == 0)
 			{
-				goal.increaseAmount(1, 5);
+				goal.increaseAmount(1, 10);
 			}
 			if(playersInGoal1.indexOf(p) < 0)
 				playersInGoal1.push(p);
@@ -1273,7 +1273,7 @@ setInterval(function()
 			//console.log("Length of 1: " + playersInGoal1.length);
 			if (playersInGoal1.length == 0)
 			{
-				goal.increaseAmount(2, 5);
+				goal.increaseAmount(2, 10);
 			}
 			if (playersInGoal2.indexOf(p) < 0)
 				playersInGoal2.push(p);
@@ -1289,16 +1289,16 @@ setInterval(function()
 
 	}
 
-	if(playersInGoal1.length == 0 && goal.team1 > 0)
+	/*if(playersInGoal1.length == 0 && goal.team1 > 0)
 	{
-		goal.decreaseAmount(1, 1);
+		goal.decreaseAmount(1, 5);
 
 	}
 	if(playersInGoal2.length == 0 && goal.team2 > 0)
 	{
-		goal.decreaseAmount(2, 1);
+		goal.decreaseAmount(2, 5);
 
-	}
+	}*/
 
 }, 1500);
 
@@ -1859,6 +1859,14 @@ io.sockets.on('connection', function(socket)
 
 	});
 
+	socket.on("resize", function(data)
+	{
+		WIDTH = data.width;
+		HEIGHT = data.height;
+		//console.log("Server: " + WIDTH + ", " + height)
+
+		
+	});
 	/*socket.on("shieldValues", function(data)
 	{
 		Player.list[socket.id].shieldMid = data.mid;
