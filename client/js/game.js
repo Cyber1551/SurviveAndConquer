@@ -2019,25 +2019,39 @@
 	
 	function drawGUI()
 	{
-		if (window.innerHeight >= 800)
+		if (window.innerHeight >= 925)
 		{
 			gui.draw(ctx, false);
+		
+		
+			healthBarBorder.draw(ctx, true);
+			expBarBorder.draw(ctx, true);
+			healthBar.draw(ctx, false);
+			drawText(healthText, (canvas.width/2)-245, canvas.height-95, "20px Arial", 'black');
+			expBar.draw(ctx, false);
+			drawText(levelVal + " ("+expVal+"/"+expMaxVal+")", ((canvas.width/2) - 85), canvas.height-74, "15px Arial", 'black');
+			drawStats();
+		
+			drawScoreText();
 		}
 		else
 		{
 			if (!isStore)
 			{
 				gui.draw(ctx, false);
+		
+		
+				healthBarBorder.draw(ctx, true);
+				expBarBorder.draw(ctx, true);
+				healthBar.draw(ctx, false);
+				drawText(healthText, (canvas.width/2)-245, canvas.height-95, "20px Arial", 'black');
+				expBar.draw(ctx, false);
+				drawText(levelVal + " ("+expVal+"/"+expMaxVal+")", ((canvas.width/2) - 85), canvas.height-74, "15px Arial", 'black');
+				drawStats();
+		
+				drawScoreText();
 			}
 		}
-		healthBarBorder.draw(ctx, true);
-		expBarBorder.draw(ctx, true);
-		healthBar.draw(ctx, false);
-		drawText(healthText, (canvas.width/2)-245, canvas.height-95, "20px Arial", 'black');
-		expBar.draw(ctx, false);
-		drawText(levelVal + " ("+expVal+"/"+expMaxVal+")", ((canvas.width/2) - 85), canvas.height-74, "15px Arial", 'black');
-		drawStats();
-		drawScoreText();
 		drawChat();
 
 		
