@@ -96,7 +96,7 @@
 	}
 	lobbyDivfindMatch.onclick = function()
 	{
-		if (window.innerWidth >= 1100)
+		if (window.innerWidth >= 1100 && window.innerHeight >= 800)
 		{
 			console.log("WIDTH " + window.innerWidth);
 			$("#loader").css("display", "inline-block");
@@ -105,7 +105,7 @@
 		}
 		else
 		{
-			alert("I'm sorry but you need a screen width of atleast 1100 pixels to play!");
+			alert("I'm sorry but you need a screen size of atleast 1100x800 pixels to play!");
 		}
 	}
 	lobbyDivSignOut.onclick = function()
@@ -2019,7 +2019,17 @@
 	
 	function drawGUI()
 	{
-		gui.draw(ctx, false);
+		if (window.innerHeight >= 800)
+		{
+			gui.draw(ctx, false);
+		}
+		else
+		{
+			if (!isStore)
+			{
+				gui.draw(ctx, false);
+			}
+		}
 		healthBarBorder.draw(ctx, true);
 		expBarBorder.draw(ctx, true);
 		healthBar.draw(ctx, false);
