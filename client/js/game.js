@@ -96,9 +96,17 @@
 	}
 	lobbyDivfindMatch.onclick = function()
 	{
-		$("#loader").css("display", "inline-block");
-		var matchType = lobbyModeSel.options [lobbyModeSel.selectedIndex].value;
-		socket.emit('matchMake', {matchType:matchType});
+		if (window.innerWidth >= 1100)
+		{
+			console.log("WIDTH " + window.innerWidth);
+			$("#loader").css("display", "inline-block");
+			var matchType = lobbyModeSel.options [lobbyModeSel.selectedIndex].value;
+			socket.emit('matchMake', {matchType:matchType});
+		}
+		else
+		{
+			alert("I'm sorry but you need a screen width of atleast 1100 pixels to play!");
+		}
 	}
 	lobbyDivSignOut.onclick = function()
 	{
@@ -190,6 +198,7 @@
 
 	socket.on("inGame", function()
 	{
+	
 		currentRoom = "game";
 		lobbyDiv.style.display = 'none';
 		document.getElementById("sacTitle").style.visibility = "hidden";
@@ -2029,8 +2038,18 @@
 	
 	function drawChat()
 	{
+		if (window.innerWidth >= 1880)
+		{
+			chatInput.draw(ctx, true);
+		}
+		else
+		{
+			if (inChat)
+			{
+				chatInput.draw(ctx, true);
+			}
+		}
 		
-		chatInput.draw(ctx, true);
 		
 		if (inChat)
 		{
