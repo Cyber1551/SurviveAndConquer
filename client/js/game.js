@@ -1168,7 +1168,7 @@
 		startTime = Date.now();
 		if (selfId)
 		{
-			socket.emit('updateGold', {amount: 2, playerId: selfId, type:"up"});
+			socket.emit('updateGold', {amount: 1, playerId: selfId, type:"up"});
 		}
 
 		socket.emit('calculateLatency');
@@ -1752,7 +1752,7 @@
 	{
 		event.preventDefault();
 	}
-	var isStore = false;
+	var isStore = true;
 	document.addEventListener("DOMContentLoaded", function()
 	{
 		resize();

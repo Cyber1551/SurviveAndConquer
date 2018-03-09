@@ -20,7 +20,7 @@ Element.list = {};
 Element("Water", "+500 Max Health", "Fire", "Lightning", function()
 {
 		
-	socket.emit("updateMaxHp", {playerId:selfId, amount:200, type:"up"});
+	socket.emit("updateMaxHp", {playerId:selfId, amount:500, type:"up"});
 }, "Water mages are kind and<br>gentle. They are all about life and<br>peace!");
 Element("Lightning", "+25% Critical Chance", "Water", "Wind", function()
 {
