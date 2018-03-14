@@ -1304,13 +1304,18 @@ setInterval(function()
 
 function levelUpdate(player)
 {
-	player.gold += 50;
+	player.gold += 100;
 	player.expMax += 50;
 	player.exp = 0;
 	player.level++;
 	player.stats.attack += 5;
-	player.stats.armor += 2;
-	if (isEven(player.level) && player.level < 11)
+	
+	if (isOdd(player.level) && player.level < 11)
+	{
+		player.stats.armor += 2;
+		player.hpMax += 100;
+	}
+	else if (isEven(player.level) && player.level < 11)
 	{
 		player.stats.elementalDamage++;
 	}
@@ -1321,6 +1326,9 @@ function levelUpdate(player)
 function isEven(n) {
   n = Number(n);
   return n === 0 || !!(n && !(n%2));
+}
+function isOdd(n) {
+  return !isEven(n);
 }
 
 
@@ -1865,7 +1873,7 @@ io.sockets.on('connection', function(socket)
 		HEIGHT = data.height;
 		//console.log("Server: " + WIDTH + ", " + height)
 
-		
+
 	});
 	/*socket.on("shieldValues", function(data)
 	{

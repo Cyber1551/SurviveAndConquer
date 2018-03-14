@@ -5,8 +5,8 @@
 
 	var isGuide = false;
 	var currentRoom = "signin";
-	
-	
+
+
 	var socket = io();
 	//var $ = require("jquery");
 	var signDiv = document.getElementById("signDiv");
@@ -98,14 +98,14 @@
 	{
 		if (window.innerWidth >= 1100 && window.innerHeight >= 800)
 		{
-			console.log("WIDTH " + window.innerWidth);
+			//console.log("WIDTH " + window.innerWidth);
 			$("#loader").css("display", "inline-block");
 			var matchType = lobbyModeSel.options [lobbyModeSel.selectedIndex].value;
 			socket.emit('matchMake', {matchType:matchType});
 		}
 		else
 		{
-			alert("I'm sorry but you need a screen size of atleast 1100x800 pixels to play!");
+			alert("I'm sorry but you need a screen size of atleast 1100x930 pixels to play!");
 		}
 	}
 	lobbyDivSignOut.onclick = function()
@@ -198,13 +198,13 @@
 
 	socket.on("inGame", function()
 	{
-	
+
 		currentRoom = "game";
 		lobbyDiv.style.display = 'none';
 		document.getElementById("sacTitle").style.visibility = "hidden";
 		$('body').css("background-color", "white");
 		gameDiv.style.display = 'inline-block';
-		
+
 
 	});
 	socket.on("updateLobbyScore", function(data)
@@ -343,7 +343,7 @@
 
 
 	var Img = {};
-	
+
 	//Neutral
 	Img.player = new Image();
 	Img.player.src = '/client/img/Player/player.png';
@@ -401,8 +401,8 @@
 	Img.water = new Image();
 	Img.water.src = '/client/img/Elements/water.png';
 
-	
-	
+
+
 	function getPoint(c1, c2, radius, angle)
 	{
 		return [c1 + Math.cos(angle) * radius, c2 + Math.sin(angle) * radius];
@@ -656,12 +656,12 @@
 	//	ctx.font = "50px Arial";
 		showDeathRecap(data);
 		var val = data.value;
-		
+
 		setInterval(function()
 		{
 			if (!selfId)
 				return;
-			
+
 			if (Player.list[selfId].canMove == false && val > 0)
 			{
 
@@ -689,15 +689,15 @@
 		{
 			case "single":
 				chatArr.unshift(Player.list[data.playerId].user + ' killed ' + data.victim);
-				
+
 			break;
 			case "double":
 				chatArr.unshift(Player.list[data.playerId].user + ' got a double kill! ');
-				
+
 			break;
 			case "triple":
 				chatArr.unshift(Player.list[data.playerId].user + ' got a TRIPLE KILL!');
-				
+
 			break;
 		}
 		drawChatBody = true;
@@ -744,7 +744,7 @@
 			ctx.moveTo(WIDTH/2, HEIGHT/2);
 
 			ctx.lineTo(entryCoor.x, entryCoor.y);
-			console.log(entryCoor.x + ": " + entryCoor.y)
+			//console.log(entryCoor.x + ": " + entryCoor.y)
 			//ctx.fillRect(bx-5, by-5, 10, 10);
 			ctx.stroke();
 			ctx.fillStyle = "red";
@@ -1214,7 +1214,7 @@
 				var percent = (missing / p.hpMax) * 100 + "%";
 				healthText = missing.toFixed(2) + " (+" + data.amount.toFixed(2) + ")";
 				//$('#healthL').text(missing.toFixed(2) + " (+" + data.amount.toFixed(2) + ")");
-				
+
 			}
 			//console.log(data.damage);
 			var ratio = p.hp / p.hpMax;
@@ -1225,7 +1225,7 @@
 	});
 	var expVal = "";
 	var expMapVal = "";
-	
+
 	function updateExpBar()
 	{
 		var p = Player.list[selfId];
@@ -1235,8 +1235,8 @@
 		var ratio = p.exp / p.expMax;
 
 		expBar.resize(400 * ratio, expBar.h);
-		
-		
+
+
 		//$('#expDiv').css("width", percent);
 		//$("#expL").text(p.exp);
 		//$("#expMaxL").text(p.expMax);
@@ -1290,7 +1290,7 @@
 	var drawElements = true;
 	function selectElement(itemId)
 	{
-		
+
 		if (checkStoreRange())
 		{
 			for (var ii in Player.list)
@@ -1315,6 +1315,7 @@
 			storeHeight = 800;
 			store.move((WIDTH / 2) - storeWidth/2, 25);
 			//storeDiv.innerHTML = "";
+		
 			var count = 0;
 			var cols = 0;
 			for (var i in Item.list)
@@ -1330,6 +1331,7 @@
 			}
 			infoId = -1;
 			drawElements = false;
+			resize();
 		}
 
 	}
@@ -1366,9 +1368,41 @@
 			else
 			{
 				//console.log(itemId);
+				
+				for (var x in Item.list)
+				{
+					//console.log(Item.list[x].ing1);
+					if (Item.list[x].ing1 == itemId || Item.list[x].ing2 == itemId)
+					{
+						Item.list[x].gold -= Item.list[itemId].gold;
+						
+					}
+				}
+				for (var b = 0; b < itemlist.length; b++)
+				{
+					//console.log(itemlist[b].id + ": " + itemId)
+					if (Item.list[itemlist[b].id].ing1 == itemId || Item.list[itemlist[b].id].ing2 == itemId )
+					{
+						
+						itemlist[b].txt = Item.list[itemlist[b].id].name + ": " + Item.list[itemlist[b].id].gold + " Gold";
+						
+					}
+				}
+				
 				playerInventory.addItem(itemId, 1, Item.list[itemId].gold, Item.list[itemId].type);
 			}
 
+		}
+		
+		for (var i = 0; i < playerInventory.items.length; i++)
+		{
+			activeBtns.push(new Button(Item.list[playerInventory.items[i].id].name, null, null, null, playerInventory.items[i].id, null, (WIDTH/2) - ((storeWidth/2) - 10), store.y + 75 + (55 * i), 300, 50));
+		}
+					
+		
+		for (var i = 0; i < playerInventory.passive.length; i++)
+		{
+			passiveBtns.push(new Button(Item.list[playerInventory.passive[i].id].name, null, null, null, playerInventory.passive[i].id, null, (WIDTH/2) - ((storeWidth/2) - 10) , store.y + 330 + (55 * i), 300, 50));
 		}
 
 	}
@@ -1399,9 +1433,9 @@
 		//checkStoreRange();
 
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);
-		
+
 		drawMap();
-		
+
 		if (isGuide)
 		{
 			var bg = BulletGuide();
@@ -1409,7 +1443,7 @@
 		}
 		//drawName();
 		//updateScoreBoard();
-		
+
 		if (Player.list[selfId].isShielding)
 		{
 			socket.emit('updateShield', {state:false}); //True for positive, false for negative
@@ -1428,10 +1462,10 @@
 		{
 			Bullet.list[i].draw();
 		}
-		
+
 		//GUI ----------
-		
-		
+
+
 		if (WIDTH != 0)
 		{
 			drawStore();
@@ -1441,8 +1475,10 @@
 		}
 		
 		playerInventory.refreshRender();
-
 		
+		
+
+
 		//Mouse
 		ctx.fillStyle = "black";
 		ctx.fillRect(entryCoor.x, entryCoor.y, 5, 5);
@@ -1457,12 +1493,12 @@
 	socket.on('addToChat', function(data)
 	{
 
-		console.log(data.name + ";" + data.txt);
+		//console.log(data.name + ";" + data.txt);
 		chatArr.unshift(data.name + "" + data.txt);
 
 		drawChatBody = true;
 
-		
+
 		//chatText.innerHTML += '<div><b>' + data.name + '</b>' + data.txt + '</div>';
 	});
 	socket.on('evalAnswer', function(data)
@@ -1492,7 +1528,7 @@
 		}
 		else if (chatText.charAt(0) === '@')
 		{
-			
+
 			socket.emit('sendPMToServer', {
 				user: chatText.slice(1, chatText.indexOf(',')),
 				message: chatText.slice(chatText.indexOf(',') + 1)
@@ -1500,13 +1536,13 @@
 		}
 		else
 		{
-			console.log(chatText);
+			//console.log(chatText);
 			socket.emit('sendMsgToServer', chatText);
 		}
 
-		
+
 	}
-	
+
 	var inChat = false;
 
 	document.onkeydown = function(event)
@@ -1551,16 +1587,16 @@
 				return;
 			showStore();
 		}
-		
+
 	}
-	
-	
+
+
 	var chatText = "";
-	
+
 	document.onkeyup = function(event)
 	{
-		
-		
+
+
 		 if(event.keyCode === 68) //D
 		{
 			socket.emit('keyPress', {inputId: 'right', state:false});
@@ -1590,6 +1626,7 @@
 			//socket.emit('keyPress', {inputId: 'item1', state:true});
 			if (playerInventory.items[0] !== undefined)
 			{
+				//console.log(Item.list[playerInventory.items[0].id].name);
 				Item.list[playerInventory.items[0].id].event();
 
 			}
@@ -1640,15 +1677,15 @@
 				{
 					chatText += letter;
 				}
-				
-				
+
+
 			}
 			else
 			{
 				chatText = chatText.substring(0, chatText.length - 1);
 			}
-			console.log(chatText);
-			
+			//console.log(chatText);
+
 		}
 	}
 
@@ -1688,30 +1725,82 @@
 			}
 			else
 			{
-				for (var i = 0; i < elementlist.length; i++)
+				if (drawElements)
 				{
-					elementlist[i].getInfo();
+					for (var i = 0; i < elementlist.length; i++)
+					{
+						elementlist[i].getInfo();
+					}
 				}
-				for (var i = 0; i < itemlist.length; i++)
+				else
 				{
-					itemlist[i].getInfo();
+					if (currentTab == "store")
+					{
+						for (var i = 0; i < itemlist.length; i++)
+						{
+							itemlist[i].getInfo();
+						}
+						
+					}
+					else if (currentTab == "inventory")
+					{
+						for (var i = 0; i < activeBtns.length; i++)
+						{
+							activeBtns[i].getInfo();
+						}
+						for (var i = 0; i < passiveBtns.length; i++)
+						{
+							passiveBtns[i].getInfo();
+						}
+						sellButton.getClick();
+					}
 				}
+				
+				invBtn.getClick();
+				storeBtn.getClick();
+				
 			}
-			
+
 		}
 		else if (event.button == 2 && isStore)
 		{
-			for (var i = 0; i < elementlist.length; i++)
+			if (drawElements)
 			{
-				elementlist[i].getClick();
+				for (var i = 0; i < elementlist.length; i++)
+				{
+					elementlist[i].getClick();
+				}
 			}
-			for (var i = 0; i < itemlist.length; i++)
+			else
 			{
-				itemlist[i].getClick();
+				if(currentTab == "store")
+				{
+					for (var i = 0; i < itemlist.length; i++)
+					{
+						itemlist[i].getClick();
+					}
+					ing1Button.getClick();
+					ing2Button.getClick();
+				}
+				else if (currentTab == "inventory")
+				{
+					for (var i = 0; i < activeBtns.length; i++)
+					{
+						activeBtns[i].getClick();
+					}
+					for (var i = 0; i < passiveBtns.length; i++)
+					{
+						passiveBtns[i].getClick();
+					}
+					
+				}
+				
 			}
-			
+
+
+
 		}
-			
+
 	}
 	document.onmousemove = function(event)
 	{
@@ -1721,14 +1810,43 @@
 		if (pointerLocked == true)
 		{
 			//checkHover();
-			for (var i = 0; i < elementlist.length; i++)
+			if (drawElements)
 			{
-				elementlist[i].getHover();
+				for (var i = 0; i < elementlist.length; i++)
+				{
+					elementlist[i].getHover();
+				}
+				
 			}
-			for (var i = 0; i < itemlist.length; i++)
+			else
 			{
-				itemlist[i].getHover();
+				if (currentTab == "store")
+				{
+					for (var i = 0; i < itemlist.length; i++)
+					{
+						itemlist[i].getHover();
+					}
+					ing1Button.getHover();
+					ing2Button.getHover();
+				}
+				else if(currentTab == "inventory")
+				{
+					for (var i = 0; i < passiveBtns.length; i++)
+					{
+						passiveBtns[i].getHover();
+					}
+					for (var i = 0; i < activeBtns.length; i++)
+					{
+						activeBtns[i].getHover();
+					}
+					sellButton.getHover();
+				}
 			}
+			
+			
+			
+			invBtn.getHover();
+			storeBtn.getHover();
 			socket.emit('keyPress', {inputId:'mouseAngle', xx:entryCoor.x, yy:entryCoor.y});
 		}
 
@@ -1764,23 +1882,25 @@
 	var isStore = true;
 	document.addEventListener("DOMContentLoaded", function()
 	{
+		console.log("resize");
 		resize();
 		loadStore();
 		
+
 	});
-	
+
 	function resize()
 	{
 		var ww = window.innerWidth - 100;
 		var wh = window.innerHeight - 100;
-		
+
 		canvas.width = ww;
 		canvas.height = wh;
-		
+
 		WIDTH = ww;
 		HEIGHT = wh;
-		
-	
+
+
 		store.move((WIDTH/2) - storeWidth/2, 25);
 		gui.move((WIDTH/2)-500, HEIGHT-125);
 		healthBar.move((WIDTH/2) - 490, HEIGHT-115);
@@ -1789,12 +1909,30 @@
 		expBarBorder.move((WIDTH/2)-490, HEIGHT-88);
 		chatInput.move(25, HEIGHT-50);
 		chatBorder.move(25, HEIGHT-470);
-
+		console.log(WIDTH + ": " + storeWidth)
+		invBtn.move((WIDTH/2) - ((storeWidth/2) - 10) + 305, store.y + 10);
+		storeBtn.move((WIDTH/2) - ((storeWidth/2) - 10), store.y + 10);
+		sellButton.move(WIDTH/2 + 450, store.y);
+		ing1Button.move(WIDTH/2 + 40, 200);
+		ing2Button.move(WIDTH/2 + 40, 290)
+		
 		for (var i = 0; i < elementlist.length; i++)
 		{
 			elementlist[i].move((WIDTH/2) - ((storeWidth/2) - 10), (i*55) + 80);
-			
+
 		}
+		
+		for (var i = 0; i < playerInventory.items.length; i++)
+		{
+			activeBtns[i].move((WIDTH/2) - ((storeWidth/2) - 10), store.y + 75 + (55 * i));
+		}
+					
+		
+		for (var i = 0; i < playerInventory.passive.length; i++)
+		{
+			passiveBtns[i].move((WIDTH/2) - ((storeWidth/2) - 10) , store.y + 330 + (55 * i));
+		}
+		
 		var count = 0;
 		var cols = 0;
 		for (var i = 0; i < itemlist.length; i++)
@@ -1809,10 +1947,10 @@
 			}
 		}
 		socket.emit("resize", {width:ww, height:wh});
-		console.log(WIDTH + ", " + HEIGHT)
-		
+		//console.log(WIDTH + ", " + HEIGHT)
+
 	}
-	
+
 	function Shape(x, y, w, h, fill) {
   		this.x = x || 0;
   		this.y = y || 0;
@@ -1835,12 +1973,12 @@
 			{
 				drawBorder(this.x, this.y, this.w, this.h, 2);
 			}
-			
+
 			ctx.fillStyle = this.fill;
 			ctx.fillRect(this.x, this.y, this.w, this.h);
 		}
-		
-	
+
+
 	var infoId = -1;
 	var infoType = false;
 	function Button(txt, ability, strength, weakness, id, item, x, y, w, h) {
@@ -1868,8 +2006,9 @@
 			this.y = y;
 		}
 		Button.prototype.draw = function(ctx) {
-		
+
 			//drawBorder(this.x, this.y, this.w, this.h, 2);
+			//console.log(this.txt + ": " + this.hover)
 			if (this.hover)
 			{
 				this.fill = '#333';
@@ -1889,7 +2028,7 @@
 			{
 				drawText(this.txt, this.x + this.w / 3, this.y + this.h / 2);
 			}
-			
+
 		}
 		Button.prototype.getHover = function()
 		{
@@ -1897,7 +2036,7 @@
 			{
 				if (entryCoor.y >= this.y && entryCoor.y <= this.y + this.h)
 				{
-					//console.log("hover");
+					//console.log(this.id);
 					this.hover = true;
 				}
 				else
@@ -1914,13 +2053,33 @@
 		{
 			if (this.hover && isStore)
 			{
-				if (this.item)
+				if (this.ability == "sell")
 				{
-					buyItem(this.id);
+					//console.log(playerInventory.hasItem(this.id, 1))
+					if (playerInventory.hasItem(this.id, 1) >= 1)
+					{
+						playerInventory.removeItem(this.id, 1, true);
+						
+					}
 				}
 				else
 				{
-					selectElement(this.id);
+					if (this.id == "store" || this.id == "inventory")
+					{
+						changeTab(this.id);
+					}
+					else
+					{
+						if (this.item == true)
+						{
+							//console.log(this.id)
+							buyItem(this.id);
+						}
+						else if(this.item == false)
+						{
+							selectElement(this.id);
+						}
+					}
 				}
 				
 			}
@@ -1929,32 +2088,42 @@
 		{
 			if (this.hover && isStore)
 			{
-				infoId = this.id;
-				infoType = this.item;
+				if (this.id != "store" && this.id != "inventory")
+				{
+					infoId = this.id;
+					infoType = this.item;
+				}
+				else
+				{
+					infoId = -1;
+					infoType = false;
+				}
 				
+
 			}
 		}
-	
-	
+
+
 	var elementlist = [];
 	var itemlist = [];
 	function loadStore()
 	{
-		console.log(true);
+		//console.log(true);
 		//storeDiv.innerHTML = "";
 		playerInventory.clearInventory();
 		var count = 0;
 		for (var i in Element.list)
 		{
-			
+
 			//new Button(Element.list[i].name, Element.list[i].ability, Element.list[i].strength, Element.list[i].weakness, selectElement(i), (WIDTH / 2), (i * 25) + 25);
 			elementlist.push(new Button(Element.list[i].name, Element.list[i].ability, Element.list[i].strength, Element.list[i].weakness, i, false, (WIDTH/2) - ((storeWidth/2) - 10), (count*55) + 80, 150, 50));
 			count++;
 		}
+		
 	}
-	
 
-	
+
+
 	function drawText(txt, x, y, font, color)
 	{
 		ctx.font=font;
@@ -1968,28 +2137,28 @@
 		{
 			array[0] = txt;
 		}
-		
-		
+
+
 		var offset = 0;
 		var boldText = "";
 		var xoffset = 0;
-		for (var i = 0; i < array.length; i++) 
-		{	
+		for (var i = 0; i < array.length; i++)
+		{
 			if (array[i].includes("<b>") && array[i].includes("</b>"))
 			{
 				array[i] = array[i].replace("<b>", "");
 				array[i] = array[i].replace("</b>", "");
 				drawBoldText(array[i], x, y + offset, font);
-				
+
 			}
 			else
 			{
 				ctx.fillText(array[i], x, y + offset);
 			}
-			
+
 			offset += 17;
 		}
-		
+
 	}
 	function drawBoldText(txt, x, y, font)
 	{
@@ -1997,11 +2166,11 @@
 		ctx.fillText(txt, x, y);
 		ctx.font = font;
 	}
-	
-	
+
+
 	var storeWidth = 600;
 	var storeHeight = 400;
-	
+
 	var store = new Shape((canvas.width / 2) - storeWidth/2, 25, storeWidth, storeHeight, '#AAAAAA');
 	var gui = new Shape((canvas.width/2) - 500, canvas.height - 125, 1000, 125, '#AAAAAA');
 	var healthBar = new Shape((canvas.width/2) - 490, canvas.height-115, 550, 25, '#e63900');
@@ -2010,20 +2179,20 @@
 	var expBarBorder = new Shape((canvas.width/2) - 490, canvas.height-88, 400, 15, '#AAAAAA');
 	var chatInput = new Shape(0, 0, 400, 25, '#fff');
 	var chatBorder = new Shape(0, 0, 400, 400, '#fff');
-	
+
 	//GUI - Healthbars and score
 
 	var isHover = false;
 	var healthText = "";
-	
-	
+
+
 	function drawGUI()
 	{
 		if (window.innerHeight >= 925)
 		{
 			gui.draw(ctx, false);
-		
-		
+			
+
 			healthBarBorder.draw(ctx, true);
 			expBarBorder.draw(ctx, true);
 			healthBar.draw(ctx, false);
@@ -2031,16 +2200,16 @@
 			expBar.draw(ctx, false);
 			drawText(levelVal + " ("+expVal+"/"+expMaxVal+")", ((canvas.width/2) - 85), canvas.height-74, "15px Arial", 'black');
 			drawStats();
-		
-			drawScoreText();
+
+			//drawScoreText();
 		}
 		else
 		{
 			if (!isStore)
 			{
 				gui.draw(ctx, false);
-		
-		
+
+
 				healthBarBorder.draw(ctx, true);
 				expBarBorder.draw(ctx, true);
 				healthBar.draw(ctx, false);
@@ -2048,18 +2217,18 @@
 				expBar.draw(ctx, false);
 				drawText(levelVal + " ("+expVal+"/"+expMaxVal+")", ((canvas.width/2) - 85), canvas.height-74, "15px Arial", 'black');
 				drawStats();
-		
-				drawScoreText();
+				
+
 			}
 		}
 		drawChat();
+		drawScoreText();
 
-		
 	}
-	
+
 	var drawChatBody = false;
 
-	
+
 	function drawChat()
 	{
 		if (window.innerWidth >= 1880)
@@ -2073,8 +2242,8 @@
 				chatInput.draw(ctx, true);
 			}
 		}
-		
-		
+
+
 		if (inChat)
 		{
 			drawChatBody = true;
@@ -2087,7 +2256,7 @@
 			ctx.fillStyle = 'black';
 			for(var i = 0; i < chatArr.length; i++)
 			{
-				
+
 				drawText(chatArr[i], 35, HEIGHT-(i*25)-75);
 			}
 			if (inChat == false)
@@ -2097,156 +2266,62 @@
 					drawChatBody = false;
 				}, 2000);
 			}
-			
+
 		}
-		
-		
+
+
 		drawText(chatText, 25, HEIGHT - 26);
-		
+
 	}
 
-	
-	
+
+
 	function drawScoreText()
 	{
-		drawText("Blue Team: " + team2ScoreVal, ((canvas.width/2) - 85), canvas.height - 50, "20px Arial", 'blue');
-		drawText("Red Team: " + team1ScoreVal, (canvas.width/2) - 85, canvas.height - 25, "20px Arial", 'red');
-		drawText(killDeathVal, canvas.width - 200, 30, "20px Arial", 'black');
-		drawText(goldVal, canvas.width - 150, 50, "20px Arial", 'black');
+		if (window.innerHeight >= 930)
+		{
+			drawText("Blue Team: " + team2ScoreVal, ((canvas.width/2) - 85), canvas.height - 50, "20px Arial", 'blue');
+			drawText("Red Team: " + team1ScoreVal, (canvas.width/2) - 85, canvas.height - 25, "20px Arial", 'red');
+			drawText(killDeathVal, canvas.width - 200, 30, "20px Arial", 'black');
+			drawText(goldVal, canvas.width - 150, 50, "20px Arial", 'black');
+		}
+		else {
+			if (!isStore)
+			{
+				drawText("Blue Team: " + team2ScoreVal, ((canvas.width/2) - 85), canvas.height - 50, "20px Arial", 'blue');
+				drawText("Red Team: " + team1ScoreVal, (canvas.width/2) - 85, canvas.height - 25, "20px Arial", 'red');
+				drawText(killDeathVal, canvas.width - 200, 30, "20px Arial", 'black');
+				drawText(goldVal, canvas.width - 150, 50, "20px Arial", 'black');
+			}
+		}
 	}
 	function drawStats()
 	{
 		var fnt = "17px Arial";
-		
+
 		if(selfId)
 		{
 			var stats = Player.list[selfId].stats;
-		
+
 			drawText("Attack: " + stats.attack, ((canvas.width/2) - 490), canvas.height-55, fnt, 'black');
 			drawText("Armor: " + stats.armor, ((canvas.width/2) - 490), canvas.height-40, fnt, 'black');
 			drawText("Attack Speed: " + stats.attackSpd, ((canvas.width/2) - 490), canvas.height-25, fnt, 'black');
 			drawText("Life Regen: " + stats.lifeRegen, ((canvas.width/2) - 490), canvas.height-10, fnt, 'black');
-		
+
 			drawText("Lethality: " + stats.lethality, ((canvas.width/2) - 270), canvas.height-55, fnt, 'black');
 			drawText("Critical Chance: " + stats.crit, ((canvas.width/2) - 270), canvas.height-40, fnt, 'black');
 			drawText("Movement Speed: " + Player.list[selfId].movementSpd, ((canvas.width/2) - 270), canvas.height-25, fnt, 'black');
 			drawText("Life Steal: " + stats.lifeSteal, ((canvas.width/2) - 270), canvas.height-10, fnt, 'black');
 		}
-		
+
 	}
 	var isBottom = false;
-	var tooltipMessage = "";
-	function checkHover()
-	{
-		
-		if(selfId)
-		{
-			var stats = Player.list[selfId].stats;
-			if (armorValue == null)
-			{
-				var armor = "Undetermined ";
-			}
-			else
-			{
-				var armor = armorValue.toFixed(2) * 100;
-			}
-			if (lethalityValue == null)
-			{
-				var lethalityArmor = "Undetermined ";
-			}
-			else
-			{
-				var lethalityArmor = 100 - (((lethalityValue - stats.lethality) / lethalityValue) * 100).toFixed(2);
-			}
-			//console.log(lethalityArmor + "; " + stats.lethality);
-			var damage = (stats.attack * stats.attack) / (stats.attack + 0);
-			var attackSpdMs = (40 * (stats.attackSpd))
-			var attackSpdSec = attackSpdMs / 1000;
 
-			var critDam = ((damage * 150) / 100);
-			var extraDam = critDam * (stats.critDam / 100);
 
-			var critDif = (critDam + extraDam) - damage;
 
-			var movementSpd = Player.list[selfId].movementSpd;
-			var mapTime = ((3200 / movementSpd) * 40) / 1000;
-			mapTime = mapTime.toFixed(2);
-			var lifeStealAmt = damage * (stats.lifeSteal / 100);
-			var critLifeAmt = critDam * (stats.lifeSteal / 100);
-
-			var lifeRegenExtra = 2 * (stats.lifeRegen / 100);
-			var lifeRegen = 2 + lifeRegenExtra;
-		
-		
-		
-		if (entryCoor.x > 110 && entryCoor.x < 170 && entryCoor.y > 930 && entryCoor.y < 940)
-		{
-			isHover = true;
-			isBottom = false;
-			//Attack
-			tooltipMessage = "You deal " + damage + " damage on hit";
-			
-		}
-		else if (entryCoor.x > 110 && entryCoor.x < 170 && entryCoor.y > 945 && entryCoor.y < 955)
-		{
-			//Armor
-			tooltipMessage = "You took " + armor + "%<br> of damage on last hit";
-			isHover = true;
-			isBottom = false;
-		}
-		else if (entryCoor.x > 110 && entryCoor.x < 225 && entryCoor.y > 960 && entryCoor.y < 970)
-		{
-			//Attack Speed
-			tooltipMessage = "1 bullet every " + attackSpdSec + " second";
-			isHover = true;
-			isBottom = true;
-		}
-		else if (entryCoor.x > 334 && entryCoor.x < 407 && entryCoor.y > 930 && entryCoor.y < 940)
-		{
-			//Lethality
-			tooltipMessage = "You negate " + lethalityArmor + "%<br> of the enemies armor";
-			isHover = true;
-			isBottom = false;
-		}
-		else if (entryCoor.x > 110 && entryCoor.x < 204 && entryCoor.y > 975 && entryCoor.y < 985)
-		{
-			//Life Regen
-			tooltipMessage = "You heal " + lifeRegen +" hp(+"+lifeRegenExtra+"%)<br> every second";
-			isHover = true;
-			isBottom = true;
-		}
-		else if (entryCoor.x > 334 && entryCoor.x < 415 && entryCoor.y > 975 && entryCoor.y < 985)
-		{
-			//Life Steal
-			tooltipMessage = "You heal "+stats.lifeSteal +"% (+"+lifeStealAmt+")<br> of your damage";
-			isHover = true;
-			isBottom = true;
-		}
-		else if (entryCoor.x > 334 && entryCoor.x < 460 && entryCoor.y > 945 && entryCoor.y < 955)
-		{
-			//Crit
-			tooltipMessage = "You have a "+stats.crit+"% chance to<br> deal "+critDam+"(+"+extraDam+") damage";
-			isHover = true;
-			isBottom = false;
-		}
-		else if (entryCoor.x > 334 && entryCoor.x < 476 && entryCoor.y > 960 && entryCoor.y < 970)
-		{
-			//Movement Speed
-			tooltipMessage = "You move across the map<br> in "+mapTime+" seconds";
-			isHover = true;
-			isBottom = true;
-		}
-		else 
-		{
-			isHover = false;
-		}
-		}
-		
-	}
-	
 
 	//Store
-	
+
 	function showStore()
 	{
 		switch(isStore)
@@ -2258,22 +2333,39 @@
 				isStore = true;
 			break;
 		}
-		
+
 	}
 	function drawBorder(xPos, yPos, width, height, thickness)
 	{
 		ctx.fillStyle='#000';
 		ctx.fillRect(xPos - (thickness), yPos - (thickness), width + (thickness * 2), height + (thickness * 2));
 	}
+	console.log("Beg: " + (window.innerWidth - 100) + ": " + storeWidth)
+	var invBtn = new Button("Inventory", null, null, null, "inventory", null, ((window.innerWidth - 100)/2) - 590 + 305, store.y + 10, 150, 35);
+	var storeBtn = new Button("Store", null, null, null, "store", null, ((window.innerWidth - 100)/2) - 590, store.y + 10, 150, 35);
 	
+
+	var currentTab = "store";
+	function changeTab(toChange)
+	{
+		currentTab = toChange;
+
+	}
+	
+	var activeBtns = [];
+	var passiveBtns = [];
+	var sellButton = new Button("Sell ", null, null, null, -1, null, ((window.innerWidth - 100)/2) - 590 + 305, store.y + 10, 150, 35);
+	
+	var ing1Button = new Button("", null, null, null, -1, true, 0, 0, 300, 50)
+	var ing2Button = new Button("", null, null, null, -1, true, 0, 0, 300, 50)
 	function drawStore()
 	{
 		if (isStore)
 		{
 			store.draw(ctx, true);
 			ctx.strokeStyle='black';
-			
-			
+
+
 			//console.log(buttonlist.length)
 			if (drawElements)
 			{
@@ -2286,7 +2378,7 @@
 				for (var i = 0; i < elementlist.length; i++)
 				{
 					elementlist[i].draw(ctx);
-					
+
 				}
 				ctx.fillStyle = 'black';
 				ctx.font = "20px Arial";
@@ -2324,49 +2416,213 @@
 							ctx.drawImage(Img.wind, WIDTH/2, 240);
 						break;
 					}
-					
-					
+
+
 				}
-				
+
 			}
 			else
 			{
 				ctx.font = "20px Arial";
 				ctx.fillStyle = 'black';
-				drawText("Store", store.x + store.w / 4, store.y + 20);
-
+				//drawText("Store", store.x + store.w / 4, store.y + 20);
+				storeBtn.draw(ctx);
+				//drawText("Store", store.x + store.w / 4, store.y + 20);
+				invBtn.draw(ctx);
 				ctx.moveTo(WIDTH/2 + 30, 25);
 				ctx.lineTo(WIDTH/2 + 30, 700);
 				ctx.stroke();
+				if(currentTab == "store")
+				{
+					for (var i = 0; i < itemlist.length; i++)
+					{
+						itemlist[i].draw(ctx);
+					}
+					
+				}
+				else if (currentTab == "inventory")
+				{
+					ctx.fillStyle = "black";
+					
+					drawText("<b>Active Items</b>",  store.x + store.w/4 - 150, store.y + 60)
+					
+					for (var i = 0; i < activeBtns.length; i++)
+					{
+						activeBtns[i].draw(ctx);
+						
+					}
+					drawText("<b>Passive Items</b>",   store.x + store.w/4 - 150, store.y + 310)
+					for (var i = 0; i < passiveBtns.length; i++)
+					{
+						passiveBtns[i].draw(ctx);
+						//console.log(passiveBtns[i].txt + ": "  + passiveBtns[i].hover);
+					}
+					
+					
+					
+					//Stats
+					if(selfId)
+					{
+						ctx.fillStyle = "black";
+						var stats = Player.list[selfId].stats;
+						if (armorValue == null)
+						{
+							var armor = "Undetermined ";
+						}
+						else
+						{
+							var armor = armorValue.toFixed(2) * 100;
+						}
+						if (lethalityValue == null)
+						{
+							var lethalityArmor = "Undetermined ";
+						}
+						else
+						{
+							var lethalityArmor = 100 - (((lethalityValue - stats.lethality) / lethalityValue) * 100).toFixed(2);
+						}
+						//console.log(lethalityArmor + "; " + stats.lethality);
+						var damage = (stats.attack * stats.attack) / (stats.attack + 0);
+						var attackSpdMs = (40 * (stats.attackSpd))
+						var attackSpdSec = attackSpdMs / 1000;
 
-				for (var i = 0; i < itemlist.length; i++)
-				{
-					itemlist[i].draw(ctx);
+						var critDam = ((damage * 150) / 100);
+						var extraDam = critDam * (stats.critDam / 100);
+
+						var critDif = (critDam + extraDam) - damage;
+
+						var movementSpd = Player.list[selfId].movementSpd;
+						var mapTime = ((3200 / movementSpd) * 40) / 1000;
+						mapTime = mapTime.toFixed(2);
+						var lifeStealAmt = damage * (stats.lifeSteal / 100);
+						var critLifeAmt = critDam * (stats.lifeSteal / 100);
+
+						var lifeRegenExtra = 2 * (stats.lifeRegen / 100);
+						var lifeRegen = 2 + lifeRegenExtra;
+
+
+						drawText("Attack: " + stats.attack, WIDTH/2 + 40, 300);
+						ctx.font = "17px Arial";
+						drawText(" - You deal " + damage + " (+"+stats.elementalDamage+" against weak elements) attack damage.", WIDTH/2 + 40, 320);
+						ctx.font = "20px Arial";
+						drawText("Armor: " + stats.armor, WIDTH/2 + 40, 340);
+						ctx.font = "17px Arial";
+						drawText(" - You negated " + armor + "% of damage on the last hit.", WIDTH/2 + 40, 360);
+						ctx.font = "20px Arial";
+						drawText("Attack Speed: " + stats.attackSpd, WIDTH/2 + 40, 380);
+						ctx.font = "17px Arial";
+						drawText(" - Shoot 1 bullet every " + attackSpdSec + " (" + attackSpdMs +"ms)", WIDTH/2 + 40, 400);
+						ctx.font = "20px Arial";
+						drawText("Life Regen: " + stats.lifeRegen + "%", WIDTH/2 + 40, 420);
+						ctx.font = "17px Arial";
+						drawText(" - You heal " + lifeRegen + " hp (+" + stats.lifeRegen +"%) every second.", WIDTH/2 + 40, 440);
+						ctx.font = "20px Arial";
+						drawText("Lethality: " + stats.lethality, WIDTH/2 + 40, 460);
+						ctx.font = "17px Arial";
+						drawText(" - You negate " + lethalityArmor + "% of the enemies armor.", WIDTH/2 + 40, 480);
+						ctx.font = "20px Arial";
+						drawText("Critical Chance: " + stats.crit + "%", WIDTH/2 + 40, 500);
+						ctx.font = "17px Arial";
+						drawText(" - You have a " + stats.crit + "% chance to deal " + critDam + " (+" + critDif +") damage", WIDTH/2 + 40, 520);
+						ctx.font = "20px Arial";
+						drawText("Movement Speed: " + Player.list[selfId].movementSpd, WIDTH/2 + 40, 540);
+						ctx.font = "17px Arial";
+						drawText(" - You can travel across the map in " + mapTime + " seconds", WIDTH/2 + 40, 560);
+						ctx.font = "20px Arial";
+						drawText("Life Steal: " + stats.lifeSteal + "%", WIDTH/2 + 40, 580);
+						ctx.font = "17px Arial";
+						drawText(" - You heal " + stats.lifeSteal + "% (+"+lifeStealAmt +"/"+critLifeAmt+") of your damage on attack.", WIDTH/2 + 40, 600);
+
+					}
 				}
-				ctx.fillStyle = 'black';
-				ctx.font = "20px Arial";
-				if (infoId == -1)
-				{
-					drawText("Left click for info.<br>Right click to select", WIDTH/2 + 40, 50);
-				}
-				else
-				{
-					ctx.font = "25px Arial";
-					drawText(Item.list[infoId].name + ": " + Item.list[infoId].gold + " Gold", WIDTH/2 + 40, 50);
+				
+				
+					ctx.fillStyle = 'black';
+					//console.log(infoId);
 					ctx.font = "20px Arial";
-					ctx.moveTo(WIDTH/2 + 30, 60);
-					ctx.lineTo(store.x + store.w, 60);
-					ctx.stroke();
-					//drawText("Lore: " + Element.list[infoId].lore, WIDTH/2 - 100, 80);
-					drawText("Type: " + Item.list[infoId].type, WIDTH/2 + 40, 80);
-					drawText("Ability: " + Item.list[infoId].explain, WIDTH/2 + 40, 110);
-					//drawText("Strength: Deal +damage against " + Element.list[infoId].strength, WIDTH/2 - 100, 180);
-					//drawText("Weakness: Take +damage from " + Element.list[infoId].weakness, WIDTH/2 - 100, 210);
-				}
+					if (infoId == -1)
+					{
+						drawText("Left click for info.<br>Right click to select", WIDTH/2 + 40, 50);
+					}
+					else if (infoId != -1)
+					{
+						ctx.font = "25px Arial";
+						//console.log(infoId);
+						var amt = 0;
+						
+						
+						for (var a = 0; a < playerInventory.items.length; a++)
+						{
+							if (playerInventory.items[a].id == infoId)
+							{
+								amt = playerInventory.items[a].amount;
+								break;
+							}
+						}
+						for (var a = 0; a < playerInventory.passive.length; a++)
+						{
+							if (playerInventory.passive[a].id == infoId)
+							{
+								amt = playerInventory.passive[a].amount;
+								break;
+							}
+						}
+						if (currentTab == "store")
+						{
+							drawText(Item.list[infoId].name + ": " + Item.list[infoId].gold + " Gold", WIDTH/2 + 40, 50);
+						}
+						else if (currentTab == "inventory")
+						{
+							drawText(Item.list[infoId].name + ": " + amt + "x", WIDTH/2 + 40, 50);
+						}
+						
+						
+						
+						ctx.font = "20px Arial";
+						ctx.moveTo(WIDTH/2 + 30, 60);
+						ctx.lineTo(store.x + store.w, 60);
+						ctx.stroke();
+						//drawText("Lore: " + Element.list[infoId].lore, WIDTH/2 - 100, 80);
+						drawText("Type: " + Item.list[infoId].type, WIDTH/2 + 40, 80);
+						drawText("Ability: " + Item.list[infoId].explain, WIDTH/2 + 40, 110);
+						
+						if (currentTab == "store")
+						{
+							if (Item.list[infoId].ing1 == null && Item.list[infoId].ing2 == null)
+							{
+								return;
+							}
+							else
+							{
+								var i1 = Item.list[infoId].ing1;
+								var i2 = Item.list[infoId].ing2;	
+								
+								ing1Button.txt = Item.list[i1].name + ": " + Item.list[i1].gold + " Gold";
+								ing2Button.txt = Item.list[i2].name + ": " + Item.list[i2].gold + " Gold";
+								ing1Button.id = i1;
+								ing2Button.id = i2;
+								
+								ing1Button.draw(ctx);
+								ing2Button.draw(ctx);
+								ctx.fillStyle = "black";
+								drawText(" + ", WIDTH/2 + 190, 275);
+							}
+							
+						}
+						
+						if (currentTab == "inventory" && playerInventory.hasItem(infoId, 1) >= 1)
+						{
+							sellButton.ability = "sell";
+							sellButton.id = infoId;
+							sellButton.txt = "Sell +" + Math.round(Item.list[infoId].gold * 0.75);
+							sellButton.draw(ctx);
+						}
+					}
+				
+				
 			}
-			
-			
+
+
 		}
-		
+
 	}
-	
