@@ -284,7 +284,7 @@ var Player = function(param)
 	self.hp = self.hpMax;
 	self.kills = 0;
 	self.deaths = 0;
-	self.gold = 200;
+	self.gold = 250;
 	self.latency = 0;
 	self.shield = 100;
 	self.isShielding = false;
@@ -481,6 +481,7 @@ var Player = function(param)
 			sprite:self.sprite,
 			spriteShield:self.spriteShield,
 			killCounter:self.killCounter,
+			matchType:self.matchType
 
 		}
 	}
@@ -1433,11 +1434,11 @@ io.sockets.on('connection', function(socket)
 					matchMakingThree(socket.id, usersLoggedIn[socket.id], 6);
 				}
 			break;
-			case "tutorial":
+			case "training":
 				if (usersWaitingOne.includes(usersLoggedIn[socket.id]) == false && usersWaitingTwo.includes(usersLoggedIn[socket.id]) == false && usersWaitingThree.includes(usersLoggedIn[socket.id]) == false)
 				{
 					socket.emit("cancelButton", {value:true});
-					matchMakingTutorial(socket.id, usersLoggedIn[socket.id], 1);
+					matchMakingTraining(socket.id, usersLoggedIn[socket.id], 1);
 				 }
 			break;
 		}
@@ -2069,7 +2070,7 @@ function matchMakingThree(id, data, roomSize)
 	//Player.list[socket.id].user = data.username;
 }
 
-function matchMakingTutorial(id, data)
+function matchMakingTraining(id, data)
 {
 
 		currentRoomID = genRandomNumber(0, 1000);
@@ -2082,10 +2083,10 @@ function matchMakingTutorial(id, data)
 		var tm = "blue";
 		goal = new Goal({one: 0, two: 0});
 		goal.updateBars();
-		Player.onConnect(SOCKET_LIST[id], currentRoomID, 1, tm, 'map1', 'tut');
+		Player.onConnect(SOCKET_LIST[id], currentRoomID, 1, tm, 'map1', 'training');
 
 		Player.list[id].user = data;
-		Player.list[id].tutorial = true;
+		Player.list[id].matchType = "training";
 		console.log(id);
 		SOCKET_LIST[id].emit('inGame');
 

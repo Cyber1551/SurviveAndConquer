@@ -443,6 +443,7 @@
 		self.sprite = initPack.sprite;
 		self.spriteShield = initPack.spriteShield;
 		self.killCounter = 0;
+		self.matchType = null;
 
 		self.draw = function()
 		{
@@ -759,6 +760,66 @@
 	}
 	Bullet.list = {};
 
+	
+	var dummy = function(x, y, maxHealth)
+	{
+		var self = {};
+		self.x = x;
+		self.y = y;
+		self.hpMax = maxHealth;
+		self.hp = self.hpMax;
+		self.draw = function()
+		{
+			var px = self.x - Player.list[selfId].x + WIDTH/2;
+			var py = self.y - Player.list[selfId].y + HEIGHT/2;
+			
+			ctx.drawImage(Img.player, px, py);
+			
+			ctx.strokeStyle = 'black';
+			ctx.strokeRect(px - 20, py - 20, 100, 10);
+			var hpWidth = 100 * (self.hp / self.hpMax);
+			ctx.fillStyle = 'red';
+			ctx.fillRect(px- 20, py- 20, hpWidth, 10);
+			var startingX = px- 20; 
+			var startingY = py - 20;
+			var endingX = startingX + hpWidth;
+			var endingY = startingY + 10;
+
+			var lines = self.hp / 250;
+			var bigLines = self.hp / 500;
+			var pixels = hpWidth / lines;
+			var bigPixels = hpWidth / bigLines;
+			var c = 0;
+			for (var i = 0; i < lines; i++)
+			{
+
+				ctx.beginPath();
+				ctx.strokeStyle = 'black';
+				ctx.moveTo(startingX, startingY);
+				if (c < 2)
+				{
+					ctx.lineTo(startingX, startingY + 6);
+				}
+				else
+				{
+					ctx.lineTo(startingX, startingY + 10);
+					c = 0;
+				}
+
+				ctx.stroke();
+				ctx.closePath();
+
+				startingX += pixels;
+				c++;
+
+			}
+		}
+
+		return self;
+	}
+	
+	
+	
 	var selfId = null;
 
 	socket.on('init', function(data)
@@ -892,6 +953,10 @@
 				if (pack.killCounter !== undefined)
 				{
 					p.killCounter = pack.killCounter;
+				}
+				if (pack.matchType !== undefined)
+				{
+					p.matchType = pack.matchType;
 				}
 
 			}
@@ -1321,13 +1386,18 @@
 			for (var i in Item.list)
 			{
 				//storeDiv.innerHTML += "<button onclick=buyItem('"+i+"')>" + Item.list[i].name + ": " + Item.list[i].gold + " Gold </button><br /><label>" + Item.list[i].explain + "</label><br /><hr />";
-				itemlist.push(new Button(Item.list[i].name + ": " + Item.list[i].gold + " Gold", Item.list[i].explain, null, null, i, true, (WIDTH/2) - ((storeWidth/2) - 10) + (cols * 305), (count*55) + 80, 300, 50));
-				count++;
-				if (count % 11 == 0)
+				if (Item.list[i].showInStore)
 				{
-					cols++;
-					count = 0;
+					itemlist.push(new Button(Item.list[i].name + ": " + Item.list[i].gold + " Gold", Item.list[i].explain, null, null, i, true, (WIDTH/2) - ((storeWidth/2) - 10) + (cols * 305), (count*55) + 80, 300, 50));
+					count++;
+					if (count % 11 == 0)
+					{
+						cols++;
+						count = 0;
+					}
+					
 				}
+				
 			}
 			infoId = -1;
 			drawElements = false;
@@ -1369,13 +1439,17 @@
 			{
 				//console.log(itemId);
 				
-				for (var x in Item.list)
+				/*for (var x in Item.list)
 				{
 					//console.log(Item.list[x].ing1);
 					if (Item.list[x].ing1 == itemId || Item.list[x].ing2 == itemId)
 					{
-						Item.list[x].gold -= Item.list[itemId].gold;
+						if (Item.list[x].currentGold - Item.list[itemId].currentGold > 0)
+						{
+							Item.list[x].currentGold -= Item.list[itemId].currentGold;	
+						}
 						
+						//console.log(Item.list[x].name + ": " + Item.list[x].currentGold);
 					}
 				}
 				for (var b = 0; b < itemlist.length; b++)
@@ -1384,10 +1458,79 @@
 					if (Item.list[itemlist[b].id].ing1 == itemId || Item.list[itemlist[b].id].ing2 == itemId )
 					{
 						
-						itemlist[b].txt = Item.list[itemlist[b].id].name + ": " + Item.list[itemlist[b].id].gold + " Gold";
+						itemlist[b].txt = Item.list[itemlist[b].id].name + ": " + Item.list[itemlist[b].id].currentGold + " Gold";
 						
 					}
 				}
+				
+				for (var i = 0; i < playerInventory.passive.length; i++)
+				{
+					
+					if (Item.list[itemId].ing1 == playerInventory.passive[i].id && Item.list[itemId].ing2 == playerInventory.passive[i].id)
+					{
+						
+						if (playerInventory.hasItem(playerInventory.passive[i].id, 2) == 0)
+						{
+							return;
+						}
+						
+						Item.list[playerInventory.passive[i].id].sellFunc();
+						Item.list[itemId].currentGold = Item.list[itemId].gold;
+						var g = Item.list[itemId].currentGold - checkForRemainingItems(playerInventory.passive[i].id);
+
+						//console.log(g);
+						for (var x in itemlist)
+						{
+							if (itemlist[x].id == Item.list[itemId].id)
+							{
+								itemlist[x].txt = Item.list[itemId].name + ": " + g + " Gold";
+							}
+						}
+						updateInventoryButtons(playerInventory.passive[i].id);
+						playerInventory.removeItem(playerInventory.passive[i].id, 2, false);
+						
+						
+						
+						
+					}
+					else if (Item.list[itemId].ing1 == playerInventory.passive[i].id && Item.list[itemId].ing2 != playerInventory.passive[i].id)
+					{
+						if (playerInventory.hasItem(playerInventory.passive[i].id, 1) == 0)
+						{
+							return;
+						}
+						Item.list[playerInventory.passive[i].id].sellFunc();
+						Item.list[itemId].currentGold = Item.list[itemId].gold;
+						for (var x in itemlist)
+						{
+							if (itemlist[x].id == Item.list[itemId].id)
+							{
+								itemlist[x].txt = Item.list[itemId].name + ": " + Item.list[itemId].currentGold + " Gold";
+							}
+						}
+						updateInventoryButtons(playerInventory.passive[i].id);
+						playerInventory.removeItem(playerInventory.passive[i].id, 1, false);
+					}
+					else if (Item.list[itemId].ing1 != playerInventory.passive[i].id && Item.list[itemId].ing2 == playerInventory.passive[i].id)
+					{
+						if (playerInventory.hasItem(playerInventory.passive[i].id, 1) == 0)
+						{
+							return;
+						}
+						Item.list[playerInventory.passive[i].id].sellFunc();
+						Item.list[itemId].currentGold = Item.list[itemId].gold;
+						for (var x in itemlist)
+						{
+							if (itemlist[x].id == Item.list[itemId].id)
+							{
+								itemlist[x].txt = Item.list[itemId].name + ": " + Item.list[itemId].currentGold + " Gold";
+							}
+						}
+						updateInventoryButtons(playerInventory.passive[i].id);
+						playerInventory.removeItem(playerInventory.passive[i].id, 1, false);
+					}
+					
+				}*/
 				
 				playerInventory.addItem(itemId, 1, Item.list[itemId].gold, Item.list[itemId].type);
 			}
@@ -1425,6 +1568,8 @@
 		}
 
 	}
+	var dummy1 = new dummy(window.innerWidth/2 + genRandomNumber(-500, 500), window.innerHeight/2 + genRandomNumber(-500, 500), 1000);
+	
 	setInterval(function()
 	{
 		if (selfId == null)
@@ -1465,7 +1610,12 @@
 
 		//GUI ----------
 
-
+		if (Player.list[selfId].matchType == "training")
+		{
+			//console.log(true)
+			dummy1.draw();
+		}
+	
 		if (WIDTH != 0)
 		{
 			drawStore();
@@ -1753,7 +1903,9 @@
 							passiveBtns[i].getInfo();
 						}
 						sellButton.getClick();
+						
 					}
+					upgradeBtn.getInfo();
 				}
 				
 				invBtn.getClick();
@@ -1779,8 +1931,7 @@
 					{
 						itemlist[i].getClick();
 					}
-					ing1Button.getClick();
-					ing2Button.getClick();
+					
 				}
 				else if (currentTab == "inventory")
 				{
@@ -1793,6 +1944,10 @@
 						passiveBtns[i].getClick();
 					}
 					
+				}
+				if (infoId == upgradeBtn.id)
+				{
+					upgradeBtn.getClick();
 				}
 				
 			}
@@ -1826,8 +1981,7 @@
 					{
 						itemlist[i].getHover();
 					}
-					ing1Button.getHover();
-					ing2Button.getHover();
+					
 				}
 				else if(currentTab == "inventory")
 				{
@@ -1840,7 +1994,9 @@
 						activeBtns[i].getHover();
 					}
 					sellButton.getHover();
+					
 				}
+				upgradeBtn.getHover();
 			}
 			
 			
@@ -1913,8 +2069,7 @@
 		invBtn.move((WIDTH/2) - ((storeWidth/2) - 10) + 305, store.y + 10);
 		storeBtn.move((WIDTH/2) - ((storeWidth/2) - 10), store.y + 10);
 		sellButton.move(WIDTH/2 + 450, store.y);
-		ing1Button.move(WIDTH/2 + 40, 200);
-		ing2Button.move(WIDTH/2 + 40, 290)
+		upgradeBtn.move(WIDTH/2 + 150, store.y + 150);
 		
 		for (var i = 0; i < elementlist.length; i++)
 		{
@@ -2032,10 +2187,12 @@
 		}
 		Button.prototype.getHover = function()
 		{
+			
 			if (entryCoor.x >= this.x && entryCoor.x <= this.x + this.w)
 			{
 				if (entryCoor.y >= this.y && entryCoor.y <= this.y + this.h)
 				{
+					//console.log(this.txt);
 					//console.log(this.id);
 					this.hover = true;
 				}
@@ -2053,19 +2210,30 @@
 		{
 			if (this.hover && isStore)
 			{
-				if (this.ability == "sell")
+				if (this.ability == "upgrade")
 				{
 					//console.log(playerInventory.hasItem(this.id, 1))
 					if (playerInventory.hasItem(this.id, 1) >= 1)
 					{
 						playerInventory.removeItem(this.id, 1, true);
-						
+						buyItem(Item.list[this.id].upgrade);
+						updateInventoryButtons(this.id);
+					}
+				}
+				else if (this.ability == "sell")
+				{
+					//console.log(playerInventory.hasItem(this.id, 1))
+					if (playerInventory.hasItem(this.id, 1) >= 1)
+					{
+						playerInventory.removeItem(this.id, 1, true);
+						updateInventoryButtons(this.id);
 					}
 				}
 				else
 				{
 					if (this.id == "store" || this.id == "inventory")
 					{
+
 						changeTab(this.id);
 					}
 					else
@@ -2088,10 +2256,20 @@
 		{
 			if (this.hover && isStore)
 			{
+				
 				if (this.id != "store" && this.id != "inventory")
 				{
-					infoId = this.id;
-					infoType = this.item;
+					if (this.ability == "upgrade")
+					{
+						infoId = Item.list[this.id].upgrade;
+						infoType = this.item;
+					}
+					else
+					{
+						infoId = this.id;
+						infoType = this.item;
+					}
+					
 				}
 				else
 				{
@@ -2121,8 +2299,47 @@
 		}
 		
 	}
+	
+	
+	function checkForRemainingItems(id)
+	{
+		var gold = 0;
+		for (var i = 0; i < playerInventory.passive.length; i++)
+		{
+			if (playerInventory.passive[i].id == id)
+			{
+				gold += Item.list[playerInventory.passive[i].id].currentGold;
+			}
+		}
+		
+		return gold;
+		
+	}
 
-
+	function updateInventoryButtons(id)
+	{
+		for (var i in activeBtns)
+		{
+			if (Item.list[activeBtns[i].id].amount == 1)
+			{
+				activeBtns.splice(i, 1);
+			}
+		}				
+		for (var i in passiveBtns)
+		{
+			if (passiveBtns[i].id == id)
+			{
+				if (Item.list[passiveBtns[i].id].amount == 1)
+				{
+					passiveBtns.splice(i, 1);
+				}
+				
+			}
+		}
+		
+		
+	}
+	
 
 	function drawText(txt, x, y, font, color)
 	{
@@ -2355,9 +2572,7 @@
 	var activeBtns = [];
 	var passiveBtns = [];
 	var sellButton = new Button("Sell ", null, null, null, -1, null, ((window.innerWidth - 100)/2) - 590 + 305, store.y + 10, 150, 35);
-	
-	var ing1Button = new Button("", null, null, null, -1, true, 0, 0, 300, 50)
-	var ing2Button = new Button("", null, null, null, -1, true, 0, 0, 300, 50)
+	var upgradeBtn = new Button("", null, null, null, -1, true, ((window.innerWidth - 100)/2) - 590 + 305, store.y + 10, 300, 50);
 	function drawStore()
 	{
 		if (isStore)
@@ -2569,7 +2784,7 @@
 						}
 						if (currentTab == "store")
 						{
-							drawText(Item.list[infoId].name + ": " + Item.list[infoId].gold + " Gold", WIDTH/2 + 40, 50);
+							drawText(Item.list[infoId].name + ": " + Item.list[infoId].currentGold + " Gold", WIDTH/2 + 40, 50);
 						}
 						else if (currentTab == "inventory")
 						{
@@ -2585,30 +2800,19 @@
 						//drawText("Lore: " + Element.list[infoId].lore, WIDTH/2 - 100, 80);
 						drawText("Type: " + Item.list[infoId].type, WIDTH/2 + 40, 80);
 						drawText("Ability: " + Item.list[infoId].explain, WIDTH/2 + 40, 110);
-						
-						if (currentTab == "store")
+						if (playerInventory.hasItem(infoId, 1) >= 1 && Item.list[infoId].upgrade != null)
 						{
-							if (Item.list[infoId].ing1 == null && Item.list[infoId].ing2 == null)
-							{
-								return;
-							}
-							else
-							{
-								var i1 = Item.list[infoId].ing1;
-								var i2 = Item.list[infoId].ing2;	
-								
-								ing1Button.txt = Item.list[i1].name + ": " + Item.list[i1].gold + " Gold";
-								ing2Button.txt = Item.list[i2].name + ": " + Item.list[i2].gold + " Gold";
-								ing1Button.id = i1;
-								ing2Button.id = i2;
-								
-								ing1Button.draw(ctx);
-								ing2Button.draw(ctx);
-								ctx.fillStyle = "black";
-								drawText(" + ", WIDTH/2 + 190, 275);
-							}
-							
+							drawText("Upgrade: ", WIDTH/2 + 150, store.y + 140);
+						
+							upgradeBtn.txt = Item.list[Item.list[infoId].upgrade].name + ": " + Item.list[Item.list[infoId].upgrade].currentGold + " Gold";
+							upgradeBtn.id = infoId;
+							upgradeBtn.ability = "upgrade";
+							upgradeBtn.draw(ctx);
+
 						}
+						
+						
+						
 						
 						if (currentTab == "inventory" && playerInventory.hasItem(infoId, 1) >= 1)
 						{

@@ -33,7 +33,7 @@ Inventory = function()
 			}
 			for (var i = 0; i < self.passive.length; i++)
 			{
-				console.log(1)
+				//console.log(1)
 				if (type == "passive")
 				{
 					if (self.passive[i].id === id)
@@ -232,7 +232,7 @@ Inventory = function()
 }
 
 
-Item = function(id, name, gold, type, event, explain, sellFunc, ing1, ing2)
+Item = function(id, name, gold, type, event, explain, sellFunc, upgrade, showInStore)
 {
 	var self =
 	{
@@ -243,9 +243,11 @@ Item = function(id, name, gold, type, event, explain, sellFunc, ing1, ing2)
 		event:event,
 		explain:explain,
 		sellFunc:sellFunc,
-		ing1:ing1,
-		ing2:ing2
+		upgrade:upgrade,
+		showInStore:showInStore
 	}
+	self.currentGold = self.gold;
+	//console.log(self.name + ": " + self.currentGold);
 	Item.list[self.id] = self;
 	return self;
 }
@@ -260,7 +262,7 @@ Item("potion", "Potion", 40, "active", function()
 	playerInventory.removeItem("potion", 1, false);
 	socket.emit("increaseHP", {amount: 100, playerId:Player.list[selfId].id});
 
-}, "+100 health on use!");
+}, "+100 health on use!",  null, true);
 
 Item("overclock", "OverClock", 200, "active", function()
 {
@@ -279,7 +281,7 @@ Item("overclock", "OverClock", 200, "active", function()
 	}
 
 
-}, "**Limit 1<br>+10 Attack Damage!<br>-10 Armor!<br>Lasts 10 Seconds");
+}, "**Limit 1<br>+10 Attack Damage!<br>-10 Armor!<br>Lasts 10 Seconds",  null, true);
 Item("return", "Return", 25, "active", function()
 {
 	socket.emit("setCanMove", {playerId:selfId, count:false, value: false});
@@ -291,7 +293,7 @@ Item("return", "Return", 25, "active", function()
 		socket.emit("teleportToBase", {selfId: selfId});
 	}, 3000);
 
-}, "**Limit 1<br>Wait 3 seconds to be teleported back to base!");
+}, "**Limit 1<br>Wait 3 seconds to be teleported back to base!",  null, true);
 
 
 
@@ -304,7 +306,7 @@ Item("boots", "Basic Boots", 50, "passive", function()
 }, "**Limit 1<br>+2 Movement Speed", function()
 {
 	socket.emit("updateStats", {playerId:selfId, stat:"movement", type:"down", amount:2});
-});
+}, null, true);
 
 Item("basicattackgem", "Basic Attack Gem", 100, "passive", function()
 {
@@ -314,7 +316,7 @@ Item("basicattackgem", "Basic Attack Gem", 100, "passive", function()
 {
 	socket.emit("updateStats", {playerId:selfId, stat:"attack", type:"down", amount:6});
 
-}, null, null);
+}, "mediumattackgem", true);
 
 Item("mediumattackgem", "Medium Attack Gem", 240, "passive", function()
 {
@@ -324,7 +326,7 @@ Item("mediumattackgem", "Medium Attack Gem", 240, "passive", function()
 {
 	socket.emit("updateStats", {playerId:selfId, stat:"attack", type:"down", amount:15});
 
-}, "basicattackgem", "basicattackgem");
+}, "largeattackgem", false);
 Item("largeattackgem", "Large Attack Gem", 500, "passive", function()
 {
 	//socket.emit("updateStats", {playerId:selfId, stat:"lethality", type:"up", amount:5});
@@ -335,7 +337,7 @@ Item("largeattackgem", "Large Attack Gem", 500, "passive", function()
 	//socket.emit("updateStats", {playerId:selfId, stat:"lethality", type:"down", amount:5});
 	socket.emit("updateStats", {playerId:selfId, stat:"attack", type:"down", amount:35});
 
-}, "mediumattackgem", "mediumattackgem");
+}, null, false);
 
 Item("supplybelt", "Supply Belt", 150, "passive", function()
 {
@@ -347,7 +349,7 @@ Item("supplybelt", "Supply Belt", 150, "passive", function()
 
 	socket.emit("updateMaxHp", {playerId:selfId, amount:250, type:"down"});
 
-});
+}, "gsupplybelt", true);
 
 Item("gsupplybelt", "Giant Supply Belt", 200, "passive", function()
 {
@@ -357,7 +359,7 @@ Item("gsupplybelt", "Giant Supply Belt", 200, "passive", function()
 {
 	socket.emit("updateMaxHp", {playerId:selfId, amount:500, type:"down"});
 
-});
+}, null, false);
 
 Item("basicarmor", "Basic Armor", 50, "passive", function()
 {
@@ -367,7 +369,7 @@ Item("basicarmor", "Basic Armor", 50, "passive", function()
 {
 	socket.emit("updateStats", {playerId:selfId, stat:"armor", type:"down", amount:5});
 
-});
+}, "mediumarmor", true);
 
 Item("mediumarmor", "Medium Armor", 135, "passive", function()
 {
@@ -377,7 +379,7 @@ Item("mediumarmor", "Medium Armor", 135, "passive", function()
 {
 	socket.emit("updateStats", {playerId:selfId, stat:"armor", type:"down", amount:10});
 
-});
+}, null, false);
 Item("basiclethality", "Basic Lethality", 125, "passive", function()
 {
 	//console.log("bought");
@@ -388,7 +390,7 @@ Item("basiclethality", "Basic Lethality", 125, "passive", function()
 	//console.log("bought");
 	socket.emit("updateStats", {playerId:selfId, stat:"lethality", type:"down", amount:5});
 
-});
+}, "mediumlethality", true);
 
 Item("mediumlethality", "Medium Lethality", 225, "passive", function()
 {
@@ -398,7 +400,7 @@ Item("mediumlethality", "Medium Lethality", 225, "passive", function()
 {
 	socket.emit("updateStats", {playerId:selfId, stat:"lethality", type:"down", amount:10});
 
-});
+}, null, false);
 
 Item("feather", "Feather", 100, "passive", function()
 {
@@ -410,7 +412,7 @@ Item("feather", "Feather", 100, "passive", function()
 
 	socket.emit("updateStats", {playerId:selfId, stat:"attackSpd", type:"down", amount:0.5});
 
-});
+}, null, true);
 
 Item("basicelectricgem", "Basic Electric Gem", 80, "passive", function()
 {
@@ -422,7 +424,7 @@ Item("basicelectricgem", "Basic Electric Gem", 80, "passive", function()
 
 	socket.emit("updateStats", {playerId:selfId, stat:"crit", type:"down", amount:10});
 	//console.log(Player.list[selfId].elementType);
-});
+}, "mediumelectricgem", true);
 
 Item("mediumelectricgem", "Medium Electric Gem", 230, "passive", function()
 {
@@ -434,7 +436,7 @@ Item("mediumelectricgem", "Medium Electric Gem", 230, "passive", function()
 
 	socket.emit("updateStats", {playerId:selfId, stat:"crit", type:"down", amount:30});
 
-});
+}, "largeelectricgem", false);
 Item("largeelectricgem", "Large Electric Gem", 350, "passive", function()
 {
 
@@ -447,7 +449,7 @@ Item("largeelectricgem", "Large Electric Gem", 350, "passive", function()
 	socket.emit("updateStats", {playerId:selfId, stat:"crit", type:"down", amount:25});
 	socket.emit("updateStats", {playerId:selfId, stat:"critDam", type:"down", amount:50});
 
-});
+}, null, false);
 
 Item("basichealinggem", "Basic Healing Gem", 80, "passive", function()
 {
@@ -459,7 +461,7 @@ Item("basichealinggem", "Basic Healing Gem", 80, "passive", function()
 
 	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"down", amount:12});
 
-});
+}, "mediumhealinggem", true);
 
 Item("mediumhealinggem", "Medium Healing Gem", 150, "passive", function()
 {
@@ -471,7 +473,7 @@ Item("mediumhealinggem", "Medium Healing Gem", 150, "passive", function()
 
 	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"down", amount:24});
 
-});
+}, "largehealinggem", false);
 Item("largehealinggem", "Large Healing Gem", 310, "passive", function()
 {
 
@@ -482,7 +484,7 @@ Item("largehealinggem", "Large Healing Gem", 310, "passive", function()
 
 	socket.emit("updateStats", {playerId:selfId, stat:"lifeSteal", type:"down", amount:50});
 
-});
+}, null, false);
 Item("basicruby", "Basic Ruby", 250, "passive", function()
 {
 
@@ -493,7 +495,7 @@ Item("basicruby", "Basic Ruby", 250, "passive", function()
 
 	socket.emit("updateStats", {playerId:selfId, stat:"lifeRegen", type:"down", amount:200});
 
-});
+}, "mediumruby", true);
 Item("mediumruby", "Medium Ruby", 450, "passive", function()
 {
 
@@ -504,4 +506,4 @@ Item("mediumruby", "Medium Ruby", 450, "passive", function()
 
 	socket.emit("updateStats", {playerId:selfId, stat:"lifeRegen", type:"down", amount:400});
 
-});
+}, null, false);
