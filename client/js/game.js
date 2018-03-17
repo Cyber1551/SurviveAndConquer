@@ -2007,7 +2007,7 @@
 
 			invBtn.getHover();
 			storeBtn.getHover();
-			console.log(entryCoor.x + ": " + entryCoor.y);
+			//console.log(entryCoor.x + ": " + entryCoor.y);
 			socket.emit('keyPress', {inputId:'mouseAngle', xx:entryCoor.x, yy:entryCoor.y});
 		}
 
@@ -2218,7 +2218,7 @@
 				if (this.ability == "upgrade")
 				{
 					//console.log(playerInventory.hasItem(this.id, 1))
-					if (playerInventory.hasItem(this.id, 1) >= 1)
+					if (playerInventory.hasItem(this.id, 1) >= 1 && Player.list[selfId].gold >= Item.list[this.id].currentGold)
 					{
 						playerInventory.removeItem(this.id, 1, true);
 						buyItem(Item.list[this.id].upgrade);
