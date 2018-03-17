@@ -2217,11 +2217,11 @@
 			{
 				if (this.ability == "upgrade")
 				{
-					//console.log(playerInventory.hasItem(this.id, 1))
-					if (playerInventory.hasItem(this.id, 1) >= 1 && Player.list[selfId].gold >= Item.list[this.id].currentGold)
+					//console.log(Player.list[selfId].gold >= Item.list[this.id].currentGold);
+					if (playerInventory.hasItem(this.id, 1) >= 1 && Player.list[selfId].gold >= Item.list[Item.list[this.id].upgrade].currentGold)
 					{
-						playerInventory.removeItem(this.id, 1, true);
 						buyItem(Item.list[this.id].upgrade);
+						playerInventory.removeItem(this.id, 1, true);
 						updateInventoryButtons(this.id);
 					}
 				}
@@ -2334,10 +2334,10 @@
 		{
 			if (passiveBtns[i].id == id)
 			{
-				if (Item.list[passiveBtns[i].id].amount == 1)
-				{
+				//if (Item.list[passiveBtns[i].id].amount == 1)
+				//{
 					passiveBtns.splice(i, 1);
-				}
+				//}
 
 			}
 		}
