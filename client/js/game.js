@@ -719,10 +719,10 @@
 			ctx.fillStyle = "black";
 			var bx = self.x - Player.list[selfId].x + WIDTH/2;
 			var by = self.y - Player.list[selfId].y + HEIGHT/2;
-	
+
 			//console.log("bx: " +bx + "y: " + by + "dx: " + dummy1.px + 16 + "dy: " + dummy1.py + 16)
 			//console.log(getDis(bx, by, dummy1.px, dummy1.py));
-			
+
 			ctx.fillRect(bx-5, by-5, 10, 10);
 			ctx.fillStyle = "red";
 			//ctx.arc(self.x-5, self.y-5, 5, 0,d 2 * Math.PI, false);
@@ -1166,12 +1166,12 @@
 	socket.on("updateArmor", function(data)
 	{
 		armorValue = data.value;
-		updateStatBoard();
+		//updateStatBoard();
 	});
 	socket.on("updateLethality", function(data)
 	{
 		lethalityValue = data.value;
-		updateStatBoard();
+		//updateStatBoard();
 	});
 	/*function updateStatBoard()
 	{
@@ -2007,6 +2007,7 @@
 
 			invBtn.getHover();
 			storeBtn.getHover();
+			console.log(entryCoor.x + ": " + entryCoor.y);
 			socket.emit('keyPress', {inputId:'mouseAngle', xx:entryCoor.x, yy:entryCoor.y});
 		}
 
