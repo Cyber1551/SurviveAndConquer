@@ -268,6 +268,7 @@ var Entity = function(param)
 	return self;
 }
 
+
 var Player = function(param)
 {
 	var self = Entity(param);
@@ -1310,7 +1311,7 @@ function levelUpdate(player)
 	player.exp = 0;
 	player.level++;
 	player.stats.attack += 5;
-	
+
 	if (isOdd(player.level) && player.level < 11)
 	{
 		player.stats.armor += 2;

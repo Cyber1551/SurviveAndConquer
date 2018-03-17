@@ -719,8 +719,10 @@
 			ctx.fillStyle = "black";
 			var bx = self.x - Player.list[selfId].x + WIDTH/2;
 			var by = self.y - Player.list[selfId].y + HEIGHT/2;
-
-
+	
+			//console.log("bx: " +bx + "y: " + by + "dx: " + dummy1.px + 16 + "dy: " + dummy1.py + 16)
+			//console.log(getDis(bx, by, dummy1.px, dummy1.py));
+			
 			ctx.fillRect(bx-5, by-5, 10, 10);
 			ctx.fillStyle = "red";
 			//ctx.arc(self.x-5, self.y-5, 5, 0,d 2 * Math.PI, false);
@@ -760,28 +762,30 @@
 	}
 	Bullet.list = {};
 
-	
+
 	var dummy = function(x, y, maxHealth)
 	{
 		var self = {};
 		self.x = x;
 		self.y = y;
+		self.px = x;
+		self.py = y;
 		self.hpMax = maxHealth;
 		self.hp = self.hpMax;
 		self.draw = function()
 		{
-			var px = self.x - Player.list[selfId].x + WIDTH/2;
-			var py = self.y - Player.list[selfId].y + HEIGHT/2;
-			
-			ctx.drawImage(Img.player, px, py);
-			
+			self.px = self.x - Player.list[selfId].x + WIDTH/2;
+			self.py = self.y - Player.list[selfId].y + HEIGHT/2;
+
+			ctx.drawImage(Img.player, self.px, self.py);
+
 			ctx.strokeStyle = 'black';
-			ctx.strokeRect(px - 20, py - 20, 100, 10);
+			ctx.strokeRect(self.px - 20, self.py - 20, 100, 10);
 			var hpWidth = 100 * (self.hp / self.hpMax);
 			ctx.fillStyle = 'red';
-			ctx.fillRect(px- 20, py- 20, hpWidth, 10);
-			var startingX = px- 20; 
-			var startingY = py - 20;
+			ctx.fillRect(self.px- 20, self.py- 20, hpWidth, 10);
+			var startingX = self.px- 20;
+			var startingY = self.py - 20;
 			var endingX = startingX + hpWidth;
 			var endingY = startingY + 10;
 
@@ -817,9 +821,9 @@
 
 		return self;
 	}
-	
-	
-	
+
+
+
 	var selfId = null;
 
 	socket.on('init', function(data)
@@ -1380,7 +1384,7 @@
 			storeHeight = 800;
 			store.move((WIDTH / 2) - storeWidth/2, 25);
 			//storeDiv.innerHTML = "";
-		
+
 			var count = 0;
 			var cols = 0;
 			for (var i in Item.list)
@@ -1395,9 +1399,9 @@
 						cols++;
 						count = 0;
 					}
-					
+
 				}
-				
+
 			}
 			infoId = -1;
 			drawElements = false;
@@ -1438,7 +1442,7 @@
 			else
 			{
 				//console.log(itemId);
-				
+
 				/*for (var x in Item.list)
 				{
 					//console.log(Item.list[x].ing1);
@@ -1446,9 +1450,9 @@
 					{
 						if (Item.list[x].currentGold - Item.list[itemId].currentGold > 0)
 						{
-							Item.list[x].currentGold -= Item.list[itemId].currentGold;	
+							Item.list[x].currentGold -= Item.list[itemId].currentGold;
 						}
-						
+
 						//console.log(Item.list[x].name + ": " + Item.list[x].currentGold);
 					}
 				}
@@ -1457,23 +1461,23 @@
 					//console.log(itemlist[b].id + ": " + itemId)
 					if (Item.list[itemlist[b].id].ing1 == itemId || Item.list[itemlist[b].id].ing2 == itemId )
 					{
-						
+
 						itemlist[b].txt = Item.list[itemlist[b].id].name + ": " + Item.list[itemlist[b].id].currentGold + " Gold";
-						
+
 					}
 				}
-				
+
 				for (var i = 0; i < playerInventory.passive.length; i++)
 				{
-					
+
 					if (Item.list[itemId].ing1 == playerInventory.passive[i].id && Item.list[itemId].ing2 == playerInventory.passive[i].id)
 					{
-						
+
 						if (playerInventory.hasItem(playerInventory.passive[i].id, 2) == 0)
 						{
 							return;
 						}
-						
+
 						Item.list[playerInventory.passive[i].id].sellFunc();
 						Item.list[itemId].currentGold = Item.list[itemId].gold;
 						var g = Item.list[itemId].currentGold - checkForRemainingItems(playerInventory.passive[i].id);
@@ -1488,10 +1492,10 @@
 						}
 						updateInventoryButtons(playerInventory.passive[i].id);
 						playerInventory.removeItem(playerInventory.passive[i].id, 2, false);
-						
-						
-						
-						
+
+
+
+
 					}
 					else if (Item.list[itemId].ing1 == playerInventory.passive[i].id && Item.list[itemId].ing2 != playerInventory.passive[i].id)
 					{
@@ -1529,20 +1533,20 @@
 						updateInventoryButtons(playerInventory.passive[i].id);
 						playerInventory.removeItem(playerInventory.passive[i].id, 1, false);
 					}
-					
+
 				}*/
-				
+
 				playerInventory.addItem(itemId, 1, Item.list[itemId].gold, Item.list[itemId].type);
 			}
 
 		}
-		
+
 		for (var i = 0; i < playerInventory.items.length; i++)
 		{
 			activeBtns.push(new Button(Item.list[playerInventory.items[i].id].name, null, null, null, playerInventory.items[i].id, null, (WIDTH/2) - ((storeWidth/2) - 10), store.y + 75 + (55 * i), 300, 50));
 		}
-					
-		
+
+
 		for (var i = 0; i < playerInventory.passive.length; i++)
 		{
 			passiveBtns.push(new Button(Item.list[playerInventory.passive[i].id].name, null, null, null, playerInventory.passive[i].id, null, (WIDTH/2) - ((storeWidth/2) - 10) , store.y + 330 + (55 * i), 300, 50));
@@ -1569,7 +1573,7 @@
 
 	}
 	var dummy1 = new dummy(window.innerWidth/2 + genRandomNumber(-500, 500), window.innerHeight/2 + genRandomNumber(-500, 500), 1000);
-	
+
 	setInterval(function()
 	{
 		if (selfId == null)
@@ -1615,7 +1619,7 @@
 			//console.log(true)
 			dummy1.draw();
 		}
-	
+
 		if (WIDTH != 0)
 		{
 			drawStore();
@@ -1623,10 +1627,10 @@
 			updateExpBar();
 			drawGUI();
 		}
-		
+
 		playerInventory.refreshRender();
-		
-		
+
+
 
 
 		//Mouse
@@ -1890,7 +1894,7 @@
 						{
 							itemlist[i].getInfo();
 						}
-						
+
 					}
 					else if (currentTab == "inventory")
 					{
@@ -1903,14 +1907,14 @@
 							passiveBtns[i].getInfo();
 						}
 						sellButton.getClick();
-						
+
 					}
 					upgradeBtn.getInfo();
 				}
-				
+
 				invBtn.getClick();
 				storeBtn.getClick();
-				
+
 			}
 
 		}
@@ -1931,7 +1935,7 @@
 					{
 						itemlist[i].getClick();
 					}
-					
+
 				}
 				else if (currentTab == "inventory")
 				{
@@ -1943,13 +1947,13 @@
 					{
 						passiveBtns[i].getClick();
 					}
-					
+
 				}
 				if (infoId == upgradeBtn.id)
 				{
 					upgradeBtn.getClick();
 				}
-				
+
 			}
 
 
@@ -1971,7 +1975,7 @@
 				{
 					elementlist[i].getHover();
 				}
-				
+
 			}
 			else
 			{
@@ -1981,7 +1985,7 @@
 					{
 						itemlist[i].getHover();
 					}
-					
+
 				}
 				else if(currentTab == "inventory")
 				{
@@ -1994,13 +1998,13 @@
 						activeBtns[i].getHover();
 					}
 					sellButton.getHover();
-					
+
 				}
 				upgradeBtn.getHover();
 			}
-			
-			
-			
+
+
+
 			invBtn.getHover();
 			storeBtn.getHover();
 			socket.emit('keyPress', {inputId:'mouseAngle', xx:entryCoor.x, yy:entryCoor.y});
@@ -2041,7 +2045,7 @@
 		console.log("resize");
 		resize();
 		loadStore();
-		
+
 
 	});
 
@@ -2070,24 +2074,24 @@
 		storeBtn.move((WIDTH/2) - ((storeWidth/2) - 10), store.y + 10);
 		sellButton.move(WIDTH/2 + 450, store.y);
 		upgradeBtn.move(WIDTH/2 + 150, store.y + 150);
-		
+
 		for (var i = 0; i < elementlist.length; i++)
 		{
 			elementlist[i].move((WIDTH/2) - ((storeWidth/2) - 10), (i*55) + 80);
 
 		}
-		
+
 		for (var i = 0; i < playerInventory.items.length; i++)
 		{
 			activeBtns[i].move((WIDTH/2) - ((storeWidth/2) - 10), store.y + 75 + (55 * i));
 		}
-					
-		
+
+
 		for (var i = 0; i < playerInventory.passive.length; i++)
 		{
 			passiveBtns[i].move((WIDTH/2) - ((storeWidth/2) - 10) , store.y + 330 + (55 * i));
 		}
-		
+
 		var count = 0;
 		var cols = 0;
 		for (var i = 0; i < itemlist.length; i++)
@@ -2187,7 +2191,7 @@
 		}
 		Button.prototype.getHover = function()
 		{
-			
+
 			if (entryCoor.x >= this.x && entryCoor.x <= this.x + this.w)
 			{
 				if (entryCoor.y >= this.y && entryCoor.y <= this.y + this.h)
@@ -2249,14 +2253,14 @@
 						}
 					}
 				}
-				
+
 			}
 		}
 		Button.prototype.getInfo = function()
 		{
 			if (this.hover && isStore)
 			{
-				
+
 				if (this.id != "store" && this.id != "inventory")
 				{
 					if (this.ability == "upgrade")
@@ -2269,14 +2273,14 @@
 						infoId = this.id;
 						infoType = this.item;
 					}
-					
+
 				}
 				else
 				{
 					infoId = -1;
 					infoType = false;
 				}
-				
+
 
 			}
 		}
@@ -2297,10 +2301,10 @@
 			elementlist.push(new Button(Element.list[i].name, Element.list[i].ability, Element.list[i].strength, Element.list[i].weakness, i, false, (WIDTH/2) - ((storeWidth/2) - 10), (count*55) + 80, 150, 50));
 			count++;
 		}
-		
+
 	}
-	
-	
+
+
 	function checkForRemainingItems(id)
 	{
 		var gold = 0;
@@ -2311,9 +2315,9 @@
 				gold += Item.list[playerInventory.passive[i].id].currentGold;
 			}
 		}
-		
+
 		return gold;
-		
+
 	}
 
 	function updateInventoryButtons(id)
@@ -2324,7 +2328,7 @@
 			{
 				activeBtns.splice(i, 1);
 			}
-		}				
+		}
 		for (var i in passiveBtns)
 		{
 			if (passiveBtns[i].id == id)
@@ -2333,13 +2337,13 @@
 				{
 					passiveBtns.splice(i, 1);
 				}
-				
+
 			}
 		}
-		
-		
+
+
 	}
-	
+
 
 	function drawText(txt, x, y, font, color)
 	{
@@ -2408,7 +2412,7 @@
 		if (window.innerHeight >= 925)
 		{
 			gui.draw(ctx, false);
-			
+
 
 			healthBarBorder.draw(ctx, true);
 			expBarBorder.draw(ctx, true);
@@ -2434,7 +2438,7 @@
 				expBar.draw(ctx, false);
 				drawText(levelVal + " ("+expVal+"/"+expMaxVal+")", ((canvas.width/2) - 85), canvas.height-74, "15px Arial", 'black');
 				drawStats();
-				
+
 
 			}
 		}
@@ -2560,7 +2564,7 @@
 	console.log("Beg: " + (window.innerWidth - 100) + ": " + storeWidth)
 	var invBtn = new Button("Inventory", null, null, null, "inventory", null, ((window.innerWidth - 100)/2) - 590 + 305, store.y + 10, 150, 35);
 	var storeBtn = new Button("Store", null, null, null, "store", null, ((window.innerWidth - 100)/2) - 590, store.y + 10, 150, 35);
-	
+
 
 	var currentTab = "store";
 	function changeTab(toChange)
@@ -2568,7 +2572,7 @@
 		currentTab = toChange;
 
 	}
-	
+
 	var activeBtns = [];
 	var passiveBtns = [];
 	var sellButton = new Button("Sell ", null, null, null, -1, null, ((window.innerWidth - 100)/2) - 590 + 305, store.y + 10, 150, 35);
@@ -2653,18 +2657,18 @@
 					{
 						itemlist[i].draw(ctx);
 					}
-					
+
 				}
 				else if (currentTab == "inventory")
 				{
 					ctx.fillStyle = "black";
-					
+
 					drawText("<b>Active Items</b>",  store.x + store.w/4 - 150, store.y + 60)
-					
+
 					for (var i = 0; i < activeBtns.length; i++)
 					{
 						activeBtns[i].draw(ctx);
-						
+
 					}
 					drawText("<b>Passive Items</b>",   store.x + store.w/4 - 150, store.y + 310)
 					for (var i = 0; i < passiveBtns.length; i++)
@@ -2672,9 +2676,9 @@
 						passiveBtns[i].draw(ctx);
 						//console.log(passiveBtns[i].txt + ": "  + passiveBtns[i].hover);
 					}
-					
-					
-					
+
+
+
 					//Stats
 					if(selfId)
 					{
@@ -2750,8 +2754,8 @@
 
 					}
 				}
-				
-				
+
+
 					ctx.fillStyle = 'black';
 					//console.log(infoId);
 					ctx.font = "20px Arial";
@@ -2764,8 +2768,8 @@
 						ctx.font = "25px Arial";
 						//console.log(infoId);
 						var amt = 0;
-						
-						
+
+
 						for (var a = 0; a < playerInventory.items.length; a++)
 						{
 							if (playerInventory.items[a].id == infoId)
@@ -2790,9 +2794,9 @@
 						{
 							drawText(Item.list[infoId].name + ": " + amt + "x", WIDTH/2 + 40, 50);
 						}
-						
-						
-						
+
+
+
 						ctx.font = "20px Arial";
 						ctx.moveTo(WIDTH/2 + 30, 60);
 						ctx.lineTo(store.x + store.w, 60);
@@ -2803,17 +2807,17 @@
 						if (playerInventory.hasItem(infoId, 1) >= 1 && Item.list[infoId].upgrade != null)
 						{
 							drawText("Upgrade: ", WIDTH/2 + 150, store.y + 140);
-						
+
 							upgradeBtn.txt = Item.list[Item.list[infoId].upgrade].name + ": " + Item.list[Item.list[infoId].upgrade].currentGold + " Gold";
 							upgradeBtn.id = infoId;
 							upgradeBtn.ability = "upgrade";
 							upgradeBtn.draw(ctx);
 
 						}
-						
-						
-						
-						
+
+
+
+
 						if (currentTab == "inventory" && playerInventory.hasItem(infoId, 1) >= 1)
 						{
 							sellButton.ability = "sell";
@@ -2822,8 +2826,8 @@
 							sellButton.draw(ctx);
 						}
 					}
-				
-				
+
+
 			}
 
 
