@@ -80,7 +80,7 @@ var isUsernameTaken = function(data, cb)
 }
 var addUser = function(data, cb)
 {
-	db.account.insert({username:data.username, password:data.password, email:data.email, gold:0, level:1, exp:0, wins:0, losses:0}, function(err)
+	db.account.insert({username:data.username, password:data.password, email:data.email, gold:0, level:1, exp:0, expMax:100, wins:0, losses:0, oneWins:0, oneLoss:0, twoWins:0, twoLoss:0, threeWins:0, threeLoss:0}, function(err)
 		{
 			cb();
 
@@ -175,6 +175,34 @@ var Goal = function(param)
 	}
 	return self;
 }
+
+function checkAccountLevelIncrease(id)
+{
+	db.collection("account").find({username:usersLoggedIn[id]}).toArray(function(err, result) {
+		if (err)
+		{
+			throw err;
+			return false;
+		}
+		else
+		{
+			var exp = result[0].exp;
+			var expMax = result[0].expMax;
+			if (exp >= expMax)
+			{
+				var diff = exp - expMax;
+				db.account.update({ username: usersLoggedIn[id]}, { $inc: { 'level': 1}});
+				db.account.update({ username: usersLoggedIn[id]}, { $inc: { 'expMax': 50}});
+				db.account.update({ username: usersLoggedIn[id]}, { $set: { 'exp': diff}});
+			}
+			console.log(result[0].exp);
+			backToLobby(id);
+		}
+	});
+	
+}
+
+
 function gameOver(team)
 {
 
@@ -185,6 +213,25 @@ function gameOver(team)
 		if (Player.list[x].team == team)
 		{
 			db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'wins': 1}});
+			var expVal = Math.round(genRandomNumber(55, 60));
+			db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'exp': expVal}});
+			
+			
+			
+				
+			//console.log(Player.list[x].matchType);
+			switch(Player.list[x].matchType)
+			{
+				case 2:
+					db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'oneWins': 1}});
+				break;
+				case 4:
+					db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'twoWins': 1}});
+				break;
+				case 6:
+					db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'threeWins': 1}});
+				break;
+			}
 			//console.log(usersLoggedIn[x] + " Wins");
 
 		}
@@ -192,10 +239,30 @@ function gameOver(team)
 		{
 			//console.log(usersLoggedIn[x] + " Losses");
 			db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'losses': 1} });
+			var expVal = Math.round(genRandomNumber(25, 30));
+			
+			db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'exp': expVal}});
+
+			switch(Player.list[x].matchType)
+			{
+				case 2:
+					db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'oneLoss': 1}});
+				break;
+				case 4:
+					db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'twoLoss': 1}});
+				break;
+				case 6:
+					db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'threeLoss': 1}});
+				break;
+			}
 
 		}
 		Player.onDisconnect(SOCKET_LIST[x]);
-		backToLobby(x);
+		checkAccountLevelIncrease(x);
+		
+			
+		
+		
 	}
 
 }
@@ -211,7 +278,18 @@ function backToLobby(id)
 		{
 			var wins = result[0].wins;
 			var losses = result[0].losses;
-			SOCKET_LIST[id].emit('backToLobby', {wins:wins, losses:losses});
+			var oneWins = result[0].oneWins;
+			var oneLoss = result[0].oneLoss;
+			var twoWins = result[0].twoWins;
+			var twoLoss = result[0].twoLoss;
+			var threeWins = result[0].threeWins;
+			var threeLoss = result[0].threeLoss;
+			
+			var exp = result[0].exp;
+			var expMax = result[0].expMax;
+			var level = result[0].level;
+			//console.log(wins + "/" + oneWins);
+			SOCKET_LIST[id].emit('backToLobby', {wins:wins, losses:losses, oneWins:oneWins, oneLoss:oneLoss, twoWins:twoWins, twoLoss:twoLoss, threeWins:threeWins, threeLoss:threeLoss, exp:exp, expMax:expMax, level:level});
 		}
 	});
 
@@ -1351,6 +1429,7 @@ io.sockets.on('connection', function(socket)
 
 	socket.on('signIn', function(data)
 	{
+		
 		isValidPassword(data, function(res)
 		{
 			if(res)
@@ -1366,7 +1445,18 @@ io.sockets.on('connection', function(socket)
 					{
 						var wins = result[0].wins;
 						var losses = result[0].losses;
-						socket.emit('signInResponse', {success: true, username: data.username, wins:wins, losses:losses});
+						var oneWins = result[0].oneWins;
+						var oneLoss = result[0].oneLoss;
+						var twoWins = result[0].twoWins;
+						var twoLoss = result[0].twoLoss;
+						var threeWins = result[0].threeWins;
+						var threeLoss = result[0].threeLoss;
+						
+						var exp = result[0].exp;
+						var expMax = result[0].expMax;
+						var level = result[0].level;
+						//console.log(expMax);
+						socket.emit('signInResponse', {success: true, username: data.username, wins:wins, losses:losses, oneWins:oneWins, oneLoss:oneLoss, twoWins:twoWins, twoLoss:twoLoss, threeWins:threeWins, threeLoss:threeLoss, exp:exp, expMax:expMax, level:level});
 					}
 
 
@@ -1391,11 +1481,14 @@ io.sockets.on('connection', function(socket)
 			else{
 				if (data.password == data.rPassword)
 				{
-
-					addUser(data, function()
+					if (data.password != "" && data.rPassword != "" && data.username != "")
 					{
-						socket.emit('registerResponse', {success:true});
-					});
+						addUser(data, function()
+						{
+							socket.emit('registerResponse', {success:true});
+						});
+					}
+					
 				}
 				else
 				{
@@ -1479,6 +1572,18 @@ io.sockets.on('connection', function(socket)
 		if (Player.list[socket.id] != undefined)
 		{
 			db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'losses': 1} });
+			switch(Player.list[socket.id].matchType)
+			{
+				case 2:
+					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'oneLoss': 1} });
+				break;
+				case 4:
+					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'twoLoss': 1} });
+				break;
+				case 6:
+					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'threeLoss': 1} });
+				break;
+			}
 		}
 
 		delete SOCKET_LIST[socket.id];

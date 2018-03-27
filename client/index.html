@@ -7,9 +7,8 @@
 </head>
 <body onresize="resize()">
 <center>
-<h2 style="position:relative; top: 275px;" id="sacTitle">SurviveAndConquer</h2>
+<h2 id="sacTitle">Survive And Conquer</h2>
 <div id="signDiv">
-
 <br />
 	<label><b>Login</b></label><br /><br />
 	<input id="signDiv-username" placeholder="Username..." type="text"></input><br /><br />
@@ -34,115 +33,93 @@
 </div>
 <div id="lobbyDiv" style="display:none;">
 <br />
-	<b>Welcome Back, <label id="userLabel"></label></b><br /><br />
-	<select id="lobbyModeSel">
-		<option value="training">Training</option>
-		<optgroup label="Normal">
-			<option value="one" selected>Normal 1v1</option>
-			<option value="two">Normal 2v2</option>
-			<option value="three">Normal 3v3</option>
-		</optgroup>
-		<optgroup label="Ranked">
-			<option disabled>Ranked Coming Soon</option>
-		</optgroup>
 
-    </select><br />
-	<button id="lobbyDiv-findMatch">Find Match</button>
-	<button id="lobbyDivCancel" style="display:none;">Cancel Search</button><br /><br />
+	<b>Welcome, <label id="userLabel"></label></b>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Level: 	<label id="level">0</label><br /><br />
+	<div id="expBarCont" class="tooltip">
+		<div id="expBar"></div>
+		<span class="tooltiptext">
+		Exp: <label id="exp">10</label> / <label id="expMax">0</label>
+		</span>
+	</div>
 
-	<button id="lobbyDivStats">Stats</button><br /><br />
+	<div id="tabs">
+  <ul>
+    <li><a href="#tabs-1">Play Game</a></li>
+    <li><a href="#tabs-2">Profile</a></li>
+    <li><a href="#tabs-3">Tutorials</a></li>
+		<li><a href="#tabs-4">Patch Notes</a></li>
+  </ul>
+  <div id="tabs-1">
+		<fieldset>
+    	<legend>Select a Game type: </legend>
+		<legend><b>Normal</b></legend>
+    	<label for="radio-1">Training</label>
+    	<input type="radio" class="radioButtons" value="training" name="radios" id="radio-1">
+    	<label for="radio-2">1v1</label>
+    	<input type="radio" class="radioButtons" value="one" name="radios" id="radio-2">
+    	<label for="radio-3">2v2</label>
+    	<input type="radio" class="radioButtons" value="two" name="radios" id="radio-3">
+		<label for="radio-4">3v3</label>
+    	<input type="radio" class="radioButtons" value="three" name="radios" id="radio-4"><br/>
+		<legend><b>Ranked</b></legend>
+		<label for="radio-5">1v1</label>
+    	<input type="radio" class="radioButtons" value="na" name="radios" id="radio-5" disabled>
+    	<label for="radio-6">2v2</label>
+    	<input type="radio" class="radioButtons" value="na" name="radios" id="radio-6" disabled>
+		<label for="radio-7">3v3</label>
+    	<input type="radio" class="radioButtons" value="na" name="radios" id="radio-7" disabled>
+  	</fieldset>
+				<br />
+			<button id="lobbyDiv-findMatch">Find Match</button>
+			<button id="lobbyDivCancel" style="display:none;">Cancel Search</button>
+			<div style="display:none;" id="loader"></div>
+			<br /><br />
+		  </div>
+  <div id="tabs-2">
+		Overall Wins: <label id="lobbyWins">0</label> / Overall Losses: <label id="lobbyLosses">0</label><br/> Overall Win Rate: <label id="lobbyWinR"></label><br /><br />
+	<div id="accordion">
+  <h3>Normal 1v1</h3>
+  <div class="accCont">
+		Wins: <label id="lobbyWins1">0</label> / Losses: <label id="lobbyLosses1">0</label><br/> Win Rate: <label id="lobbyWinR1"></label><br />
+  </div>
+  <h3>Normal 2v2</h3>
+  <div class="accCont">
+		Wins: <label id="lobbyWins2">0</label> / Losses: <label id="lobbyLosses2">0</label><br/> Win Rate: <label id="lobbyWinR2"></label><br />
+  </div>
+  <h3>Normal 3v3</h3>
+  <div class="accCont">
+		Wins: <label id="lobbyWins3">0</label> / Losses: <label id="lobbyLosses3">0</label><br/> Win Rate: <label id="lobbyWinR3"></label><br />
+  </div>
+</div>
+		
+  </div>
+  <div id="tabs-3">
+		<h3>Tutorials</h3>
+			Coming soon!
+	</div>
+	<div id="tabs-4">
+		<h3>Patch 0.0.1</h3>
+			Updated Health bars style.<br/>
+			Updated Store System.<br/>
+			Added new training mode.<br/>
+			Added Upgrade System.<br/>
+			<b>Coming in 0.0.2</b><br/>
+			Fixed dummies<br/>
+			Login and register security<br />
+			Elements for bullets<br/>
+			More Items<br/>
+			Abilities???<br />
+			Better lobby and matchMaking.<br/>
+	</div>
+</div>
+<br/>
+	<button id="lobbyDiv-signOut">Sign Out</button><br />
 
-	<button id="lobbyDiv-signOut">Sign Out</button><br /><br />
-	<div style="display:none;" id="loader"></div>
 
 </div>
-<div id="playerStatsDiv" style="display:none;">
-	Wins: <label id="lobbyWins">0</label> / Losses: <label id="lobbyLosses">0</label>; Win Rate: <label id="lobbyWinR"></label><br /><br />
-	<button id="statsDivBack">Back</button><br /><br />
-</div>
+
 <div id="gameDiv" style="display:none;padding:0px;margin:0px;">
 <canvas id="ctx" width="1200" height="1000" style="border:1px solid #000000;padding:0px;margin:0px;" ></canvas>
-<!--
-<table style="width: auto; height:auto;padding: 0px; margin: 0px;">
-<tr>
-<td>
-<label id="killL">0</label><label id="deathL">0</label>
-<div id="chat-text" style="width:300px;height:100px;overflow-y:scroll">
-
-</div>
-
-<form id="chat-form">
-	<input id="chat-input" type="text" placeholder="Chat: " style="width:300px"></input>
-</form>
-<button id="surrenderBtn" onclick="surrender()">Surrender</button>
-</td>
-
-<td>
-<table style="padding:0px;margin:0px;">
-<tr>
-<td>
-<label id="respawnL"></label>
-<div id="healthCont" style="border: 1px solid black; width: 500px; height: 15px;">
-<div id="healthDiv" style="background-color: red; width: 100%; height: 15px; text-align: center;">
-<label id="healthL">500</label>
-</div>
-</div>
-</td>
-</tr>
-<tr>
-<td>
-<div id="expCont" style="border: 1px solid black; width: 500px; height: 10px;">
-<div id="expDiv" style="background-color: #66ffb3; width: 100%; height: 10px; text-align: center;">
-
-</div>
-</div>
-
-Level: <label id="levelL">1</label> (<label id="expL"></label>/<label id="expMaxL"></label>)
-</td>
-</tr>
-</table>
-<div id="statsDiv" style="width: 500px; height: 150px; border:1px solid black;">
-<b>Attack: </b><label id="attackL"></label><div class="tooltip">&nbsp;<u>i</u><span class="tooltiptext" id="attackTT">Tooltip text</span></div><br />
-<b>Armor: </b><label id="armorL"></label><div class="tooltip" >&nbsp;<u>i</u><span class="tooltiptext" id="armorTT">Tooltip text</span></div><br />
-<b>Lethality: </b><label id="lethalityL"></label><div class="tooltip" >&nbsp;<u>i</u><span class="tooltiptext" id="lethalityTT">Tooltip text</span></div><br />
-<b>Attack Speed: </b><label id="attackSpdL"></label><div class="tooltip">&nbsp;<u>i</u><span class="tooltiptext" id="attackSpdTT">Tooltip text</span></div><br />
-<b>Critical Chance: </b><label id="critL"></label><div class="tooltip">&nbsp;<u>i</u><span class="tooltiptext" id="critTT">Tooltip text</span></div><br />
-<b>Life Steal: </b><label id="lifeStealL"></label><div class="tooltip">&nbsp;<u>i</u><span class="tooltiptext" id="lifeStealTT">Tooltip text</span></div><br />
-<b>Life Regen: </b><label id="lifeRegenL"></label><div class="tooltip">&nbsp;<u>i</u><span class="tooltiptext" id="lifeRegenTT">Tooltip text</span></div><br />
-<b>Movement Speed: </b><label id="movementL"></label><div class="tooltip">&nbsp;<u>i</u><span class="tooltiptext" id="movementTT">Tooltip text</span></div><br />
-</div>
-
-</td>
-<td>
-RED: <div id="team1Cont" style="border: 1px solid black; width: 15px; height: 200px; transform:rotate(180deg);">
-<div id="team1Div" style="background-color: #d9d9d9; width: 15px; height: 0%; text-align: center;">
-
-</div>
-</div>
-</td>
-<td>
-BLUE: <div id="team2Cont" style="border: 1px solid black; width: 15px; height: 200px; transform:rotate(180deg);">
-<div id="team2Div" style="background-color: #d9d9d9; width:15px; height: 0%; text-align: center;">
-
-</div>
-</div>
-
-</td>
-<td>
-<b>Gold: </b><label id="gold"></label><br />
-<div id="inventory" style="width: 200px; height:200px; border: 1px solid black; overflow-y:scroll;">
-
-</div>
-
-</td>
-<td>
-<u>Store</u>; Element: <label id="elementL">Not Set</label>
-<div id="store" style="width: 300px; height:200px; border: 1px solid black; overflow-y:scroll;">
-
-</div>
-</td>
-</table>
--->
 <div id="deathRecap" title="Death Recap">
 </div>
 </div>

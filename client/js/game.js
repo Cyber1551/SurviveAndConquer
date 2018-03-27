@@ -34,7 +34,6 @@
 	var deathL = document.getElementById("deathL");
 
 
-
 	//SignDiv
 	var signDivUsername = document.getElementById("signDiv-username");
 	var signDivPassword = document.getElementById("signDiv-password");
@@ -53,7 +52,11 @@
 	var userLabel = document.getElementById("userLabel");
 	var lobbyDivfindMatch = document.getElementById("lobbyDiv-findMatch");
 	var lobbyDivSignOut = document.getElementById("lobbyDiv-signOut");
-	var lobbyModeSel = document.getElementById ("lobbyModeSel");
+	var lobbyDiv = document.getElementById("lobbyDiv");
+	//var lobbyModeSel = document.getElementById ("lobbyModeSel");
+	var radios = document.getElementsByName('radios');
+
+
 	var lobbyDivCancel = document.getElementById("lobbyDivCancel");
 
 	var statsDivBack = document.getElementById("statsDivBack");
@@ -98,10 +101,31 @@
 	{
 		if (window.innerWidth >= 1100 && window.innerHeight >= 800)
 		{
+			var matchType = null;
 			//console.log("WIDTH " + window.innerWidth);
-			$("#loader").css("display", "inline-block");
-			var matchType = lobbyModeSel.options [lobbyModeSel.selectedIndex].value;
-			socket.emit('matchMake', {matchType:matchType});
+			
+			for (var i = 0; i < radios.length; i++)
+			{
+				if (radios[i].checked)
+				{
+					matchType = radios[i].value;
+					//alert(radios[i].value);
+					break;
+				}
+			}
+			if (matchType != null)
+			{
+				$("#loader").css("display", "inline-block");
+				socket.emit('matchMake', {matchType:matchType});
+			}
+			else if (matchType == "na")
+			{
+				lobbyDiv.innerHTML += "<p>Ranked coming soon!</p>";
+			}
+			else if (matchType == null)
+			{
+				lobbyDiv.innerHTML += "<p>Please select a match type!</p>";
+			}
 		}
 		else
 		{
@@ -123,22 +147,19 @@
 		//var matchType = lobbyModeSel.options[lobbyModeSel.selectedIndex].value;
 		socket.emit("cancelSearch");
 	}
-	lobbyDivStats.onclick = function()
+
+	
+	function calculateWinRate(wins, losses)
 	{
-		//var matchType = lobbyModeSel.options[lobbyModeSel.selectedIndex].value;
-		$("#lobbyDiv").css("display", "none");
-		$("#playerStatsDiv").css("display", "inline-block");
-		currentRoom = "stats";
-	}
-	statsDivBack.onclick = function()
-	{
-		$("#lobbyDiv").css("display", "inline-block");
-		$("#playerStatsDiv").css("display", "none");
-		currentRoom = "lobby";
+		var totalGames = wins + losses;
+		//console.log(wins + "/" + losses);
+		//console.log(totalGames);
+		var winR = ((wins / totalGames) * 100).toFixed(2) + "%";
+		return winR;
 	}
 	socket.on('backToLobby', function(data)
 	{
-		loadStore();
+		
 		currentRoom = "lobby";
 		$("#elementL").text("Not Set");
 		$("#gameDiv").css("display", "none");
@@ -146,9 +167,35 @@
 		$("#loader").css("display", "none");
 		$("#lobbyWins").text(data.wins);
 		$("#lobbyLosses").text(data.losses);
-		var totalGames = data.wins + data.losses;
-		var winR = ((data.wins / totalGames) * 100).toFixed(2) + "%";
+		
+		//One
+		$("#lobbyWins1").text(data.oneWins);
+		$("#lobbyLosses1").text(data.oneLoss);
+		var winR1 = calculateWinRate(data.oneWins, data.oneLoss);
+		//console.log(winR1);
+		$("#lobbyWinR1").text(winR1);
+		//Two
+		$("#lobbyWins2").text(data.twoWins);
+		$("#lobbyLosses2").text(data.twoLoss);
+		var winR2 = calculateWinRate(data.twoWins, data.twoLoss);
+		$("#lobbyWinR2").text(winR2);
+		//Three
+		$("#lobbyWins3").text(data.threeWins);
+		$("#lobbyLosses3").text(data.threeLoss);
+		var winR3 = calculateWinRate(data.threeWins, data.threeLoss);
+		$("#lobbyWinR3").text(winR3);
+		
+		var winR = calculateWinRate(data.wins, data.losses);
 		$("#lobbyWinR").text(winR);
+		
+		//Level
+			$("#level").text(data.level);
+			$("#exp").text(data.exp);
+			$("#expMax").text(data.expMax);
+		
+		var expPercent = (data.exp / data.expMax) * 100 + "%";
+			$("#expBar").css("width", expPercent);
+		
 		$("body").css("background-color", "rgb(51, 153, 255)");
 		$("#lobbyDivCancel").css("display", "none");
 		$("#lobbyDiv-findMatch").css("display", "inline-block");
@@ -167,10 +214,37 @@
 			lobbyDiv.style.display = 'inline-block';
 			$("#lobbyWins").text(data.wins);
 			$("#lobbyLosses").text(data.losses);
-			var totalGames = data.wins + data.losses;
-			var winR = ((data.wins / totalGames) * 100).toFixed(2) + "%";
+			var winR = calculateWinRate(data.wins, data.losses);
 			$("#lobbyWinR").text(winR);
 			$("#userLabel").text(data.username);
+			
+			
+			//One
+			$("#lobbyWins1").text(data.oneWins);
+			$("#lobbyLosses1").text(data.oneLoss);
+			var winR1 = calculateWinRate(data.oneWins, data.oneLoss);
+			//console.log(winR1);
+			$("#lobbyWinR1").text(winR1);
+			//Two
+			$("#lobbyWins2").text(data.twoWins);
+			$("#lobbyLosses2").text(data.twoLoss);
+			var winR2 = calculateWinRate(data.twoWins, data.twoLoss);
+			$("#lobbyWinR2").text(winR2);
+			//Three
+			$("#lobbyWins3").text(data.threeWins);
+			$("#lobbyLosses3").text(data.threeLoss);
+			var winR3 = calculateWinRate(data.threeWins, data.threeLoss);
+			$("#lobbyWinR3").text(winR3);
+			
+			
+			//Level
+			$("#level").text(data.level);
+			$("#exp").text(data.exp);
+			$("#expMax").text(data.expMax);
+			
+			var expPercent = (data.exp / data.expMax) * 100 + "%";
+			$("#expBar").css("width", expPercent);
+			
 			currentRoom = "lobby";
 		}
 		else{
@@ -198,23 +272,28 @@
 
 	socket.on("inGame", function()
 	{
-
+		
 		currentRoom = "game";
 		lobbyDiv.style.display = 'none';
 		document.getElementById("sacTitle").style.visibility = "hidden";
 		$('body').css("background-color", "white");
 		gameDiv.style.display = 'inline-block';
+		var storeWidth = 600;
+		var storeHeight = 400;
+		store.resize(600, 400);
+		store.move((WIDTH/2) - storeWidth/2, 25);
+		isStore = true;
+		loadStore();
+		for (var i = 0; i < elementlist.length; i++)
+		{
+			elementlist[i].move((WIDTH/2) - ((storeWidth/2) - 10), (i*55) + 80);
 
+		}
+		drawElements = true;
+		infoId = -1;
 
 	});
-	socket.on("updateLobbyScore", function(data)
-	{
-		$("#lobbyWins").text(data.wins);
-		$("#lobbyLosses").text(data.losses);
-		var totalGames = data.wins + data.losses;
-		var winR = ((data.wins / totalGames) * 100).toFixed(2) + "%";
-		$("#lobbyWinR").text(winR);
-	});
+	
 
 	socket.on("cancelButton", function(data)
 	{
@@ -2043,6 +2122,20 @@
 	var isStore = true;
 	document.addEventListener("DOMContentLoaded", function()
 	{
+		$( function() {
+			$( "#tabs" ).tabs();
+		} );
+		$( function() {
+	 		$( ".radioButtons" ).checkboxradio({
+		 	icon: false
+	 	});
+ 		} );
+		$( function() {
+			$( "#accordion" ).accordion({
+				active: false,
+				collapsible: true
+			});
+		} );
 		console.log("resize");
 		resize();
 		loadStore();
@@ -2293,6 +2386,8 @@
 	{
 		//console.log(true);
 		//storeDiv.innerHTML = "";
+		elementlist = [];
+		itemlist = [];
 		playerInventory.clearInventory();
 		var count = 0;
 		for (var i in Element.list)
@@ -2530,7 +2625,7 @@
 			drawText("Attack Speed: " + stats.attackSpd, ((canvas.width/2) - 490), canvas.height-25, fnt, 'black');
 			drawText("Life Regen: " + stats.lifeRegen, ((canvas.width/2) - 490), canvas.height-10, fnt, 'black');
 
-			drawText("Lethality: " + stats.lethality, ((canvas.width/2) - 270), canvas.height-55, fnt, 'black');
+			drawText("Armor Penetration: " + stats.lethality, ((canvas.width/2) - 270), canvas.height-55, fnt, 'black');
 			drawText("Critical Chance: " + stats.crit, ((canvas.width/2) - 270), canvas.height-40, fnt, 'black');
 			drawText("Movement Speed: " + Player.list[selfId].movementSpd, ((canvas.width/2) - 270), canvas.height-25, fnt, 'black');
 			drawText("Life Steal: " + stats.lifeSteal, ((canvas.width/2) - 270), canvas.height-10, fnt, 'black');
@@ -2737,7 +2832,7 @@
 						ctx.font = "17px Arial";
 						drawText(" - You heal " + lifeRegen + " hp (+" + stats.lifeRegen +"%) every second.", WIDTH/2 + 40, 440);
 						ctx.font = "20px Arial";
-						drawText("Lethality: " + stats.lethality, WIDTH/2 + 40, 460);
+						drawText("Armor Penetration: " + stats.lethality, WIDTH/2 + 40, 460);
 						ctx.font = "17px Arial";
 						drawText(" - You negate " + lethalityArmor + "% of the enemies armor.", WIDTH/2 + 40, 480);
 						ctx.font = "20px Arial";

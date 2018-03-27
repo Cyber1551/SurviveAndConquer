@@ -1,4 +1,14 @@
 /* =========== Login ===========*/
+
+@font-face {
+font-family: newyorkescape;
+src: url("fonts/newyorkescape-webfont.eot");
+src: 
+url("fonts/newyorkescape-webfont.woff") format("woff"),
+url("fonts/newyorkescape-webfont.otf") format("opentype"),
+url("fonts/newyorkescape-webfont.svg#filename") format("svg");
+}
+
 body
 {
 	background-color: #3399ff;
@@ -251,8 +261,8 @@ body
 {
 	position: relative;
 	top: 300px;
-	width: 250px;
-	height: 375px;
+	width: 500px;
+	height: 500px;
 	border: 1px solid black;
 	padding: 10px;
 	border-radius: 5px;
@@ -336,66 +346,61 @@ body
 	 background-color: #4CAF50; /* Green */
     color: white;
 }
-#lobbyDivStats
+#tabs-1
 {
-	background-color: #3399ff; /* Blue */
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-	-webkit-transition-duration: 0.4s; /* Safari */
-    transition-duration: 0.4s;
+	width:450px;
+	height: 250px;
+	overflow-y: scroll;
 }
-#lobbyDivStats:hover
+#tabs-2
 {
-	 background-color: #4CAF50; /* Green */
-    color: white;
+	width:450px;
+	height: 250px;
+	overflow-y: scroll;
 }
-/*  ============= Stats Div============ */
-#playerStatsDiv
+#tabs-3
 {
-	position: relative;
-	top: 300px;
-	width: 250px;
-	height: 150px;
+	width:450px;
+	height: 250px;
+	overflow-y: scroll;
+}
+#tabs-4
+{
+	width:450px;
+	height: 250px;
+	overflow-y: scroll;
+}
+.accCont 
+{
+	height: 50px;
+}
+#expBarCont
+{
+	width: 450px;
+	height: 10px;
 	border: 1px solid black;
-	padding: 10px;
-	border-radius: 5px;
 	background-color: white;
+	text-align:left;
 }
-#statsDivBack
+#expBar
 {
-	background-color: #3399ff; /* Blue */
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-	-webkit-transition-duration: 0.4s; /* Safari */
-    transition-duration: 0.4s;
+	width: 100%;
+	height: 10px;
+	background-color: green;
 }
-#statsDivBack:hover
+#sacTitle
 {
-	 background-color: #4CAF50; /* Green */
-    color: white;
-}
-/* Game styles */
-.tooltip {
-    position: relative;
-    display: inline-block;
-   /* border-bottom: 1px dotted black;  If you want dots under the hoverable text */
-
+	position:relative;
+	top: 275px;
+	font-size: 50px;
+	font-family: newyorkescape;
+	color: #F7F7FF;
 }
 
 /* Tooltip text */
 .tooltip .tooltiptext {
     visibility: hidden;
-    width: 120px;
+    width: 150px;
     background-color: black;
     color: #fff;
     text-align: center;
@@ -405,8 +410,12 @@ body
     /* Position the tooltip text - see examples below! */
     position: relative;
     z-index: 1;
-		top: -5px;
-    left: 10%;
+	top: -40px;
+	width: 150px;
+    bottom: 100%;
+    left: 50%; 
+    margin-left: -60px
+	
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
