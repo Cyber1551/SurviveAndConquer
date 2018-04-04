@@ -3,7 +3,7 @@
 @font-face {
 font-family: newyorkescape;
 src: url("fonts/newyorkescape-webfont.eot");
-src: 
+src:
 url("fonts/newyorkescape-webfont.woff") format("woff"),
 url("fonts/newyorkescape-webfont.otf") format("opentype"),
 url("fonts/newyorkescape-webfont.svg#filename") format("svg");
@@ -370,7 +370,7 @@ body
 	height: 250px;
 	overflow-y: scroll;
 }
-.accCont 
+.accCont
 {
 	height: 50px;
 }
@@ -397,6 +397,19 @@ body
 	color: #F7F7FF;
 }
 
+
+/*======WaitDiv=======*/
+#waitDiv
+{
+	position: relative;
+	top: 300px;
+	width: 500px;
+	height: 500px;
+	border: 1px solid black;
+	padding: 10px;
+	border-radius: 5px;
+	background-color: white;
+}
 /* Tooltip text */
 .tooltip .tooltiptext {
     visibility: hidden;
@@ -413,9 +426,9 @@ body
 	top: -40px;
 	width: 150px;
     bottom: 100%;
-    left: 50%; 
+    left: 50%;
     margin-left: -60px
-	
+
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */

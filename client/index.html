@@ -27,14 +27,14 @@
 	<input id="regDiv-password" placeholder="Password..." type="password"></input><br /><br />
 	<input id="regDiv-passwordRepeat" placeholder="Repeat Password..." type="password"></input><br /><br />
 	<input id="regDiv-email" placeholder="Email..." type="text"></input><br /><br />
-	<button id="regDiv-register">Register</button>
-	<button id="regDiv-signIn">Sign In</button><br /><br />
+	<button id="regDiv-register">Create</button>
+	<button id="regDiv-signIn">Go Back</button><br /><br />
 	<label style="display: none; font-size: 20px;" id="regInfo"></label>
 </div>
 <div id="lobbyDiv" style="display:none;">
 <br />
 
-	<b>Welcome, <label id="userLabel"></label></b>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Level: 	<label id="level">0</label><br /><br />
+	<b>Welcome, <label id="userLabel"></label></b> | Level: 	<label id="level">0</label>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Gold: <label id="gold">0</label><br /><br />
 	<div id="expBarCont" class="tooltip">
 		<div id="expBar"></div>
 		<span class="tooltiptext">
@@ -117,7 +117,9 @@
 <br/>
 	<button id="lobbyDiv-signOut">Sign Out</button><br />
 </div>
+<div id="waitDiv" style="display:none;">
 
+</div>
 <div id="gameDiv" style="display:none;padding:0px;margin:0px;">
 <canvas id="ctx" width="1200" height="1000" style="border:1px solid #000000;padding:0px;margin:0px;" ></canvas>
 <div id="deathRecap" title="Death Recap">

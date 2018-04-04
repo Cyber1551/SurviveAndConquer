@@ -2091,7 +2091,7 @@ function matchMakingOne(id, data, roomSize)
 
 			Player.list[playersWaitingOne[i]].user = usersWaitingOne[i];
 
-			SOCKET_LIST[playersWaitingOne[i]].emit('inGame');
+			SOCKET_LIST[playersWaitingOne[i]].emit('strategy');
 
 			//playersWaiting.splice(i, 1);
 		}
@@ -2138,7 +2138,7 @@ function matchMakingTwo(id, data, roomSize)
 
 			Player.list[playersWaitingTwo[i]].user = usersWaitingTwo[i];
 
-			SOCKET_LIST[playersWaitingTwo[i]].emit('inGame');
+			SOCKET_LIST[playersWaitingTwo[i]].emit('strategy');
 
 			//playersWaiting.splice(i, 1);
 		}
@@ -2184,7 +2184,7 @@ function matchMakingThree(id, data, roomSize)
 
 			Player.list[playersWaitingThree[i]].user = usersWaitingThree[i];
 
-			SOCKET_LIST[playersWaitingThree[i]].emit('inGame');
+			SOCKET_LIST[playersWaitingThree[i]].emit('strategy');
 
 			//playersWaiting.splice(i, 1);
 		}
@@ -2215,7 +2215,7 @@ function matchMakingTraining(id, data)
 		Player.list[id].user = data;
 		Player.list[id].matchType = "training";
 		console.log(id);
-		SOCKET_LIST[id].emit('inGame');
+		SOCKET_LIST[id].emit('strategy');
 
 			//playersWaiting.splice(i, 1);
 

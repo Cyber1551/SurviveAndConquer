@@ -12,6 +12,7 @@
 	var signDiv = document.getElementById("signDiv");
 	var regDiv = document.getElementById("regDiv");
 	var lobbyDiv = document.getElementById("lobbyDiv");
+	var waitDiv = document.getElementById("waitDiv");
 	//var matchLabel = document.getElementById("matchLabel");
 	var goldLabel = document.getElementById("gold");
 	var gameDiv = document.getElementById("gameDiv");
@@ -269,8 +270,29 @@
 
 		}
 	});
+	socket.on("strategy", function()
+	{
+		console.log("strategy start");
+		currentRoom = "wait";
+		lobbyDiv.style.display = 'none';
+		waitDiv.style.display = 'inline-block';
+		for (var i = 10; i > 0; i--)
+		{
+			setTimeout(function()
+			{
+				console.log (i);
+				if (i == 0)
+				{
+					console.log("strategy finished");
+					inGame();
+					break;
+				}
+			}, 1000);
+		}
+	});
 
-	socket.on("inGame", function()
+
+	function inGame()
 	{
 
 		currentRoom = "game";
@@ -748,13 +770,16 @@
 
 		for (var i = data.value; i > 0; i--)
 		{
-			console.log (i);
-			if (i == 0)
+			setTimeout(function()
 			{
-				socket.emit("setCanMove", {playerId:selfId, count: true, value:true});
-				console.log("Respawn");
-				break;
-			}
+				console.log (i);
+				if (i == 0)
+				{
+					socket.emit("setCanMove", {playerId:selfId, count: true, value:true});
+					console.log("Respawn");
+					break;
+				}
+			}, 1000);
 		}
 
 
