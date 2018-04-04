@@ -199,7 +199,7 @@ function checkAccountLevelIncrease(id)
 			backToLobby(id);
 		}
 	});
-	
+
 }
 
 
@@ -215,10 +215,10 @@ function gameOver(team)
 			db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'wins': 1}});
 			var expVal = Math.round(genRandomNumber(55, 60));
 			db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'exp': expVal}});
-			
-			
-			
-				
+
+
+
+
 			//console.log(Player.list[x].matchType);
 			switch(Player.list[x].matchType)
 			{
@@ -240,7 +240,7 @@ function gameOver(team)
 			//console.log(usersLoggedIn[x] + " Losses");
 			db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'losses': 1} });
 			var expVal = Math.round(genRandomNumber(25, 30));
-			
+
 			db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'exp': expVal}});
 
 			switch(Player.list[x].matchType)
@@ -259,10 +259,10 @@ function gameOver(team)
 		}
 		Player.onDisconnect(SOCKET_LIST[x]);
 		checkAccountLevelIncrease(x);
-		
-			
-		
-		
+
+
+
+
 	}
 
 }
@@ -284,7 +284,7 @@ function backToLobby(id)
 			var twoLoss = result[0].twoLoss;
 			var threeWins = result[0].threeWins;
 			var threeLoss = result[0].threeLoss;
-			
+
 			var exp = result[0].exp;
 			var expMax = result[0].expMax;
 			var level = result[0].level;
@@ -345,6 +345,22 @@ var Entity = function(param)
 	}
 	return self;
 }
+
+var Dummy = function(x, y)
+{
+	var self = {};
+	self.id = Math.round(genRandomNumber(0, 999));
+	self.x = x;
+	self.y = y;
+	self.hpMax = 1000;
+	self.hp = self.hpMax;
+
+	Dummy.list[self.id] = self;
+	return self;
+}
+Dummy.list = {};
+
+
 
 
 var Player = function(param)
@@ -768,6 +784,11 @@ var Bullet = function(param)
 			if (p == undefined || Player.list[self.parent] == undefined)
 				return;
 			//console.log("update");
+
+			if (p.matchType == 1)
+			{
+
+			}
 			if (self.roomId == p.roomId && p.team != Player.list[self.parent].team && self.getDistance(p) < 32 && self.parent !== p.id)
 			{
 				if (p.isShielding == true)
@@ -1429,7 +1450,7 @@ io.sockets.on('connection', function(socket)
 
 	socket.on('signIn', function(data)
 	{
-		
+
 		isValidPassword(data, function(res)
 		{
 			if(res)
@@ -1451,7 +1472,7 @@ io.sockets.on('connection', function(socket)
 						var twoLoss = result[0].twoLoss;
 						var threeWins = result[0].threeWins;
 						var threeLoss = result[0].threeLoss;
-						
+
 						var exp = result[0].exp;
 						var expMax = result[0].expMax;
 						var level = result[0].level;
@@ -1488,7 +1509,7 @@ io.sockets.on('connection', function(socket)
 							socket.emit('registerResponse', {success:true});
 						});
 					}
-					
+
 				}
 				else
 				{

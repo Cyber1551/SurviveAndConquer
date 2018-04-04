@@ -103,7 +103,7 @@
 		{
 			var matchType = null;
 			//console.log("WIDTH " + window.innerWidth);
-			
+
 			for (var i = 0; i < radios.length; i++)
 			{
 				if (radios[i].checked)
@@ -148,7 +148,7 @@
 		socket.emit("cancelSearch");
 	}
 
-	
+
 	function calculateWinRate(wins, losses)
 	{
 		var totalGames = wins + losses;
@@ -159,7 +159,7 @@
 	}
 	socket.on('backToLobby', function(data)
 	{
-		
+
 		currentRoom = "lobby";
 		$("#elementL").text("Not Set");
 		$("#gameDiv").css("display", "none");
@@ -167,7 +167,7 @@
 		$("#loader").css("display", "none");
 		$("#lobbyWins").text(data.wins);
 		$("#lobbyLosses").text(data.losses);
-		
+
 		//One
 		$("#lobbyWins1").text(data.oneWins);
 		$("#lobbyLosses1").text(data.oneLoss);
@@ -184,18 +184,18 @@
 		$("#lobbyLosses3").text(data.threeLoss);
 		var winR3 = calculateWinRate(data.threeWins, data.threeLoss);
 		$("#lobbyWinR3").text(winR3);
-		
+
 		var winR = calculateWinRate(data.wins, data.losses);
 		$("#lobbyWinR").text(winR);
-		
+
 		//Level
 			$("#level").text(data.level);
 			$("#exp").text(data.exp);
 			$("#expMax").text(data.expMax);
-		
+
 		var expPercent = (data.exp / data.expMax) * 100 + "%";
 			$("#expBar").css("width", expPercent);
-		
+
 		$("body").css("background-color", "rgb(51, 153, 255)");
 		$("#lobbyDivCancel").css("display", "none");
 		$("#lobbyDiv-findMatch").css("display", "inline-block");
@@ -217,8 +217,8 @@
 			var winR = calculateWinRate(data.wins, data.losses);
 			$("#lobbyWinR").text(winR);
 			$("#userLabel").text(data.username);
-			
-			
+
+
 			//One
 			$("#lobbyWins1").text(data.oneWins);
 			$("#lobbyLosses1").text(data.oneLoss);
@@ -235,16 +235,16 @@
 			$("#lobbyLosses3").text(data.threeLoss);
 			var winR3 = calculateWinRate(data.threeWins, data.threeLoss);
 			$("#lobbyWinR3").text(winR3);
-			
-			
+
+
 			//Level
 			$("#level").text(data.level);
 			$("#exp").text(data.exp);
 			$("#expMax").text(data.expMax);
-			
+
 			var expPercent = (data.exp / data.expMax) * 100 + "%";
 			$("#expBar").css("width", expPercent);
-			
+
 			currentRoom = "lobby";
 		}
 		else{
@@ -272,7 +272,7 @@
 
 	socket.on("inGame", function()
 	{
-		
+
 		currentRoom = "game";
 		lobbyDiv.style.display = 'none';
 		document.getElementById("sacTitle").style.visibility = "hidden";
@@ -293,7 +293,7 @@
 		infoId = -1;
 
 	});
-	
+
 
 	socket.on("cancelButton", function(data)
 	{
@@ -735,29 +735,27 @@
 	{
 	//	ctx.font = "50px Arial";
 		showDeathRecap(data);
-		var val = data.value;
+		//var val = data.value;
 
-		setInterval(function()
+
+		/*setTimeout(function()
 		{
-			if (!selfId)
-				return;
 
-			if (Player.list[selfId].canMove == false && val > 0)
+			socket.emit("setCanMove", {playerId:selfId, count: true, value:true});
+			console.log("Respawn");
+		}, (val * 1000));
+		*/
+
+		for (var i = data.value; i > 0; i--)
+		{
+			console.log (i);
+			if (i == 0)
 			{
-
-				$("#respawnL").text("Respawn in: " + val + " seconds! ");
-				//console.log(val);
-				val-=1;
-				if (val == 0)
-				{
-					console.log("respawn");
-					$("#respawnL").text("");
-					socket.emit("setCanMove", {playerId:selfId, count: true, value:true});
-				}
+				socket.emit("setCanMove", {playerId:selfId, count: true, value:true});
+				console.log("Respawn");
+				break;
 			}
-
-		}, 1000);
-
+		}
 
 
 	});
