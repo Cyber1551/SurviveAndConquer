@@ -314,7 +314,7 @@
 		drawElements = true;
 		infoId = -1;
 
-	});
+	};
 
 
 	socket.on("cancelButton", function(data)
