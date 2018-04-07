@@ -2145,6 +2145,7 @@
 	var isStore = true;
 	document.addEventListener("DOMContentLoaded", function()
 	{
+		console.log(window.innerWidth);
 		$( function() {
 			$( "#tabs" ).tabs();
 		} );
