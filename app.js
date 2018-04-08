@@ -6,7 +6,7 @@ require("./client/js/Elements.js");
 var serv = require('http').Server(app);
 var mongojs = require("mongojs");
 var db = mongojs('mongodb://cyberboy1551:Tank1551@ds023445.mlab.com:23445/heroku_grzkxhzt', ['account']);
-
+//var db = mongojs('localhost:27017/SurviveAndConquer', ['account']);
 WIDTH = 1200;
 HEIGHT = 1000;
 
@@ -212,9 +212,13 @@ function gameOver(team)
 
 		if (Player.list[x].team == team)
 		{
-			db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'wins': 1}});
-			var expVal = Math.round(genRandomNumber(55, 60));
-			db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'exp': expVal}});
+			if (Player.list[x].matchType != 1)
+			{
+				db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'wins': 1}});
+				var expVal = Math.round(genRandomNumber(55, 60));
+				db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'exp': expVal}});
+			}
+
 
 
 
@@ -238,10 +242,14 @@ function gameOver(team)
 		else
 		{
 			//console.log(usersLoggedIn[x] + " Losses");
-			db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'losses': 1} });
-			var expVal = Math.round(genRandomNumber(25, 30));
+			if (Player.list[x].matchType != 1)
+			{
+				db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'losses': 1} });
+				var expVal = Math.round(genRandomNumber(25, 30));
 
-			db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'exp': expVal}});
+				db.account.update({ username: usersLoggedIn[x]}, { $inc: { 'exp': expVal}});
+			}
+
 
 			switch(Player.list[x].matchType)
 			{
@@ -722,6 +730,7 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 		}
 
 	});
+
 
 
 
@@ -2013,6 +2022,22 @@ io.sockets.on('connection', function(socket)
 		//console.log("setvalues")
 
 	});*/
+
+
+	socket.on("getPlayerList", function(data)
+	{
+		var currentPlayers = [];
+
+		for (var p in Player.list)
+		{
+			//console.log("####" + p.roomId);
+			if (Player.list[p].roomId == data.roomId)
+			{
+				currentPlayers.push(p);
+			}
+		}
+		SOCKET_LIST[data.id].emit("displayPlayerList", {list: currentPlayers});
+	});
 });
 
 /*function matchMaking(id, data)
@@ -2103,6 +2128,7 @@ function matchMakingOne(id, data, roomSize)
 	//Player.onConnect(socket);
 	//Player.list[socket.id].user = data.username;
 }
+
 
 
 function matchMakingTwo(id, data, roomSize)

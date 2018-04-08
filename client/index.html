@@ -56,7 +56,7 @@
     	<label for="radio-1">Training</label>
     	<input type="radio" class="radioButtons" value="training" name="radios" id="radio-1">
     	<label for="radio-2">1v1</label>
-    	<input type="radio" class="radioButtons" value="one" name="radios" id="radio-2">
+    	<input type="radio" class="radioButtons" value="one" name="radios" id="radio-2" checked="checked">
     	<label for="radio-3">2v2</label>
     	<input type="radio" class="radioButtons" value="two" name="radios" id="radio-3">
 		<label for="radio-4">3v3</label>
@@ -71,7 +71,7 @@
   	</fieldset>
 				<br />
 			<button id="lobbyDiv-findMatch">Find Match</button>
-			<button id="lobbyDivCancel" style="display:none;">Cancel Search</button>
+			<button id="lobbyDivCancel" style="display:none;">Cancel Search</button><br />
 			<div style="display:none;" id="loader"></div>
 			<br /><br />
 		  </div>
@@ -118,7 +118,18 @@
 	<button id="lobbyDiv-signOut">Sign Out</button><br />
 </div>
 <div id="waitDiv" style="display:none;">
+<h3>Prepare for battle: </h3><label id="timer">30</label>
+<table>
+<tr>
+<td id="blueTeamList">
+ <b>Blue Team</b><br />
+</td>
+<td id="redTeamList">
+	<b>Red Team</b><br />
+</td>
+</tr>
 
+</table>
 </div>
 <div id="gameDiv" style="display:none;padding:0px;margin:0px;">
 <canvas id="ctx" width="1200" height="1000" style="border:1px solid #000000;padding:0px;margin:0px;" ></canvas>

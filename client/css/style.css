@@ -19,7 +19,7 @@ body
 #signDiv
 {
 	position: relative;
-	top: 300px;
+	top: 150px;
 	width: 350px;
 	height: 275px;
 	border: 1px solid black;
@@ -124,7 +124,7 @@ body
 #regDiv
 {
 	position: relative;
-	top: 300px;
+	top: 150px;
 	width: 350px;
 	height: 400px;
 	border: 1px solid black;
@@ -260,7 +260,7 @@ body
 #lobbyDiv
 {
 	position: relative;
-	top: 300px;
+	top: 150px;
 	width: 500px;
 	height: 500px;
 	border: 1px solid black;
@@ -391,7 +391,7 @@ body
 #sacTitle
 {
 	position:relative;
-	top: 275px;
+	top: 150px;
 	font-size: 50px;
 	font-family: newyorkescape;
 	color: #F7F7FF;
@@ -402,7 +402,7 @@ body
 #waitDiv
 {
 	position: relative;
-	top: 300px;
+	top: 150px;
 	width: 500px;
 	height: 500px;
 	border: 1px solid black;
@@ -410,6 +410,28 @@ body
 	border-radius: 5px;
 	background-color: white;
 }
+#blueTeamList
+{
+	border-right: 1px solid black;
+}
+
+.redList
+{
+	color: white;
+	background-color: red;
+	width: 150px;
+	height: 25px;
+	text-align: center;
+}
+.blueList
+{
+	color: white;
+	background-color: blue;
+	width: 150px;
+	height: 25px;
+	text-align: center;
+}
+
 /* Tooltip text */
 .tooltip .tooltiptext {
     visibility: hidden;

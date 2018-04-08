@@ -122,10 +122,12 @@
 			else if (matchType == "na")
 			{
 				lobbyDiv.innerHTML += "<p>Ranked coming soon!</p>";
+				radios[0].checked = "checked";
 			}
 			else if (matchType == null)
 			{
 				lobbyDiv.innerHTML += "<p>Please select a match type!</p>";
+				radios[0].checked = "checked";
 			}
 		}
 		else
@@ -276,28 +278,66 @@
 		currentRoom = "wait";
 		lobbyDiv.style.display = 'none';
 		waitDiv.style.display = 'inline-block';
-		for (var i = 10; i > 0; i--)
-		{
-			setTimeout(function()
-			{
-				console.log (i);
-				if (i == 0)
-				{
-					console.log("strategy finished");
-					inGame();
-					break;
-				}
-			}, 1000);
-		}
+		setTimeout(function()
+	{
+		socket.emit("getPlayerList", {roomId: Player.list[selfId].roomId, id:selfId});
+	}, 1000);
+
+
+
+		var c = 30;
+		var x = setInterval(function() {
+			$("#timer").text(c);
+  		// If the count down is finished, write some text
+  	if (c <= 0) {
+			console.log("DONE");
+    	clearInterval(x);
+			inGame();
+  	}
+		c--;
+	}, 1000);
 	});
 
+	socket.on("displayPlayerList", function(data)
+{
+	//console.log(Player.list[data.id].user);
+	for (var i = 0; i < data.list.length; i++)
+	{
+		//console.log(data.list[i]);
+		switch(Player.list[data.list[i]].team)
+		{
+			case "red":
+				if (data.list[i] == selfId)
+				{
+					$("#redTeamList").append("<div class='redList'>" + Player.list[data.list[i]].user + " (YOU)</div><br />");
 
+				}
+				else {
+					$("#redTeamList").append("<div class='redList'>" + Player.list[data.list[i]].user + "</div><br />");
+
+				}
+					break;
+			case "blue":
+				if (data.list[i] == selfId)
+				{
+					$("#blueTeamList").append("<div class='blueList'>" + Player.list[data.list[i]].user + " (YOU)</div><br />");
+
+				}
+				else {
+					$("#blueTeamList").append("<div class='blueList'>" + Player.list[data.list[i]].user + "</div><br />");
+
+				}
+			break;
+		}
+	}
+
+});
 	function inGame()
 	{
 
 		currentRoom = "game";
-		lobbyDiv.style.display = 'none';
-		document.getElementById("sacTitle").style.visibility = "hidden";
+		waitDiv.style.display = 'none';
+		document.getElementById("sacTitle").style.display = "none";
 		$('body').css("background-color", "white");
 		gameDiv.style.display = 'inline-block';
 		var storeWidth = 600;
@@ -757,30 +797,16 @@
 	{
 	//	ctx.font = "50px Arial";
 		showDeathRecap(data);
-		//var val = data.value;
-
-
-		/*setTimeout(function()
-		{
-
+		var val = data.value;
+		var x = setInterval(function() {
+		console.log(val);
+  	if (val <= 0) {
+			console.log("respawn");
 			socket.emit("setCanMove", {playerId:selfId, count: true, value:true});
-			console.log("Respawn");
-		}, (val * 1000));
-		*/
-
-		for (var i = data.value; i > 0; i--)
-		{
-			setTimeout(function()
-			{
-				console.log (i);
-				if (i == 0)
-				{
-					socket.emit("setCanMove", {playerId:selfId, count: true, value:true});
-					console.log("Respawn");
-					break;
-				}
-			}, 1000);
-		}
+    	clearInterval(x);
+  	}
+		val--;
+	}, 1000);
 
 
 	});
@@ -1768,8 +1794,8 @@
 
 		//$("#team1L").text("(+" + data.team1N + ")");
 		//$("#team2L").text("(+" + data.team2N + ")");
-		team1ScoreVal = (data.team1 / 1000).toFixed(2) * 100 + "%";
-		team2ScoreVal = (data.team2 / 1000).toFixed(2) * 100 + "%";
+		team1ScoreVal = (data.team1 / 1000) * 100 + "%";
+		team2ScoreVal = (data.team2 / 1000) * 100 + "%";
 		//$("#team1Div").css("height", data.team1);
 		//$("#team2Div").css("height", data.team2);
 	});
@@ -2149,11 +2175,13 @@
 		$( function() {
 			$( "#tabs" ).tabs();
 		} );
+
 		$( function() {
 	 		$( ".radioButtons" ).checkboxradio({
 		 	icon: false
 	 	});
  		} );
+
 		$( function() {
 			$( "#accordion" ).accordion({
 				active: false,
@@ -2170,7 +2198,7 @@
 	function resize()
 	{
 		var ww = window.innerWidth - 100;
-		var wh = window.innerHeight - 100;
+		var wh = window.innerHeight - 50;
 
 		canvas.width = ww;
 		canvas.height = wh;
@@ -2621,16 +2649,16 @@
 	{
 		if (window.innerHeight >= 930)
 		{
-			drawText("Blue Team: " + team2ScoreVal, ((canvas.width/2) - 85), canvas.height - 50, "20px Arial", 'blue');
-			drawText("Red Team: " + team1ScoreVal, (canvas.width/2) - 85, canvas.height - 25, "20px Arial", 'red');
+			drawText("Blue Team: " + Math.round(team2ScoreVal), ((canvas.width/2) - 85), canvas.height - 50, "20px Arial", 'blue');
+			drawText("Red Team: " + Math.round(team1ScoreVal), (canvas.width/2) - 85, canvas.height - 25, "20px Arial", 'red');
 			drawText(killDeathVal, canvas.width - 200, 30, "20px Arial", 'black');
 			drawText(goldVal, canvas.width - 150, 50, "20px Arial", 'black');
 		}
 		else {
 			if (!isStore)
 			{
-				drawText("Blue Team: " + team2ScoreVal, ((canvas.width/2) - 85), canvas.height - 50, "20px Arial", 'blue');
-				drawText("Red Team: " + team1ScoreVal, (canvas.width/2) - 85, canvas.height - 25, "20px Arial", 'red');
+				drawText("Blue Team: " + Math.round(team2ScoreVal), ((canvas.width/2) - 85), canvas.height - 50, "20px Arial", 'blue');
+				drawText("Red Team: " + Math.round(team1ScoreVal), (canvas.width/2) - 85, canvas.height - 25, "20px Arial", 'red');
 				drawText(killDeathVal, canvas.width - 200, 30, "20px Arial", 'black');
 				drawText(goldVal, canvas.width - 150, 50, "20px Arial", 'black');
 			}
