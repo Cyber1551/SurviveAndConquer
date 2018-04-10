@@ -651,14 +651,8 @@ Player.onConnect = function(socket, roomId, index, team, map, matchType)
 		{
 			//console.log("x:" + player.updatedX + "; y: " + player.updatedY);
 
-			var xx = data.xx - WIDTH/2;
-			var yy = data.yy - HEIGHT/2;
-			var angle = Math.atan2(yy, xx);
-			angle = angle * (180/Math.PI);
-
-			if (angle < 0) angle = 360 - (-angle);
 			//console.log(angle);
-			player.mouseAngle = angle;
+			player.mouseAngle = data.angle;
 			//console.log(angle);
 			//socket.emit("getPlayerAngle", {mouseAngle:angle});
 		}
