@@ -2826,7 +2826,7 @@
 				if(currentTab == "store")
 				{
 					ctx.fillStyle = "black";
-					drawText ("Gold: " + Player.list[selfId].gold, WIDTH/2 + 450, store.y + 50);
+					drawText ("Gold: " + Player.list[selfId].gold, WIDTH/2 + 450, store.y + 25);
 					for (var i = 0; i < itemlist.length; i++)
 					{
 						itemlist[i].draw(ctx);
