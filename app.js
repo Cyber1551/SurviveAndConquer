@@ -1663,7 +1663,7 @@ io.sockets.on('connection', function(socket)
 		//console.log(socket.id);
 		if (Player.list[socket.id] !== undefined)
 		{
-		switch (data.state)
+		/*switch (data.state)
 		{
 			case true: //+
 				if (Player.list[socket.id].shield < 100)
@@ -1678,7 +1678,16 @@ io.sockets.on('connection', function(socket)
 					Player.list[socket.id].shield--;
 				}
 			break;
+		}*/
+		if(data.isShielding == false)
+		{
+			Player.list[socket.id].isShielding = false;
 		}
+		else
+		{
+			Player.list[socket.id].shield = data.val;
+		}
+		
 		}
 	});
 	socket.on("increaseHP", function(data)

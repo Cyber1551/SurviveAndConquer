@@ -799,9 +799,9 @@
 		showDeathRecap(data);
 		var val = data.value;
 		var x = setInterval(function() {
-		console.log(val);
+		ctx.draw(val, WIDTH/2, HEIGHT/2);
   	if (val <= 0) {
-			console.log("respawn");
+			//ctx.draw("Respawn", WIDTH/2, HEIGHT/2);
 			socket.emit("setCanMove", {playerId:selfId, count: true, value:true});
     	clearInterval(x);
   	}
@@ -1725,12 +1725,27 @@
 
 		if (Player.list[selfId].isShielding)
 		{
-			socket.emit('updateShield', {state:false}); //True for positive, false for negative
+			if (Player.list[selfId].shield > 0)
+			{
+				Player.list[selfId].shield--;
+				socket.emit("updateShield", {val: Player.list[selfId].shield});
+			}
+			else
+			{
+				socket.emit('keyPress', {inputId: 'shield', state:false});
+				//socket.emit ("updateShield", {isShielding:false});
+			}
+				
 		}
 		else
 		{
-			socket.emit('updateShield', {state:true});
+			if (Player.list[selfId].shield < 100)
+			{
+				Player.list[selfId].shield++;
+				socket.emit("updateShield", {val: Player.list[selfId].shield});
+			}
 		}
+		
 
 		//chatText.innerHTML += "cleared";
 		for (var i in Player.list)
@@ -1796,8 +1811,8 @@
 
 		//$("#team1L").text("(+" + data.team1N + ")");
 		//$("#team2L").text("(+" + data.team2N + ")");
-		team1ScoreVal = (data.team1 / 1000) * 100 + "%";
-		team2ScoreVal = (data.team2 / 1000) * 100 + "%";
+		team1ScoreVal = Math.round((data.team1 / 1000) * 100) + "%";
+		team2ScoreVal = Math.round((data.team2 / 1000) * 100) + "%";
 		//$("#team1Div").css("height", data.team1);
 		//$("#team2Div").css("height", data.team2);
 	});
@@ -1863,7 +1878,8 @@
 		{
 			if (inChat)
 				return;
-			socket.emit('keyPress', {inputId: 'shield', state:true});
+			if (Player.list[selfId].shield > 0)
+				socket.emit('keyPress', {inputId: 'shield', state:true});
 		}
 		else if(event.keyCode === 69) //E
 		{
@@ -2657,16 +2673,16 @@
 	{
 		if (window.innerHeight >= 930)
 		{
-			drawText("Blue Team: " + Math.round(team2ScoreVal), ((canvas.width/2) - 85), canvas.height - 50, "20px Arial", 'blue');
-			drawText("Red Team: " + Math.round(team1ScoreVal), (canvas.width/2) - 85, canvas.height - 25, "20px Arial", 'red');
+			drawText("Blue Team: " + team2ScoreVal, ((canvas.width/2) - 85), canvas.height - 50, "20px Arial", 'blue');
+			drawText("Red Team: " + team1ScoreVal, (canvas.width/2) - 85, canvas.height - 25, "20px Arial", 'red');
 			drawText(killDeathVal, canvas.width - 200, 30, "20px Arial", 'black');
 			drawText(goldVal, canvas.width - 150, 50, "20px Arial", 'black');
 		}
 		else {
 			if (!isStore)
 			{
-				drawText("Blue Team: " + Math.round(team2ScoreVal), ((canvas.width/2) - 85), canvas.height - 50, "20px Arial", 'blue');
-				drawText("Red Team: " + Math.round(team1ScoreVal), (canvas.width/2) - 85, canvas.height - 25, "20px Arial", 'red');
+				drawText("Blue Team: " + team2ScoreVal, ((canvas.width/2) - 85), canvas.height - 50, "20px Arial", 'blue');
+				drawText("Red Team: " + team1ScoreVal, (canvas.width/2) - 85, canvas.height - 25, "20px Arial", 'red');
 				drawText(killDeathVal, canvas.width - 200, 30, "20px Arial", 'black');
 				drawText(goldVal, canvas.width - 150, 50, "20px Arial", 'black');
 			}
@@ -2809,6 +2825,8 @@
 				ctx.stroke();
 				if(currentTab == "store")
 				{
+					ctx.fillStyle = "black";
+					drawText ("Gold: " + Player.list[selfId].gold, WIDTH/2 + 450, store.y + 50);
 					for (var i = 0; i < itemlist.length; i++)
 					{
 						itemlist[i].draw(ctx);
