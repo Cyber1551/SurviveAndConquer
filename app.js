@@ -1586,16 +1586,41 @@ io.sockets.on('connection', function(socket)
 			switch(Player.list[socket.id].matchType)
 			{
 				case 2:
+					
 					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'losses': 1} });
 					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'oneLoss': 1} });
+					for (var i in SOCKET_LIST)
+					{
+						if (Player.list[i].roomId == Player.list[socket.id].roomId)
+						{
+							Player.onDisconnect(SOCKET_LIST[i]);
+							backToLobby(i);
+						}
+					}
 				break;
 				case 4:
 					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'losses': 1} });
 					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'twoLoss': 1} });
+					for (var i in SOCKET_LIST)
+					{
+						if (Player.list[i].roomId == Player.list[socket.id].roomId)
+						{
+							Player.onDisconnect(SOCKET_LIST[i]);
+							backToLobby(i);
+						}
+					}
 				break;
 				case 6:
 					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'losses': 1} });
 					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'threeLoss': 1} });
+					for (var i in SOCKET_LIST)
+					{
+						if (Player.list[i].roomId == Player.list[socket.id].roomId)
+						{
+							Player.onDisconnect(SOCKET_LIST[i]);
+							backToLobby(i);
+						}
+					}
 				break;
 			}
 		}
