@@ -300,7 +300,7 @@ function backToLobby(id)
 			SOCKET_LIST[id].emit('backToLobby', {wins:wins, losses:losses, oneWins:oneWins, oneLoss:oneLoss, twoWins:twoWins, twoLoss:twoLoss, threeWins:threeWins, threeLoss:threeLoss, exp:exp, expMax:expMax, level:level});
 		}
 	});
-
+ 
 
 }
 
@@ -1593,7 +1593,6 @@ io.sockets.on('connection', function(socket)
 					{
 						if (Player.list[i].roomId == Player.list[socket.id].roomId)
 						{
-							Player.onDisconnect(SOCKET_LIST[i]);
 							backToLobby(i);
 						}
 					}
@@ -1605,7 +1604,6 @@ io.sockets.on('connection', function(socket)
 					{
 						if (Player.list[i].roomId == Player.list[socket.id].roomId)
 						{
-							Player.onDisconnect(SOCKET_LIST[i]);
 							backToLobby(i);
 						}
 					}
@@ -1617,7 +1615,6 @@ io.sockets.on('connection', function(socket)
 					{
 						if (Player.list[i].roomId == Player.list[socket.id].roomId)
 						{
-							Player.onDisconnect(SOCKET_LIST[i]);
 							backToLobby(i);
 						}
 					}
