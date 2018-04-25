@@ -188,15 +188,28 @@ function checkAccountLevelIncrease(id)
 		{
 			var exp = result[0].exp;
 			var expMax = result[0].expMax;
+			console.log(usersLoggedIn[id] + " | " + exp + " : " + expMax)
 			if (exp >= expMax)
 			{
-				var diff = exp - expMax;
+				var diff = exp - expMax;  
+				var goldAmt = Math.round(genRandomNumber(100, 150));
 				db.account.update({ username: usersLoggedIn[id]}, { $inc: { 'level': 1}});
 				db.account.update({ username: usersLoggedIn[id]}, { $inc: { 'expMax': 50}});
 				db.account.update({ username: usersLoggedIn[id]}, { $set: { 'exp': diff}});
+				db.account.update({ username: usersLoggedIn[id]}, { $inc: { 'gold': goldAmt}});
+				
+				setTimeout(function()
+				{
+					backToLobby(id, true, goldAmt);
+				}, 100);
+				
 			}
-			console.log(result[0].exp);
-			backToLobby(id);
+			else
+			{
+				backToLobby(id, false, 0);
+			}
+			//console.log(result[0].exp);
+			
 		}
 	});
 
@@ -209,6 +222,9 @@ function gameOver(team)
 	for (var x in Player.list)
 	{
 
+		//playersInGoal1.splice(playersInGoal1.indexOf(x), 1);
+		//playersInGoal2.splice(playersInGoal2.indexOf(x), 1);
+		//Player.list[x].isGoal = false;
 
 		if (Player.list[x].team == team)
 		{
@@ -275,7 +291,7 @@ function gameOver(team)
 
 }
 
-function backToLobby(id)
+function backToLobby(id, levelUp, goldAmt)
 {
 	 db.collection("account").find({username:usersLoggedIn[id]}).toArray(function(err, result) {
 		if (err)
@@ -297,7 +313,7 @@ function backToLobby(id)
 			var expMax = result[0].expMax;
 			var level = result[0].level;
 			//console.log(wins + "/" + oneWins);
-			SOCKET_LIST[id].emit('backToLobby', {wins:wins, losses:losses, oneWins:oneWins, oneLoss:oneLoss, twoWins:twoWins, twoLoss:twoLoss, threeWins:threeWins, threeLoss:threeLoss, exp:exp, expMax:expMax, level:level});
+			SOCKET_LIST[id].emit('backToLobby', {wins:wins, losses:losses, oneWins:oneWins, oneLoss:oneLoss, twoWins:twoWins, twoLoss:twoLoss, threeWins:threeWins, threeLoss:threeLoss, exp:exp, expMax:expMax, level:level, levelUp:levelUp, gold:goldAmt});
 		}
 	});
  
@@ -398,7 +414,7 @@ var Player = function(param)
 	self.sprite = '/client/img/Player/player.png';
 	self.spriteShield = '/client/img/PlayerShield/playerShield.png';
 	self.stats = {
-		attack:5,
+		attack:7,
 		elementalDamage:1,
 		lethality:0,
 		armor:0,
@@ -1343,10 +1359,10 @@ setInterval(function()
 
 		if (p.isGoal && p.team == "red")
 		{
-			//console.log("Length of 2: " + playersInGoal2.length);
+			console.log(playersInGoal2.length);
 			if (playersInGoal2.length == 0)
 			{
-				goal.increaseAmount(1, 10);
+				goal.increaseAmount(1, 20);
 			}
 			if(playersInGoal1.indexOf(p) < 0)
 				playersInGoal1.push(p);
@@ -1361,10 +1377,10 @@ setInterval(function()
 
 		if (p.isGoal && p.team == "blue")
 		{
-			//console.log("Length of 1: " + playersInGoal1.length);
+			console.log(playersInGoal1.length);
 			if (playersInGoal1.length == 0)
 			{
-				goal.increaseAmount(2, 10);
+				goal.increaseAmount(2, 20);
 			}
 			if (playersInGoal2.indexOf(p) < 0)
 				playersInGoal2.push(p);
@@ -1398,8 +1414,9 @@ function levelUpdate(player)
 	player.gold += 100;
 	player.expMax += 50;
 	player.exp = 0;
-	player.level++;
+	player.level++; 
 	player.stats.attack += 5;
+	player.stats.lifeRegen += 2;
 
 	if (isOdd(player.level) && player.level < 11)
 	{
@@ -1524,12 +1541,20 @@ io.sockets.on('connection', function(socket)
 					matchMakingOne(socket.id, usersLoggedIn[socket.id], 2);
 
 				}
+				else
+				{
+					socket.emit("showErrorText", {value: "Your account is already in the queue!"});
+				}
 			break;
 			case "two": //2v2
 				if (usersWaitingOne.includes(usersLoggedIn[socket.id]) == false && usersWaitingTwo.includes(usersLoggedIn[socket.id]) == false && usersWaitingThree.includes(usersLoggedIn[socket.id]) == false)
 				{
 					socket.emit("cancelButton", {value:true});
 					matchMakingTwo(socket.id, usersLoggedIn[socket.id], 4);
+				}
+				else
+				{
+					socket.emit("showErrorText", {value: "Your account is already in the queue!"});
 				}
 			break;
 			case "three": //3v3
@@ -1538,6 +1563,10 @@ io.sockets.on('connection', function(socket)
 					socket.emit("cancelButton", {value:true});
 					matchMakingThree(socket.id, usersLoggedIn[socket.id], 6);
 				}
+				else
+				{
+					socket.emit("showErrorText", {value: "Your account is already in the queue!"});
+				}
 			break;
 			case "training":
 				if (usersWaitingOne.includes(usersLoggedIn[socket.id]) == false && usersWaitingTwo.includes(usersLoggedIn[socket.id]) == false && usersWaitingThree.includes(usersLoggedIn[socket.id]) == false)
@@ -1545,6 +1574,10 @@ io.sockets.on('connection', function(socket)
 					socket.emit("cancelButton", {value:true});
 					matchMakingTraining(socket.id, usersLoggedIn[socket.id], 1);
 				 }
+				else
+				{
+					socket.emit("showErrorText", {value: "Your account is already in the queue!"});
+				}
 			break;
 		}
 
@@ -1589,12 +1622,16 @@ io.sockets.on('connection', function(socket)
 					
 					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'losses': 1} });
 					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'oneLoss': 1} });
-					for (var i in SOCKET_LIST)
+					for (var i in Player.list)
 					{
-						if (Player.list[i].roomId == Player.list[socket.id].roomId)
+						if (i != socket.id)
 						{
-							backToLobby(i);
+							if (Player.list[i].roomId == Player.list[socket.id].roomId)
+							{
+								backToLobby(i, false, 0);
+							}
 						}
+						
 					}
 				break;
 				case 4:
@@ -1604,7 +1641,7 @@ io.sockets.on('connection', function(socket)
 					{
 						if (Player.list[i].roomId == Player.list[socket.id].roomId)
 						{
-							backToLobby(i);
+							backToLobby(i, false,0);
 						}
 					}
 				break;
@@ -1615,7 +1652,7 @@ io.sockets.on('connection', function(socket)
 					{
 						if (Player.list[i].roomId == Player.list[socket.id].roomId)
 						{
-							backToLobby(i);
+							backToLobby(i, false, 0);
 						}
 					}
 				break;

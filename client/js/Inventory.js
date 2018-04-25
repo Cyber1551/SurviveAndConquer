@@ -405,9 +405,9 @@ Item("mediumlethality", "Medium Lethality", 225, "passive", function()
 Item("feather", "Feather", 100, "passive", function()
 {
 
-	socket.emit("updateStats", {playerId:selfId, stat:"attackSpd", type:"up", amount:0.5});
+	socket.emit("updateStats", {playerId:selfId, stat:"attackSpd", type:"up", amount:0.2});
 
-}, "+0.5 Attack Speed", function()
+}, "+0.2 Attack Speed", function()
 {
 
 	socket.emit("updateStats", {playerId:selfId, stat:"attackSpd", type:"down", amount:0.5});

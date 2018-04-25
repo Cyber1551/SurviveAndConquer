@@ -116,7 +116,7 @@
 			}
 			if (matchType != null)
 			{
-				$("#loader").css("display", "inline-block");
+				
 				socket.emit('matchMake', {matchType:matchType});
 			}
 			else if (matchType == "na")
@@ -162,7 +162,7 @@
 	}
 	socket.on('backToLobby', function(data)
 	{
-
+		
 		currentRoom = "lobby";
 		$("#elementL").text("Not Set");
 		$("#gameDiv").css("display", "none");
@@ -190,7 +190,9 @@
 
 		var winR = calculateWinRate(data.wins, data.losses);
 		$("#lobbyWinR").text(winR);
-
+		var currentGold = $("#gold").text();
+		$("#gold").text(currentGold + data.gold);  
+		$("#addGold").text(data.gold);
 		//Level
 			$("#level").text(data.level);
 			$("#exp").text(data.exp);
@@ -206,6 +208,22 @@
 		pointerLocked = false;
 		document.getElementById("sacTitle").style.visibility = "visible";
 		document.exitPointerLock();
+		
+		if (data.levelUp == true)
+		{
+			$( function() {
+			$("#dialog-message").css("display", "inline-block"); 
+			$( "#dialog-message" ).dialog({
+				modal: true,
+				buttons: {
+					Ok: function() {
+						$( this ).dialog( "close" );
+					}
+				}
+			})
+		} );
+			 
+		}
 		//socket.emit('disconnect');
 	});
 
@@ -334,7 +352,9 @@
 });
 	function inGame()
 	{
-
+		playerInventory.clearInventory();
+		activeBtns = [];
+		passiveBtns = [];
 		currentRoom = "game";
 		waitDiv.style.display = 'none';
 		document.getElementById("sacTitle").style.display = "none";
@@ -361,6 +381,7 @@
 	{
 		if (data.value == true)
 		{
+			$("#loader").css("display", "inline-block");
 			$("#lobbyDivCancel").css("display", "inline-block");
 			$("#lobbyDiv-findMatch").css("display", "none");
 		}
@@ -372,10 +393,21 @@
 		}
 
 	});
+	
+	socket.on("showErrorText", function(data)
+	{
+		$("#errorText").text(data.value);
+		setTimeout(function()
+		{
+			$("#errorText").text("");
+		}, 2000);
+		
+	});
+	
 	socket.on("removeSelfId", function()
 	{
 		selfId = null;
-	})
+	});
 	function surrender()
 	{
 		if (!selfId)
@@ -796,18 +828,20 @@
 	socket.on("deathCounter", function(data)
 	{
 	//	ctx.font = "50px Arial";
-		showDeathRecap(data);
+		
 		var val = data.value;
 		var x = setInterval(function() {
-		ctx.draw(val, WIDTH/2, HEIGHT/2);
-  	if (val <= 0) {
+		ctx.fillStyle = "black";
+		ctx.font = "30px Arial";
+		ctx.fillText(val, WIDTH/2, HEIGHT/2);
+		if (val <= 0) {
 			//ctx.draw("Respawn", WIDTH/2, HEIGHT/2);
 			socket.emit("setCanMove", {playerId:selfId, count: true, value:true});
-    	clearInterval(x);
-  	}
+			clearInterval(x);
+		}
 		val--;
 	}, 1000);
-
+		showDeathRecap(data);
 
 	});
 
@@ -1414,8 +1448,9 @@
 		var p = Player.list[selfId];
 		if (p.hp < p.hpMax)
 		{
-			var healExtra = 2 * (p.stats.lifeRegen / 100);
-			var healAmt = 2 + healExtra;
+			
+			var healExtra = (p.hpMax/3) * (p.stats.lifeRegen / 100);
+			var healAmt = p.stats.lifeRegen + healExtra;
 			socket.emit("increaseHP", {amount: healAmt, playerId:selfId});
 		}
 	}, 1000);
@@ -2117,6 +2152,7 @@
 			}
 		}
 		});
+		
 
 	}
 
@@ -2128,10 +2164,12 @@
 	document.addEventListener("DOMContentLoaded", function()
 	{
 		console.log(window.innerWidth);
+		
 		$( function() {
 			$( "#tabs" ).tabs();
 		} );
 
+		
 		$( function() {
 	 		$( ".radioButtons" ).checkboxradio({
 		 	icon: false
@@ -2144,6 +2182,7 @@
 				collapsible: true
 			});
 		} );
+		
 		console.log("resize");
 		resize();
 		loadStore();
@@ -2718,25 +2757,31 @@
 					ctx.lineTo(store.x + store.w, 60);
 					ctx.stroke();
 					drawText("Lore: " + Element.list[infoId].lore, WIDTH/2 - 100, 80);
-					drawText("Ability: " + Element.list[infoId].ability, WIDTH/2 - 100, 150);
-					drawText("Strength: Deal +damage against " + Element.list[infoId].strength, WIDTH/2 - 100, 180);
-					drawText("Weakness: Take +damage from " + Element.list[infoId].weakness, WIDTH/2 - 100, 210);
+					drawText("Health: " + Element.list[infoId].health, WIDTH/2 - 100, 150);
+					drawText("Attack: " + Element.list[infoId].attack, WIDTH/2 - 100, 180);
+					drawText("Armor: " + Element.list[infoId].armor, WIDTH/2 - 100, 210);
+					drawText("Attack Speed: " + Element.list[infoId].attackSpd, WIDTH/2 - 100, 240);
+					drawText("Critical Chance: " + Element.list[infoId].critChance + "%", WIDTH/2 - 100, 270);
+					drawText("Life Regen: " + Element.list[infoId].lifeRegen + "%", WIDTH/2 - 100, 300);
+ 
+					drawText("Strength: Deal +damage against " + Element.list[infoId].strength, WIDTH/2 - 100, 330);
+					drawText("Weakness: Take +damage from " + Element.list[infoId].weakness, WIDTH/2 - 100, 360);
 					switch(Element.list[infoId].name)
 					{
 						case "Fire":
-							ctx.drawImage(Img.fire, WIDTH/2, 240);
+							ctx.drawImage(Img.fire, WIDTH/2 + 70, 150);
 						break;
 						case "Lightning":
-							ctx.drawImage(Img.lightning, WIDTH/2, 240);
+							ctx.drawImage(Img.lightning, WIDTH/2 + 70, 150);
 						break;
 						case "Water":
-							ctx.drawImage(Img.water, WIDTH/2, 240);
+							ctx.drawImage(Img.water, WIDTH/2 + 70, 150);
 						break;
 						case "Earth":
-							ctx.drawImage(Img.earth, WIDTH/2, 240);
+							ctx.drawImage(Img.earth, WIDTH/2 + 70, 150);
 						break;
 						case "Wind":
-							ctx.drawImage(Img.wind, WIDTH/2, 240);
+							ctx.drawImage(Img.wind, WIDTH/2 + 70, 150);
 						break;
 					}
 
@@ -2822,8 +2867,8 @@
 						var lifeStealAmt = damage * (stats.lifeSteal / 100);
 						var critLifeAmt = critDam * (stats.lifeSteal / 100);
 
-						var lifeRegenExtra = 2 * (stats.lifeRegen / 100);
-						var lifeRegen = 2 + lifeRegenExtra;
+						var lifeRegenExtra = (Player.list[selfId].hpMax/3) * (stats.lifeRegen / 100);
+						var lifeRegen = stats.lifeRegen + lifeRegenExtra;
 
 
 						drawText("Attack: " + stats.attack, WIDTH/2 + 40, 300);
