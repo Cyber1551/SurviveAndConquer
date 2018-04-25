@@ -891,67 +891,6 @@
 	Bullet.list = {};
 
 
-	var dummy = function(x, y, maxHealth)
-	{
-		var self = {};
-		self.x = x;
-		self.y = y;
-		self.px = x;
-		self.py = y;
-		self.hpMax = maxHealth;
-		self.hp = self.hpMax;
-		self.draw = function()
-		{
-			self.px = self.x - Player.list[selfId].x + WIDTH/2;
-			self.py = self.y - Player.list[selfId].y + HEIGHT/2;
-
-			ctx.drawImage(Img.player, self.px, self.py);
-
-			ctx.strokeStyle = 'black';
-			ctx.strokeRect(self.px - 20, self.py - 20, 100, 10);
-			var hpWidth = 100 * (self.hp / self.hpMax);
-			ctx.fillStyle = 'red';
-			ctx.fillRect(self.px- 20, self.py- 20, hpWidth, 10);
-			var startingX = self.px- 20;
-			var startingY = self.py - 20;
-			var endingX = startingX + hpWidth;
-			var endingY = startingY + 10;
-
-			var lines = self.hp / 250;
-			var bigLines = self.hp / 500;
-			var pixels = hpWidth / lines;
-			var bigPixels = hpWidth / bigLines;
-			var c = 0;
-			for (var i = 0; i < lines; i++)
-			{
-
-				ctx.beginPath();
-				ctx.strokeStyle = 'black';
-				ctx.moveTo(startingX, startingY);
-				if (c < 2)
-				{
-					ctx.lineTo(startingX, startingY + 6);
-				}
-				else
-				{
-					ctx.lineTo(startingX, startingY + 10);
-					c = 0;
-				}
-
-				ctx.stroke();
-				ctx.closePath();
-
-				startingX += pixels;
-				c++;
-
-			}
-		}
-
-		return self;
-	}
-
-
-
 	var selfId = null;
 
 	socket.on('init', function(data)
@@ -1702,8 +1641,6 @@
 		}
 
 	}
-	var dummy1 = new dummy(window.innerWidth/2 + genRandomNumber(-500, 500), window.innerHeight/2 + genRandomNumber(-500, 500), 1000);
-
 	setInterval(function()
 	{
 		if (selfId == null)
@@ -1759,11 +1696,6 @@
 
 		//GUI ----------
 
-		if (Player.list[selfId].matchType == "training")
-		{
-			//console.log(true)
-			dummy1.draw();
-		}
 
 		if (WIDTH != 0)
 		{

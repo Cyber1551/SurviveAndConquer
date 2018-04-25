@@ -18,7 +18,7 @@ var usersWaitingTwo = [];
 
 var playersWaitingThree = [];
 var usersWaitingThree = [];
-
+ 
 
 var usersLoggedIn = [];
 //var roomSize = 2;
@@ -354,19 +354,6 @@ var Entity = function(param)
 	return self;
 }
 
-var Dummy = function(x, y)
-{
-	var self = {};
-	self.id = Math.round(genRandomNumber(0, 999));
-	self.x = x;
-	self.y = y;
-	self.hpMax = 1000;
-	self.hp = self.hpMax;
-
-	Dummy.list[self.id] = self;
-	return self;
-}
-Dummy.list = {};
 
 
 
@@ -1595,16 +1582,19 @@ io.sockets.on('connection', function(socket)
 	{
 		if (Player.list[socket.id] != undefined)
 		{
-			db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'losses': 1} });
+			
 			switch(Player.list[socket.id].matchType)
 			{
 				case 2:
+					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'losses': 1} });
 					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'oneLoss': 1} });
 				break;
 				case 4:
+					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'losses': 1} });
 					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'twoLoss': 1} });
 				break;
 				case 6:
+					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'losses': 1} });
 					db.account.update({ username: usersLoggedIn[socket.id]}, { $inc: { 'threeLoss': 1} });
 				break;
 			}
