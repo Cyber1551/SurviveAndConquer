@@ -9,7 +9,7 @@ public class AddUser : MonoBehaviour {
 
 
 
-	private static string hash = "string!12345@";
+	private static string hash = "Th3Hash1sV3ryS3cr3tAndN0b0dyCanKn0w@12345";
 	public static string Encrypt(string input)
 	{
 
@@ -34,7 +34,7 @@ public class AddUser : MonoBehaviour {
 		form.AddField("username", username);
 		form.AddField ("password", Encrypt(password));
 
-		WWW www = new WWW ("http://localhost/SurviveAndConquerMoba/InsertData.php", form);
+		WWW www = new WWW ("http://localhost/SurviveAndConquerFight/InsertData.php", form);
 
 	}
 }

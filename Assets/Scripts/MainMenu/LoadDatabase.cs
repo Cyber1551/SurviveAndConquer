@@ -4,18 +4,24 @@ using UnityEngine;
 using System.Text;
 using System.Security.Cryptography;
 using System;
+using UnityEditor;
 
 public class LoadDatabase : MonoBehaviour {
-	private string[] users;
+	public string[] users;
 
 	// Use this for initialization
-	IEnumerator Start () {
-		WWW userData = new WWW ("http://localhost/SurviveAndConquerMoba/GetData.php");
+
+	void Start()
+	{
+		DontDestroyOnLoad (this.gameObject);
+		StartCoroutine (UpdateData ());
+	}
+	IEnumerator UpdateData () {
+		WWW userData = new WWW ("http://localhost/SurviveAndConquerFight/GetData.php");
 		yield return userData;
 		string userString = userData.text;
 		 
 		users = userString.Split (';'); 
-
 
 	}
 		
@@ -59,7 +65,7 @@ public class LoadDatabase : MonoBehaviour {
 
 		
 
-	string GetDataValue(string data, string index)
+	 string GetDataValue(string data, string index)
 	{
 		if (data != "") {
 
@@ -78,21 +84,19 @@ public class LoadDatabase : MonoBehaviour {
 
 	public bool Login(string username, string password)
 	{
+
+
 		if (!username.Equals ("") && !password.Equals ("")) 
 		{
 			
 			foreach (string user in users) {
-				print (GetDataValue (user, "Pass:").Equals (Encrypt(password)));
+				print (GetDataValue (user, "Pass:") + ", " + Encrypt(password));
 				if (GetDataValue (user, "User:").Equals(username)) {
 					if (GetDataValue (user, "Pass:").Equals(Encrypt(password))) {
 						return true;
-					} else {
-						return false;
-					}
+					} 
 				}
-				else {
-					return false;
-				}
+
 			} 
 			return false;
 		}
@@ -117,6 +121,36 @@ public class LoadDatabase : MonoBehaviour {
 		return false;
 
 		}
+	public void reload()
+	{
+		StartCoroutine (UpdateData ());
 
+	}
+
+	public string[] getUser(string username)
+	{
+		string[] u = new string[8];
+		int index = -1;
+		foreach(string user in users)
+		{
+			if (GetDataValue(user, "User:").Equals (username)) {
+				index = Array.IndexOf (users, user);
+				break;
+			}
+		}
+		if (index == -1)
+			return null;
+
+		u[0] = username;
+		u[1]=GetDataValue (users [index], "Wins:");
+		u[2]=GetDataValue (users [index], "Losses:");
+		u[3]=GetDataValue (users [index], "Gold:");
+		u[4]=GetDataValue (users [index], "Exp:");
+		u[5]=GetDataValue (users [index], "ExpMax:");
+		u[6]=GetDataValue (users [index], "Level:");
+		PlayerStats.Level = int.Parse(u [6]);
+		u [7] = GetDataValue (users [index], "Honor:");
+		return u;
+	}
 
 }

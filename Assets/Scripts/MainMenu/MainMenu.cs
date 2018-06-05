@@ -42,6 +42,7 @@ public class MainMenu : MonoBehaviour {
 	public void LoginButton()
 	{
 		if (ld.Login (loginUsername.text, loginPassword.text)) {
+			PlayerStats.Username = loginUsername.text;
 			SceneManager.LoadScene ("MainMenu");
 		} else {
 			
@@ -96,6 +97,7 @@ public class MainMenu : MonoBehaviour {
 				if (!ld.userExists (user)) {
 					if (pass.Equals (rpass)) {
 						au.CreateUser (user, pass);
+						ld.reload (); 
 						//StartCoroutine (ld.Start ());
 					} else {
 						errorTxt.text = "Passwords must match!";
@@ -118,30 +120,5 @@ public class MainMenu : MonoBehaviour {
 	void Fade()
 	{
 		errorTxt.gameObject.GetComponent<Fade> ().startFade ();
-	}
-	public void openSettings()
-	{
-		if (loginPanel.gameObject.activeSelf == true) {
-			loginPanel.gameObject.SetActive (false);
-			previousRoom = "login";
-		}
-		else if (registerPanel.gameObject.activeSelf == true) {
-			registerPanel.gameObject.SetActive (false);
-			backBtn.gameObject.SetActive (false);
-			previousRoom = "register";
-		}
-		settingsPanel.gameObject.SetActive (true);
-		settingsBtn.gameObject.SetActive (false);
-	}
-	public void closeSettings()
-	{
-		settingsPanel.gameObject.SetActive (false);
-		settingsBtn.gameObject.SetActive (true);
-		if (previousRoom.Equals ("login")) {
-			loginPanel.gameObject.SetActive (true);
-		} else if (previousRoom.Equals ("register")) {
-			registerPanel.gameObject.SetActive (true);
-			backBtn.gameObject.SetActive (true);
-		}
 	}
 }
