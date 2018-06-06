@@ -565,6 +565,7 @@ GameObject:
   - component: {fileID: 114431937772491158}
   - component: {fileID: 114311948429747408}
   - component: {fileID: 114822871448601200}
+  - component: {fileID: 114938623599481380}
   m_Layer: 0
   m_Name: ThirdPersonController
   m_TagString: Untagged
@@ -763,7 +764,6 @@ GameObject:
   - component: {fileID: 4001715875187878}
   - component: {fileID: 20307561233796584}
   - component: {fileID: 124069041843579428}
-  - component: {fileID: 81673528727413980}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -1733,13 +1733,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!81 &81673528727413980
-AudioListener:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1762225109738244}
-  m_Enabled: 1
 --- !u!95 &95487827899319580
 Animator:
   serializedVersion: 3
@@ -1771,8 +1764,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MovingTurnSpeed: 360
   m_StationaryTurnSpeed: 180
-  m_JumpPower: 10
-  m_GravityMultiplier: 1
+  m_JumpPower: 8
+  m_GravityMultiplier: 2
   m_RunCycleLegOffset: 0
   m_MoveSpeedMultiplier: 1
   m_AnimSpeedMultiplier: 1
@@ -1814,6 +1807,19 @@ MonoBehaviour:
   instantiationId: -1
   currentMasterID: -1
   isRuntimeInstantiated: 0
+--- !u!114 &114938623599481380
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1555339227338056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b78a64ff8098c7c4ea5b1e18a4fed0af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerControl:
+  - {fileID: 114431937772491158}
 --- !u!124 &124069041843579428
 Behaviour:
   m_ObjectHideFlags: 1

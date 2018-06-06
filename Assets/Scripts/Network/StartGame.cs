@@ -10,7 +10,10 @@ public class StartGame : Photon.PunBehaviour {
 	[SerializeField] private GameObject player;
 	[SerializeField] private GameObject world;
 	[SerializeField] private GameObject menu;
+	private bool searching = false;
 	public GameObject cam;
+	private int joinAttempts = 0;
+	private int maximumSkillDeviation = 3;
 	private AudioSource[] audio;
 
 	public GameObject[] spawns;
@@ -39,25 +42,56 @@ public class StartGame : Photon.PunBehaviour {
 	public void FindRoom()
 	{
 		playText.text = "Searching..."; 
-		RoomOptions ro = new RoomOptions ();
-		ro.IsOpen = true;
-		ro.IsVisible = true;
-		ro.MaxPlayers = 2;
 
-		ro.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable () { { "C0", "Level" } }; 
-		ro.CustomRoomPropertiesForLobby = new string[] { "C0" };
+		searching = true;
 
-		int level = PlayerStats.Level;
-		int min = level - 2;
-		int max = level + 2;
-		if (min < 1)
-			min = 1; 
-		TypedLobby sqlLobby = new TypedLobby (null, LobbyType.SqlLobby); 
-		string lobbyFilter = "(C0 &gt;" + min + " AND C0 &lt; " + max + ")";
-		Debug.Log (lobbyFilter);
 
-		PhotonNetwork.JoinOrCreateRoom ("Room" + Random.Range(0, 99999), ro, sqlLobby);
-		//PhotonNetwork.JoinRandomRoom (null, 2, MatchmakingMode.FillRoom, sqlLobby, lobbyFilter);
+	
 		
-	} 
+	}
+
+	void Update()
+	{
+		if (searching) {
+
+			if (PhotonNetwork.inRoom == false) {
+				if (joinAttempts < maximumSkillDeviation) {
+					Debug.Log ("Join");
+					string sqlLobbyFilter = SQLSearch ();
+					if (PhotonNetwork.JoinRandomRoom (null, 2, MatchmakingMode.FillRoom, PhotonNetwork.lobby, sqlLobbyFilter)) {
+						searching = false;
+					}
+					joinAttempts++;
+				} else {
+					Debug.Log ("Create room");
+					searching = false;
+					CreateServer ();
+				}
+			}
+
+		}
+	}
+	public void CreateServer()
+	{
+		ExitGames.Client.Photon.Hashtable sqlProperties = new ExitGames.Client.Photon.Hashtable ();
+
+
+		sqlProperties.Add ("C0", PlayerStats.Level);
+		string[] lobbyProperties = new string[] { "C0" };
+
+		RoomOptions ro = new RoomOptions ();
+		ro.CustomRoomPropertiesForLobby = lobbyProperties;
+		ro.CustomRoomProperties = sqlProperties;
+		PhotonNetwork.CreateRoom ("Room" + Random.Range (0, 9999), ro, PhotonNetwork.lobby);
+	}
+
+	string SQLSearch()
+	{
+		string possibleSearchResult = "(C0 > 0) AND (C0 < 5)";
+
+		int skill = joinAttempts + 1;
+
+		return 
+			"(C0 > " + (PlayerStats.Level - skill) + ") AND (C0 < " + (PlayerStats.Level + skill) + ")";
+	}
 }

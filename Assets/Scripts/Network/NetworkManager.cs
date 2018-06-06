@@ -10,7 +10,7 @@ public class NetworkManager : Photon.PunBehaviour {
 	// Use this for initialization
 	private void Start () {
 		DontDestroyOnLoad (this.gameObject);
-		PhotonNetwork.autoJoinLobby = true; 
+		PhotonNetwork.autoJoinLobby = false; 
 		Debug.Log ("Start");
 		PhotonNetwork.ConnectUsingSettings ("0.0.1");
 
@@ -21,6 +21,11 @@ public class NetworkManager : Photon.PunBehaviour {
 			loadingTxt.text = PhotonNetwork.connectionStateDetailed.ToString ();
 	}
 
+	public virtual void OnConnectedToMaster()
+	{
+		TypedLobby lobby = new TypedLobby ("Main Lobby", LobbyType.SqlLobby);
+		PhotonNetwork.JoinLobby (lobby);
+	}
 	public virtual void OnJoinedLobby()
 	{ 
 		Debug.Log ("Joined Lobby");

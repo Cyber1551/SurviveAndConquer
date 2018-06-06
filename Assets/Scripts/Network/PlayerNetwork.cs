@@ -7,7 +7,7 @@ public class PlayerNetwork : MonoBehaviour {
 	//[SerializeField] private Transform playerCamera;
 	[SerializeField] private MonoBehaviour[] playerControl;
 
-
+	 
 	Vector3 realPos = Vector3.zero;
 	Quaternion realRot = Quaternion.identity;
 
