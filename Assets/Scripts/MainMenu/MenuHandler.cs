@@ -6,49 +6,35 @@ using UnityEngine.UI;
 
 public class MenuHandler : MonoBehaviour {
 
-    public GameObject home;
-    string previousRoom = "home";
-
-    public GameObject ExitPanel;
-    public Button ExitBtn;
-
-    public Text user;
+    public Text[] user;
     public Text level;
     public Text gold;
     public Text honor;
+    public Text expTxt;
     public Image expFill;
-
+    public Text wins;
+    public Text losses;
+    public Text winRate;
     public Image honorFill;
     
 
     public void Start()
     {
-        user.text = PlayerData.username;
+        foreach(Text t in user)
+        {
+            t.text = PlayerData.username;
+        }
         level.text = "Level: " + PlayerData.level;
-        honor.text = PlayerData.honor + "/100";
-        gold.text = PlayerData.gold + "";
-        honorFill.fillAmount = ((float)PlayerData.honor / 100);
+        //honor.text = PlayerData.honor + "/100";
+        gold.text = "Gold: " + PlayerData.gold;
+        wins.text = "Wins: " + PlayerData.wins;
+        losses.text = "Losses: " + PlayerData.losses;
+        int totalGames = PlayerData.wins + PlayerData.losses;
+        string wr = (totalGames == 0) ? "" + 0 : "" + PlayerData.wins / totalGames;
+        winRate.text = "Win Rate: " + wr;
+        //honorFill.fillAmount = ((float)PlayerData.honor / 100);
+        expTxt.text = PlayerData.exp + "/" + PlayerData.maxExp;
         expFill.fillAmount = ((float)PlayerData.exp / PlayerData.maxExp);
         
-    }
-    public void exitConfirm()
-    {
-        
-        
-        ExitPanel.gameObject.SetActive(true);
-        //ExitBtn.gameObject.SetActive(false);
-
-    }
-    public void quitGame()
-    {
-
-        SceneManager.LoadScene("LoginRegister");
-    }
-    public void cancel()
-    {
-
-        ExitPanel.gameObject.SetActive(false);
-       
-       
     }
 }

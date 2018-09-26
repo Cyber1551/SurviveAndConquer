@@ -121,9 +121,7 @@ public class MainMenu : MonoBehaviour {
 					if (pass.Equals (rpass)) {
 
                         StartCoroutine(au.CreateUser (user, pass));
-                       
-                       
-                        
+
 						//StartCoroutine (ld.Start ());
 					} else {
 						errorTxt.text = "Passwords must match!";
@@ -165,7 +163,7 @@ public class MainMenu : MonoBehaviour {
     public void quitGame()
     {
         Application.Quit();
-        UnityEditor.EditorApplication.isPlaying = false; 
+        //UnityEditor.EditorApplication.isPlaying = false; 
     }
     public void cancel()
     {

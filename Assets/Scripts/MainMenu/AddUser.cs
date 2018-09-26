@@ -59,8 +59,8 @@ public class AddUser : MonoBehaviour {
         
         new PlayerData(username);
         
-        Debug.Log(PlayerData.username);
-        SceneManager.LoadScene("CharacterCreation");
+        //Debug.Log(PlayerData.username);
+        SceneManager.LoadScene("LoginRegister");
 
     }
     void Fade()
