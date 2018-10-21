@@ -29,13 +29,25 @@ public class AddUser : MonoBehaviour {
 			} 
 		}
 	}
-    public void UpdateUser(string username, string update, string value)
+    public IEnumerator UpdateUser(string username, string update, string value)
     {
         WWWForm form = new WWWForm();
         form.AddField("username", username);
         form.AddField("update", update);
         form.AddField("value", value);
         WWW www = new WWW("http://localhost/SurviveAndConquerFight/UpdateData.php", form);
+        yield return www;
+        WWW userData = new WWW("http://localhost/SurviveAndConquerFight/GetData.php");
+        yield return userData;
+
+        string userString = userData.text;
+
+
+        LoadDatabase ld = GameObject.Find("NetworkManager").GetComponent<LoadDatabase>();
+        ld.users = userString.Split(';');
+
+        PlayerData.spellBook = ld.GetDataValue(ld.getUserString(PlayerData.username), "SpellBook:").Split(',');
+
     }
 
 

@@ -4,6 +4,6 @@ using UnityEngine;
 
 public class Projectile : Spell {
 
-    public int damage;
     public int speed;
+   
 }

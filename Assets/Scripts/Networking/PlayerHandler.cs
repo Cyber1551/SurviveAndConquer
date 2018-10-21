@@ -16,7 +16,7 @@ public class PlayerHandler : MonoBehaviour {
         c = GetComponent<Character>();
         photonView = GetComponent<PhotonView>();
         Initialize();
-        Canvas[] ca = gameObject.GetComponentsInChildren<Canvas>();
+        /*Canvas[] ca = gameObject.GetComponentsInChildren<Canvas>();
 
         foreach (Canvas cc in ca)
         {
@@ -24,7 +24,7 @@ public class PlayerHandler : MonoBehaviour {
             {   
                 PopupController.Initialize(cc);
             }
-        }
+        }*/
        
         
     }
@@ -55,7 +55,7 @@ public class PlayerHandler : MonoBehaviour {
             c.currentHealth -= 5;
           
             
-            PopupController.CreateText(Random.Range(-100, -5).ToString());
+            //PopupController.CreateText(Random.Range(-100, -5).ToString());
         }
     }
     private void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

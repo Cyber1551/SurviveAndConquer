@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class MenuHandler : MonoBehaviour {
 
     public Text[] user;
-    public Text level;
+    public Text[] level;
     public Text gold;
     public Text honor;
     public Text expTxt;
@@ -24,7 +24,9 @@ public class MenuHandler : MonoBehaviour {
         {
             t.text = PlayerData.username;
         }
-        level.text = "Level: " + PlayerData.level;
+        
+        level[0].text = "Level: " + PlayerData.level;
+        level[1].text = PlayerData.level + "";
         //honor.text = PlayerData.honor + "/100";
         gold.text = "Gold: " + PlayerData.gold;
         wins.text = "Wins: " + PlayerData.wins;

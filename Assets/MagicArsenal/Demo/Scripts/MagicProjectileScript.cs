@@ -38,7 +38,7 @@ public class MagicProjectileScript : MonoBehaviour
             }
             if (hit.gameObject.tag == "Player" && hit.gameObject.layer != LayerMask.NameToLayer("isSelf"))
             {
-                PopupController.CreateText(spell.damage.ToString());
+                //PopupController.CreateText(spell.damage.ToString());
                 hit.gameObject.GetComponent<Character>().TakeDamage(this.GetComponent<Character>(), spell.damage);
             }
             

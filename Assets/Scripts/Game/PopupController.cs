@@ -21,7 +21,7 @@ public class PopupController : MonoBehaviour {
         
         instance.transform.position += new Vector3(instance.transform.rotation.x, Random.Range(0.0f, 0.3f), instance.transform.rotation.z + Random.Range(-0.5f, 0.5f));
         
-        instance.SetText(txt);
+        //instance.SetText(txt);
     }
 
 }

@@ -12,6 +12,7 @@ public class MatchSelector : MonoBehaviour {
     }
     public void UnrankedMatch()
     {
+
         SceneManager.LoadScene("Map1");
 
     }

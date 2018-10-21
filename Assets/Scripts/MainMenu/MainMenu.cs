@@ -119,7 +119,7 @@ public class MainMenu : MonoBehaviour {
 			if (pass.Length > 4) {
 				if (!ld.userExists (user)) {
 					if (pass.Equals (rpass)) {
-
+                        Debug.Log("UM");
                         StartCoroutine(au.CreateUser (user, pass));
 
 						//StartCoroutine (ld.Start ());

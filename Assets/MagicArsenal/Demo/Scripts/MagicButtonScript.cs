@@ -39,7 +39,7 @@ public class MagicButtonScript : MonoBehaviour
 	public void getProjectileNames()			// Find and diplay the name of the currently selected projectile
 	{
 		// Access the currently selected projectile's 'ProjectileScript'
-		projectileScript = effectScript.projectiles[effectScript.currentProjectile].GetComponent<MagicProjectileScript>();
+		projectileScript = effectScript.projectiles.GetComponent<MagicProjectileScript>();
 		projectileParticleName = projectileScript.projectileParticle.name;	// Assign the name of the currently selected projectile to projectileParticleName
 	}
 
