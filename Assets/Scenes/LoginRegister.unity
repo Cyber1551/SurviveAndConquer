@@ -1929,9 +1929,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Levels: []
   PlayButtonName: QUICKPLAY >
-  Windows:
-  - {fileID: 1149055289}
-  - {fileID: 1734837146}
+  Windows: []
   Dialogs: []
   LevelPrefab: {fileID: 0}
   LevelPanel: {fileID: 0}
@@ -2807,18 +2805,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6de873865f4292418dcf99f9eedffd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loginPanel: {fileID: 1149055289}
-  registerPanel: {fileID: 1734837146}
+  loginPanel: {fileID: 0}
+  registerPanel: {fileID: 0}
   backBtn: {fileID: 0}
   settingsBtn: {fileID: 0}
   settingsPanel: {fileID: 0}
-  loginUsername: {fileID: 1208079928}
-  loginPassword: {fileID: 213911043}
-  regUsername: {fileID: 1997338050}
-  regPassword: {fileID: 585520042}
-  regRepeatPassword: {fileID: 1562306258}
-  errorTxt: {fileID: 999186769}
-  userData: {fileID: 2092178689}
+  loginUsername: {fileID: 0}
+  loginPassword: {fileID: 0}
+  regUsername: {fileID: 0}
+  regPassword: {fileID: 0}
+  regRepeatPassword: {fileID: 0}
+  errorTxt: {fileID: 0}
+  userData: {fileID: 0}
 --- !u!1 &1611073015
 GameObject:
   m_ObjectHideFlags: 0
@@ -3615,7 +3613,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa673d7ebe6e8494894771caba77b8eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  msg: {fileID: 999186769}
+  msg: {fileID: 0}
 --- !u!82 &2092178694
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3924,7 +3922,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loginPanel: {fileID: 1149055289}
   registerPanel: {fileID: 1734837146}
-  backBtn: {fileID: 0}
+  backBtn: {fileID: 261788801}
   settingsBtn: {fileID: 0}
   settingsPanel: {fileID: 0}
   loginUsername: {fileID: 1208079928}
@@ -3933,7 +3931,7 @@ MonoBehaviour:
   regPassword: {fileID: 585520042}
   regRepeatPassword: {fileID: 1562306258}
   errorTxt: {fileID: 999186769}
-  userData: {fileID: 2092178689}
+  userData: {fileID: 0}
 --- !u!1 &2136747411
 GameObject:
   m_ObjectHideFlags: 0

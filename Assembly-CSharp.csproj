@@ -61,32 +61,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\AnimatorDisableHelper.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\ChatUIManager.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\DevConsoleUI.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\DropdownSubMenu.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\ExitToSystem.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\FriendsPanelManager.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\LaunchURL.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\LayoutGroupPositionFix.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\ListContentSizeFix.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\ListTabsButton.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\ListTabsManager.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\LoginUserManager.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\ModelDissolve.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\NewsPanelManager.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\ObjectDisableHelper.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\RotateObject.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\SettingsManager.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\SliderManager.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\SplashScreenManager.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\SwitchManager.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\SwitchToMainPanels.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\TooltipManager.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\TopPanelButton.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\TopPanelManager.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\UIElementInFront.cs" />
-    <Compile Include="Assets\Field - Complete Main Menu\Scripts\UIElementSound.cs" />
     <Compile Include="Assets\MagicArsenal\Demo\Scripts\MagicButtonScript.cs" />
     <Compile Include="Assets\MagicArsenal\Demo\Scripts\MagicDragMouseOrbit.cs" />
     <Compile Include="Assets\MagicArsenal\Demo\Scripts\MagicFireProjectile.cs" />
@@ -103,7 +77,6 @@
     <Compile Include="Assets\Modern UI Pack\Scripts\DemoManager.cs" />
     <Compile Include="Assets\Modern UI Pack\Scripts\DemoPanelAnim.cs" />
     <Compile Include="Assets\Modern UI Pack\Scripts\DropdownItem.cs" />
-    <Compile Include="Assets\Modern UI Pack\Scripts\LaunchURL.cs" />
     <Compile Include="Assets\Modern UI Pack\Scripts\ModalByScript.cs" />
     <Compile Include="Assets\Modern UI Pack\Scripts\ModalDialog.cs" />
     <Compile Include="Assets\Modern UI Pack\Scripts\ModalWindowTabs.cs" />
@@ -146,11 +119,8 @@
     <Compile Include="Assets\Scripts\Player\RotateCanvas.cs" />
     <None Include="Assets\Modern UI Pack\Licence.txt" />
     <None Include="Assets\MagicArsenal\MagicArsenal - ReadMe.txt" />
-    <None Include="Assets\Field - Complete Main Menu\Shaders\Dissolve.shader" />
     <None Include="Assets\Modern UI Pack\Read Me.txt" />
-    <None Include="Assets\Field - Complete Main Menu\Shaders\Masked UI Blur.shader" />
     <None Include="Assets\Fonts\OpenSans\License!.txt" />
-    <None Include="Assets\Field - Complete Main Menu\Shaders\UI Blur.shader" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>D:/Github/SurviveAndConquer/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
